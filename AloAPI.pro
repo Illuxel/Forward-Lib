@@ -8,15 +8,22 @@ TARGET = AloAPI
 TEMPLATE = lib
 VERSION = 0.0.1
 
+# component includes
+
 QT -= gui
+QT += core network sql
+
+# project type
 
 CONFIG += staticlib
+
+# COMPILE LOG OUTPUT
 
 CONFIG(release, release | debug) {
     OBJECTS_DIR =   ../Compiles/Msg-API/Build/release/obj
     MOC_DIR =       ../Compiles/Msg-API/Build/release/moc
 }
-else: CONFIG(debug, release | debug) {
+else:CONFIG(debug, release | debug) {
     OBJECTS_DIR =   ../Compiles/Msg-API/Build/debug/obj
     MOC_DIR =       ../Compiles/Msg-API/Build/debug/moc
 }
@@ -38,26 +45,29 @@ else:unix:CONFIG(debug, release | debug) {
 
 # PROJECT CHECKERS
 
-!isEmpty(target.path): INSTALLS += target
-win32-g++: error("Could not compile this lib with g++ compiler. Consider using mcvs instead.")
+!isEmpty(target.path):
+    INSTALLS += target
+#win32-g++:
+    #error("Could not compile this lib with g++ compiler. Consider using mcvs instead.")
 
-# DIRS VARS
+# DIR VARS
 
 MAIN =      $$PWD/aloAPI
 
-UTILS =     ./aloAPI/utils
+UTILS =     $$PWD/aloAPI/utils
 
-DB =        ./aloAPI/db
-DTYPES =    ./aloAPI/datatypes
-PARSER =    ./aloAPI/parsers
+DB =        $$PWD/aloAPI/db
+DTYPES =    $$PWD/aloAPI/datatypes
+PARSER =    $$PWD/aloAPI/parsers
 
-CRYPTO =    ./aloAPI/crypto
+NET    =    $$PWD/aloAPI/net
+CRYPTO =    $$PWD/aloAPI/crypto
 
-# INCLUDES
+# FILE INCLUDES
 
 HEADERS += \
-    $$MAIN/aloAPI.h \
-    $$MAIN/aloAPI_global.h \
+    $$MAIN/AloAPI.h \
+    $$MAIN/AloAPI_global.h \
     \
     $$UTILS/log.h \
     $$UTILS/converters.h \
@@ -86,4 +96,5 @@ DEFINES += \
     ALO_API_LIB \
 
 DISTFILES += \
-    $$PWD/aloAPI.pro \
+    $$PWD/AloAPI.pro \
+    $$PWD/AloAPI.pri \
