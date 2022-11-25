@@ -4,17 +4,18 @@
 #                                                   #
 #---------------------------------------------------#
 
-TARGET = AloAPI
+TARGET = aloAPI
 TEMPLATE = lib
 VERSION = 0.0.1
 
-# component includes
+# components to include
 
 QT -= gui
 QT += core network sql
 
 # project type
 
+DEFINES += ALO_EXPORT
 CONFIG += staticlib
 
 # COMPILE LOG OUTPUT
@@ -47,27 +48,22 @@ else:unix:CONFIG(debug, release | debug) {
 
 !isEmpty(target.path):
     INSTALLS += target
-#win32-g++:
-    #error("Could not compile this lib with g++ compiler. Consider using mcvs instead.")
-
+    
 # DIR VARS
 
-MAIN =      $$PWD/aloAPI
+MAIN =      $$PWD/src/
 
-UTILS =     $$PWD/aloAPI/utils
-
-DB =        $$PWD/aloAPI/db
-DTYPES =    $$PWD/aloAPI/datatypes
-PARSER =    $$PWD/aloAPI/parsers
-
-NET    =    $$PWD/aloAPI/net
-CRYPTO =    $$PWD/aloAPI/crypto
+UTILS =     $$MAIN/utils
+DB =        $$MAIN/db
+DTYPES =    $$MAIN/datatypes
+PARSER =    $$MAIN/parsers
+NET    =    $$MAIN/net
 
 # FILE INCLUDES
 
 HEADERS += \
-    $$MAIN/AloAPI.h \
-    $$MAIN/AloAPI_global.h \
+    $$MAIN/aloAPI.h \
+    $$MAIN/aloAPI_global.h \
     \
     $$UTILS/log.h \
     $$UTILS/converters.h \
@@ -90,11 +86,13 @@ SOURCES += \
     $$DTYPES/Message.cpp \
     $$DTYPES/MessageForward.cpp \
 
+INCLUDEPATH += \
+    $$MAIN
+DEPENDPATH += \
+    $$MAIN
+
 # OTHER
 
-DEFINES += \
-    ALO_API_LIB \
-
 DISTFILES += \
-    $$PWD/AloAPI.pro \
-    $$PWD/AloAPI.pri \
+    $$PWD/aloAPI.pro \
+    $$PWD/aloAPI.pri \
