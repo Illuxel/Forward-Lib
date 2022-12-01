@@ -54,6 +54,7 @@ else:unix:CONFIG(debug, release | debug) {
 MAIN =      $$PWD/src/
 
 UTILS =     $$MAIN/utils
+
 DB =        $$MAIN/db
 DTYPES =    $$MAIN/datatypes
 PARSER =    $$MAIN/parsers
@@ -65,7 +66,8 @@ HEADERS += \
     $$MAIN/aloAPI.h \
     $$MAIN/aloAPI_global.h \
     \
-    $$UTILS/log.h \
+    $$UTILS/debug/log.h \
+    $$UTILS/debug/logger.h \
     $$UTILS/converters.h \
     $$UTILS/thpool.h \
     \
@@ -76,7 +78,8 @@ HEADERS += \
     $$DTYPES/MessageForward.h \
 
 SOURCES += \
-    $$UTILS/log.cpp \
+    $$UTILS/debug/log.cpp \
+    $$UTILS/debug/logger.cpp \
     $$UTILS/converters.cpp \
     $$UTILS/thpool.cpp \
     \
