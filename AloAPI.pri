@@ -11,11 +11,11 @@ else:unix:CONFIG(debug, release | debug) {
     LIBS += -L$$OUT_PWD/../Compiles/Msg-API/unix/debug -laloAPI
 }
 
-DEFINES += ALO_EXPORT
+DEFINES = ALO_EXPORT
 
-INCLUDEPATH += \
+INCLUDEPATH = \
     $$PWD/../Msg-API/src
-DEPENDPATH += \
+DEPENDPATH = \
     $$PWD/../Msg-API/src
 
 win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $OUT_PWD/../Compiles/Msg-API/win/release/aloAPI.lib
