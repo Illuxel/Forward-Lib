@@ -1,6 +1,6 @@
 ## Alo API for messenger
 
-This is messenger API based on QT Framework.
+This is social-messenger API based on QT Framework.
 
 ## List of task
 
