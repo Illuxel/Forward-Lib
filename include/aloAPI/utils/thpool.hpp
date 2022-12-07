@@ -1,11 +1,6 @@
 #pragma once
 
-#include <QVector>
-
-#include <QThread>
-#include <QMutex>
-
-#include "aloAPI_global.h"
+#include "aloAPI/alo-common.hpp"
 
 namespace alo::Utils
 {

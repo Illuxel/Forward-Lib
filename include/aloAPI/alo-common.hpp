@@ -11,5 +11,3 @@
 #else
 #  define ALO_API Q_DECL_IMPORT
 #endif
-
-namespace alo {}
