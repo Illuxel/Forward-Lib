@@ -21,27 +21,27 @@ CONFIG += staticlib
 # COMPILE LOG OUTPUT
 
 CONFIG(release, release | debug) {
-    OBJECTS_DIR =   ../Compiles/Msg-API/Build/release/obj
-    MOC_DIR =       ../Compiles/Msg-API/Build/release/moc
+    OBJECTS_DIR =   $$PWD/../Compiles/Msg-API/qmake/Build/release/obj
+    MOC_DIR =       $$PWD/../Compiles/Msg-API/qmake/Build/release/moc
 }
 else:CONFIG(debug, release | debug) {
-    OBJECTS_DIR =   ../Compiles/Msg-API/Build/debug/obj
-    MOC_DIR =       ../Compiles/Msg-API/Build/debug/moc
+    OBJECTS_DIR =   $$PWD/../Compiles/Msg-API/qmake/Build/debug/obj
+    MOC_DIR =       $$PWD/../Compiles/Msg-API/qmake/Build/debug/moc
 }
 
 # PLATFORM SPECIFIC
 
 win32:CONFIG(release, release | debug) {
-    DESTDIR =   ../Compiles/Msg-API/win/release
+    DESTDIR =   $$PWD/../Compiles/Msg-API/qmake/win/release
 }
 else:win32:CONFIG(debug, release | debug) {
-    DESTDIR =   ../Compiles/Msg-API/win/debug
+    DESTDIR =   $$PWD/../Compiles/Msg-API/qmake/win/debug
 }
 else:unix:CONFIG(release, release | debug) {
-    DESTDIR =   ../Compiles/Msg-API/unix/release
+    DESTDIR =   $$PWD/../Compiles/Msg-API/qmake/unix/release
 }
 else:unix:CONFIG(debug, release | debug) {
-    DESTDIR =   ../Compiles/Msg-API/unix/debug
+    DESTDIR =   $$PWD/../Compiles/Msg-API/qmake/unix/debug
 }
 
 # PROJECT CHECKERS
@@ -51,51 +51,57 @@ else:unix:CONFIG(debug, release | debug) {
     
 # DIR VARS
 
-MAIN =      $$PWD/src/
+MAIN =      $$PWD/src
 
-UTILS =     $$MAIN/utils
-
-DB =        $$MAIN/db
+DB  =       $$MAIN/db
 DTYPES =    $$MAIN/datatypes
 PARSER =    $$MAIN/parsers
 NET    =    $$MAIN/net
+
+UTILS =     $$MAIN/utils
 
 # FILE INCLUDES
 
 HEADERS += \
     $$MAIN/aloAPI.h \
-    $$MAIN/aloAPI_global.h \
-    \
-    $$UTILS/debug/log.h \
-    $$UTILS/debug/logger.h \
-    $$UTILS/converters.h \
-    $$UTILS/thpool.h \
+    $$MAIN/alo-common.h \
     \
     $$DTYPES/Account.h \
     $$DTYPES/Channel.h \
     $$DTYPES/Chat.h \
     $$DTYPES/Message.h \
     $$DTYPES/MessageForward.h \
+    \
+    $$UTILS/debug/log.h \
+    $$UTILS/debug/logger.h \
+    $$UTILS/converters.h \
+    $$UTILS/thpool.h 
 
 SOURCES += \
-    $$UTILS/debug/log.cpp \
-    $$UTILS/debug/logger.cpp \
-    $$UTILS/converters.cpp \
-    $$UTILS/thpool.cpp \
-    \
     $$DTYPES/Account.cpp \
     $$DTYPES/Channel.cpp \
     $$DTYPES/Chat.cpp \
     $$DTYPES/Message.cpp \
     $$DTYPES/MessageForward.cpp \
+    \
+    $$UTILS/debug/log.cpp \
+    $$UTILS/debug/logger.cpp \
+    $$UTILS/converters.cpp \
+    $$UTILS/thpool.cpp 
 
-INCLUDEPATH += \
-    $$MAIN
-DEPENDPATH += \
-    $$MAIN
+#
 
+INCLUDEPATH += $$MAIN
+DEPENDPATH  += $$MAIN
+   
 # OTHER
 
 DISTFILES += \
     $$PWD/aloAPI.pro \
-    $$PWD/aloAPI.pri \
+    $$PWD/aloAPI.pri 
+
+# methods
+
+# defineHeaderSource(path) {
+# 
+# }
