@@ -2,7 +2,7 @@
 
 This is social-messenger API based on QT Framework.
 
-## List of task
+## List of tasks
 
 - [ ] Port lib to CMake
 - [ ] Add basic logging system 
