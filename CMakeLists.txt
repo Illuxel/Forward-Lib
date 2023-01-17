@@ -1,110 +1,161 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
-project(aloAPI 
-    VERSION 0.0.1 
-    LANGUAGES CXX C
-    DESCRIPTION "Alo API built for messaging" 
+project(forwardLib VERSION 0.0.1
+    LANGUAGES CXX
+    DESCRIPTION ""
 )
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-set(CMAKE_PREFIX_PATH $ENV{QT})
-set(CMAKE_AUTOMOC ON)
+option(FL_INCLUDE_BENCHMARK_COMPILE "Enabling sources, will add google bench includes" ON) 
+option(FL_ENABLE_TESING "Enabling testing, will add google test feautures in C++" ON)
+option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" ON)
 
-#--------------C++ settings--------------#
+if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
+    set(CMAKE_INSTALL_LIBDIR "lib")
+endif()
+if (NOT DEFINED CMAKE_INSTALL_BINDIR)
+    set(CMAKE_INSTALL_BINDIR "bin")
+endif()
+if (NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
+    set(CMAKE_INSTALL_INCLUDEDIR "include")
+endif()
+
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(cxx-common)
+include(project-common)
+include(qt-common)
 
-#--------------Platform--------------#
+include(GNUInstallDirs)
 
-if (WIN32) 
-    
+set(namespace Fl)
+
+set(FLAPI_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fl)
+
+set(FLAPI_INCLUDE
+    fl/flapi.hpp
+)
+set(FLAPI_SOURCE
+    ${FLAPI_INCLUDE}
+    fl/flapi.cpp
+)
+
+set(FLCLIENT_INCLUDE
+    fl/forward/Client.hpp
+)
+set(FLCLIENT_SOURCE
+    ${FLCLIENT_INCLUDE}
+    fl/forward/Client.cpp
+)
+
+if (MSVC)
+    source_group("cmake-common" 
+    FILES 
+        "cmake/cxx-common.cmake"
+        "cmake/project-common.cmake"
+        "cmake/fl-install.cmake"
+        "cmake/fl-config.cmake"
+    )
+endif()
+
+add_subdirectory(fltypes)
+add_subdirectory(flutils)
+add_subdirectory(flnet)
+add_subdirectory(fldb)
+
+add_library(flapi ${FLAPI_SOURCE})
+add_library(${namespace}::flapi ALIAS flapi)
+target_include_directories(flapi
+PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+target_link_libraries(flapi
+PUBLIC
+    ${namespace}::types
+    ${namespace}::utils
+    ${namespace}::net
+    ${namespace}::db
+)
+
+add_library(client ${FLCLIENT_SOURCE})
+add_library(${namespace}::client ALIAS client)
+target_include_directories(client
+PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+target_link_libraries(client
+PUBLIC
+    ${namespace}::flapi
+)
+
+add_library(${namespace}::types ALIAS types)
+add_library(${namespace}::utils ALIAS utils)
+add_library(${namespace}::net ALIAS net)
+add_library(${namespace}::db ALIAS db)
+
+add_subdirectory(vendor)
+
+if (WIN32)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 elseif(APPLE)
 elseif(UNIX)
 endif()
 
-#--------------Project sources and dirs--------------#
+#--------------< Exporting targets >--------------#
 
-set(namespace alo)
-
-set(ALOLIB_INCLUDE
-
-    include/aloAPI/aloAPI.hpp
-    include/aloAPI/alo-common.hpp
-    include/aloAPI/aloapi
-
-    # include/aloAPI/net/
-    # include/aloAPI/net/auth/
-    # include/aloAPI/net/crypto/
-
-    include/aloAPI/db/Database.hpp
-
-    include/aloAPI/parsers/MessageParser.hpp
-
-    include/aloAPI/datatypes/Account.hpp
-    include/aloAPI/datatypes/Channel.hpp
-    include/aloAPI/datatypes/Chat.hpp
-    include/aloAPI/datatypes/Message.hpp
-    include/aloAPI/datatypes/MessageForwarded.hpp
-
-    include/aloAPI/utils/converters.hpp
-    include/aloAPI/utils/thpool.hpp
-    include/aloAPI/utils/debug/log.hpp
-    include/aloAPI/utils/debug/logger.hpp
-)
-set(ALOLIB_SOURCES
-    # src/net/
-    # src/net/auth/
-    # src/net/crypto/
-
-    src/db/Database.cpp
-
-    src/datatypes/Account.cpp
-    src/datatypes/Channel.cpp
-    src/datatypes/Chat.cpp
-    src/datatypes/Message.cpp
-    src/datatypes/MessageForwarded.cpp
-
-    src/parsers/MessageParser.cpp
-
-    src/utils/converters.cpp
-    src/utils/thpool.cpp
-    src/utils/debug/log.cpp
-    src/utils/debug/logger.cpp
+install(TARGETS flapi client
+    EXPORT fl-targets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-set(ALOLIB_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-set(ALOLIB_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
+install(FILES ${FLAPI_INCLUDE} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/fl")
+install(FILES ${FLCLIENT_INCLUDE} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/fl/forward")
 
-#
-
-include(project-target)
-
-target_compile_definitions(${PROJECT_NAME}
-PRIVATE
-    ALO_EXPORT
-)
-target_sources(${PROJECT_NAME}
-PRIVATE
-    ${ALOLIB_SOURCES}
-)
-target_include_directories(${PROJECT_NAME}
-PRIVATE
-    ${ALOLIB_SOURCE_DIR}
-PUBLIC
-    # where top-level project will look for the library's public headers
-    $<BUILD_INTERFACE:${ALOLIB_INCLUDE_DIR}>
-    # where external projects will look for the library's public headers
-    $<INSTALL_INTERFACE:${ALOLIB_INCLUDE_DIR}>
+install(EXPORT fl-targets
+    FILE fl-targets.cmake
+    NAMESPACE ${namespace}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fl
 )
 
-#--------------Qt Settings--------------#
+#--------------< Configuration File >--------------#
 
-include(qt-common)
+include(CMakePackageConfigHelpers)
 
-find_package(Qt6 REQUIRED COMPONENTS Core)
-find_package(Qt6 REQUIRED COMPONENTS Network)
-find_package(Qt6 REQUIRED COMPONENTS Sql)
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/fl-config.cmake
+    "${CMAKE_CURRENT_BINARY_DIR}/fl-config.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fl
+)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core)
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Network)
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Sql)
+#--------------< Package version >--------------#
+
+write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/fl-config-version.cmake"
+    VERSION ${forwardLib_VERSION}
+    COMPATIBILITY ExactVersion
+)
+
+install(
+FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/fl-config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/fl-config-version.cmake"
+DESTINATION 
+    "${CMAKE_INSTALL_LIBDIR}/cmake/fl"
+)
+
+export(EXPORT fl-targets
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/fl-targets.cmake"
+    NAMESPACE ${namespace}::
+)
+
+set_target_properties(flapi PROPERTIES
+    VERSION ${forwardLib_VERSION} 
+    SOVERSION ${forwardLib_VERSION}
+)
+set_target_properties(client 
+PROPERTIES 
+    VERSION ${forwardLib_VERSION}
+    SOVERSION ${forwardLib_VERSION}
+)
