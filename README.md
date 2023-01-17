@@ -1,10 +1,10 @@
-## Alo API for messenger
+## Forward API for messenger
 
 This is social-messenger API based on QT Framework.
 
 ## List of task
 
-- [ ] Port lib to CMake
+- [+] Port lib to CMake
 - [ ] Add basic logging system 
 - [ ] Add basic strucure types
 - [ ] Add basic net system (web, file send)
