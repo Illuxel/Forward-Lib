@@ -1,6 +1,6 @@
-## Forward API for messenger
+## Forward library
 
-This is social-messenger API based on QT Framework.
+Description: Soon
 
 ## List of task
 
