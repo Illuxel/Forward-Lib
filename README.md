@@ -4,7 +4,7 @@ Description: Soon
 
 ## List of task
 
-- [x] Ported lib to CMake.
+- [x] Lib ported to CMake.
 - [ ] Add basic logging system. 
 - [ ] Add basic strucure types.
 - [ ] Add basic net system (web, file send).
