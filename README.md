@@ -1,4 +1,4 @@
-## Forward library
+## Forward library Qt
 
 Description: Soon
 
@@ -9,3 +9,11 @@ Description: Soon
 - [ ] Add basic strucure types.
 - [ ] Add basic net system (web, file send).
 - [ ] Add auth sytem (SSL, encryption, 2 factor auth).
+
+## Dependencies
+
+Soon
+
+## How to install
+
+Soon
