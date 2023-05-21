@@ -6,27 +6,30 @@ endif()
 
 set(FLUTILS_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/utils)
 
-set(FLUTILS_INCLUDE 
-    fl/utils/converters.hpp
-    fl/utils/TsQueue.hpp
+set(FLUTILS_INCLUDE
+    fl/utils/Memory.hpp
+    fl/utils/DateTime.hpp
+    fl/utils/Enum.hpp
+    fl/utils/Flags.hpp
+    fl/utils/MimeType.hpp
     fl/utils/StringBuilder.hpp
+    fl/utils/Logger.hpp
+    fl/utils/Log.hpp
 )
 set(FLUTILS_SOURCE
     ${FLUTILS_INCLUDE}
-    fl/utils/converters.cpp
-    fl/utils/TsQueue.cpp
+    fl/utils/DateTime.cpp
+    fl/utils/Enum.cpp
+    fl/utils/Flags.cpp
+    fl/utils/MimeType.cpp
     fl/utils/StringBuilder.cpp
+    fl/utils/Logger.cpp
+    fl/utils/Log.cpp
 )
 
-set(FLLOG_INCLUDE
-    fl/utils/debug/logger.hpp
-    fl/utils/debug/log.hpp
-)
-set(FLLOG_SOURCE
-    ${FLLOG_INCLUDE}
-    fl/utils/debug/logger.cpp
-    fl/utils/debug/log.cpp
-)
+if(NOT TARGET Benchmark)
+    find_package(Benchmark CONFIG REQUIRED)
+endif()
 
 if (FL_INCLUDE_BENCHMARK_COMPILE)
     if (FL_ENABLE_BENCHMARK)
@@ -38,21 +41,30 @@ if (FL_INCLUDE_BENCHMARK_COMPILE)
     endif()
 endif()
 
-add_library(utils STATIC ${FLUTILS_SOURCE} ${FLLOG_SOURCE})
+add_library(utils 
+STATIC 
+    ${FLUTILS_SOURCE} 
+    ${FLLOG_SOURCE}
+)
+
 target_include_directories(utils 
 PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_link_libraries(utils
-PUBLIC
-    Qt6::Core
-)
+# target_link_libraries(utils
+# PUBLIC
+#     # Qt6::Core
+# PRIVATE
+#     # Boost::system 
+#     # Boost::thread
+# )
 
 install(FILES ${FLUTILS_INCLUDE}  DESTINATION ${FLUTILS_DIR})
 install(FILES ${FLLOG_INCLUDE}    DESTINATION ${FLUTILS_DIR}/debug)
 
-install(TARGETS utils EXPORT fl-targets
-  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+install(TARGETS utils 
+    EXPORT fl-targets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
