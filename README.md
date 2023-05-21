@@ -1,4 +1,4 @@
-## Forward library Qt
+## Forward library for messenger
 
 Description: Soon
 
