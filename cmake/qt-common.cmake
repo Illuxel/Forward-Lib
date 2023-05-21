@@ -1,4 +1,0 @@
-list(APPEND CMAKE_PREFIX_PATH $ENV{QT})
-set(CMAKE_AUTOMOC ON)
-
-find_package(Qt6 COMPONENTS Core Network Sql HttpServer REQUIRED)
