@@ -7,161 +7,199 @@
 
 namespace fl::utils {
     
-    StringArg::StringArg(std::string_view arg, std::string_view data, const char& format) 
-        : m_ArgFormat(format)
-        , m_ArgSpecifier(arg)
-        , m_Data(data) 
+    StringArg::StringArg() {}
+
+    // without specifier
+
+    StringArg::StringArg(std::string_view name) 
+        : name_(name) {}
+    StringArg::StringArg(
+        std::string_view name, 
+        std::string_view arg_data)
+        : name_(name)
     {
-        m_Data.shrink_to_fit();
-        m_ArgSpecifier.shrink_to_fit();
+        arg_data_.emplace(arg_data);
     }
 
-    StringArg::StringArg()
-        : m_ArgFormat('%') {}
+    // with specifier
 
-    StringArg::StringArg(StringArg&& right)
-        : m_ArgFormat(std::move(right.format()))
-        , m_ArgSpecifier(std::move(right.specifier()))
-        , m_Data(std::move(right.data())) {}
-
-    StringArg::StringArg(const StringArg& right) 
-        : m_ArgFormat(right.format())
-        , m_ArgSpecifier(right.specifier())
-        , m_Data(right.data()) {}
-
-    StringArg::~StringArg() {}
-
-    void StringArg::SetArgFormat(const char& format) 
+    StringArg::StringArg(char specifier) 
     {
-        m_ArgFormat = format;
+        specifier_.emplace(specifier);
     }
-    void StringArg::SetArgSpecifier(std::string_view arg)
+    StringArg::StringArg(std::string_view name, char specifier)
+        : name_(name)
     {
-        m_ArgSpecifier = arg;
+        specifier_.emplace(specifier);
+    }
+    StringArg::StringArg(
+        std::string_view name, 
+        std::string_view arg_data,
+        char specifier)
+        : name_(name)
+    {
+        specifier_.emplace(specifier);
+        arg_data_.emplace(arg_data);
+    }
+
+    void StringArg::SetSpecifier(char specifier)
+    {
+        specifier_ = specifier;
+    }
+    void StringArg::SetName(std::string_view name) 
+    {
+        name_ = name;
+    }
+    void StringArg::SetData(std::string_view arg_data) 
+    {
+        arg_data_ = arg_data;
+    }
+
+    std::optional<char> StringArg::Specifier() const
+    {
+        return specifier_;
+    }
+    std::string_view StringArg::Name() const
+    {
+        return name_;
+    }
+    std::string StringArg::Joined() const
+    {
+        if (specifier_.has_value())
+            return specifier_.value() + name_;
+
+        return name_;
+    }
+
+    std::string_view StringArg::Data() const
+    {
+        return *arg_data_;
+    }
+
+    bool StringArg::HasSpecifier() const 
+    {
+        return specifier_.has_value();
+    }
+
+    StringArg& StringArg::operator=(StringArg const& right) 
+    {
+        specifier_ = right.specifier_;
+        name_ = right.name_;
+        arg_data_ = right.arg_data_;
+
+        return *this;
     }
     
-    void StringArg::SetArgData(std::string_view data) 
+    bool StringArg::operator==(StringArg const& arg) const
     {
-        m_Data = data;
+        return (specifier_ == arg.specifier_) 
+            && (name_ == arg.name_);
     }
-    
-    const char& StringArg::format() const
+    bool StringArg::operator==(std::string_view data) const
     {
-        return m_ArgFormat;
-    }
-    std::string_view StringArg::specifier() const
-    {
-        return m_ArgSpecifier;
-    }
-    std::string StringArg::arg() const
-    {
-        return m_ArgFormat + m_ArgSpecifier;
+        return data.find(Joined()) != std::string::npos;
     }
 
-    std::string_view StringArg::data() const
+    std::vector<StringArg> 
+    StringArg::MakeArgs(std::initializer_list<char> const& args, 
+                bool use_specifier, 
+                char specifier)
     {
-        return m_Data;
+        std::vector<StringArg> arg_list;
+
+        for (auto c : args)
+        {
+            if (use_specifier)
+            {
+                arg_list.emplace_back(std::string(1, c), specifier);
+            } 
+            else 
+            {
+                arg_list.emplace_back(std::string(1, c));
+            }
+        }
+
+        return arg_list;
+    }
+    std::vector<StringArg> 
+    StringArg::MakeArgs(std::map<std::string, std::string> const& mapped_args, 
+                bool use_specifier, char specifier) 
+    {
+        std::vector<StringArg> arg_list;
+
+        for (auto& [arg, data] : mapped_args)
+        {
+            if (use_specifier)
+            {
+                arg_list.emplace_back(arg, data, specifier);
+            } 
+            else 
+            {
+                arg_list.emplace_back(arg, data);
+            }
+        }
+
+        return arg_list;
     }
 
-    size_t StringArg::size() const 
-    {
-        return m_ArgSpecifier.size() + 1;
-    }
-
-    bool StringArg::IsDataEmpty() const 
-    {
-        return m_Data.empty();
-    }
-
-
-    StringBuilder::StringBuilder(std::string_view str, const ArgList& args)
-        : m_StrBuild(str) 
-    {
-        this->BuildString(args);
-    }
-
-    StringBuilder::StringBuilder(const StringBuilder& right) 
-        : m_StrBuild(right.m_StrBuild) {}
 
     StringBuilder::StringBuilder() {}
-    StringBuilder::~StringBuilder() 
+    StringBuilder::StringBuilder(std::string_view str, std::vector<StringArg> const& args) 
     {
-        this->Clear();
+        result_.emplace(str);
+        BuildString(args);
     }
 
+    std::string StringBuilder::Data() const
+    {
+        return result_.value_or("");
+    }
     void StringBuilder::SetTemplate(std::string_view str)
     {
-        m_StrBuild = str;
+        result_.emplace(str);
     }
 
-    void StringBuilder::BuildString(const StringArg& arg)
-    {
-        if (m_StrBuild.empty())
-            return;
-
-        size_t ArgPos{};
-
-        while (true) 
-        {
-            ArgPos = m_StrBuild.find(arg.arg());
-
-            if (ArgPos == std::string::npos)
-                break;
-
-            auto begin = m_StrBuild.cbegin() + ArgPos;
-            auto end = m_StrBuild.cbegin() + ArgPos + arg.size(); 
-
-            m_StrBuild.replace(begin, end, arg.data());
-        }
-    }
-    void StringBuilder::BuildString(const ArgList& args) 
-    {
-        for (auto& arg : args)
-            this->BuildString(arg);
-    }
-
-    StringBuilder& StringBuilder::Arg(const StringArg& arg) 
+    StringBuilder& StringBuilder::Arg(StringArg const& arg) 
     {
         this->BuildString(arg);
         return *this;
     }
-    StringBuilder& StringBuilder::Arg(const ArgList& args)
+    StringBuilder& StringBuilder::Arg(std::vector<StringArg> const& args)
     {
-        this->BuildString({args.cbegin(), args.cend()});
+        this->BuildString(args);
         return *this;
     }
 
-    StringBuilder StringBuilder::FromFile(std::string_view fileName)
+    StringBuilder StringBuilder::FromFile(std::string_view file_name)
     {
         StringBuilder build;
-
-        std::ifstream file(fileName.data());
+        std::ifstream file(file_name.data(), std::ios::in);
+        
         if (!file.is_open())
             return build;
  
-        std::string data, temp;
-
-        while (std::getline(file, temp))
-        {
-            data.append(temp + "\r\n");
-        }
+        std::string data{std::istreambuf_iterator<char>(file),
+                              std::istreambuf_iterator<char>()};
 
         file.close();
         build.SetTemplate(data);
 
         return build;
     }
-    StringBuilder StringBuilder::FromFile(std::string_view fileName, const ArgList &args)
+    StringBuilder StringBuilder::FromFile(std::string_view file_name, std::vector<StringArg> const& args)
     {
-        return StringBuilder::FromFile(fileName).Arg(args);
+        return StringBuilder::FromFile(file_name).Arg(args);
     }
 
     void StringBuilder::Clear() 
     {
-        m_StrBuild.clear();
+        if (!result_.has_value())
+            return;
+
+        result_.value().clear();
     }
 
-    StringBuilder &StringBuilder::operator=(const char *arr)
+    StringBuilder &StringBuilder::operator=(char const* arr)
     {
         SetTemplate(arr);
         return *this;
@@ -170,5 +208,36 @@ namespace fl::utils {
     {
         SetTemplate(str);
         return *this;
+    }
+
+    void StringBuilder::BuildString(StringArg const& arg)
+    {
+        if (!result_.has_value())
+            return;
+
+        std::string& result = result_.value();
+
+        if (result.empty())
+            return;
+
+        size_t ArgPos;
+
+        while (true) 
+        {
+            ArgPos = result.find(arg.Joined());
+
+            if (ArgPos == std::string::npos)
+                break;
+
+            auto const& begin = result.cbegin() + ArgPos;
+            auto const& end = result.cbegin() + ArgPos + arg.Joined().size(); 
+
+            result.replace(begin, end, arg.Data());
+        }
+    }
+    void StringBuilder::BuildString(std::vector<StringArg> const& args) 
+    {
+        for (auto& arg : args)
+            this->BuildString(arg);
     }
 }

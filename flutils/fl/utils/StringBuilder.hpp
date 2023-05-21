@@ -1,112 +1,109 @@
 #pragma once
 
-#include <QChar>
-#include <QByteArray>
+#include <optional>
+
+#include <map>
+#include <vector>
+#include <string>
 
 namespace fl::utils {
 
-    // encapsulates argument 
-    // and data paired with him
-
     class StringArg 
     {
+        std::optional<char> specifier_;
+
+        std::string name_;
+        std::optional<std::string> arg_data_;
+
     public:
-        StringArg(std::string_view arg, std::string_view data, const char& format = '%');
+        // without specifier
 
         StringArg();
-        StringArg(StringArg&& right);
-        StringArg(const StringArg& arg);
-        ~StringArg();
-        /**
-         *  Sets a prefix
-         */
-        void SetArgFormat(const char& format);
-        /**
-         *  Sets an argument name 
-         */
-        void SetArgSpecifier(std::string_view data);
-        /**
-         *  Sets a data to an argument 
-         */
-        void SetArgData(std::string_view data);
+        StringArg(std::string_view name);
+        StringArg(std::string_view name, std::string_view arg_data);
 
-        const char& format() const;
-        std::string_view specifier() const;
+        // with specifier
 
-        std::string arg() const;
-        std::string_view data() const;
+        StringArg(char specifier);
+        StringArg(std::string_view name, char specifier);
+        StringArg(std::string_view name, std::string_view arg_data, char specifier);
 
-        size_t size() const;
+        void SetSpecifier(char specifier);
+        void SetName(std::string_view name);
 
-        bool IsDataEmpty() const;
-    
-        StringArg& operator=(const StringArg& right) 
+        void SetData(std::string_view arg_data);
+
+        std::optional<char> Specifier() const;
+        std::string_view Name() const;
+        std::string Joined() const;
+
+        std::string_view Data() const;
+
+        bool HasSpecifier() const;
+
+        static std::vector<StringArg> 
+        MakeArgs(std::initializer_list<char> const& args, 
+                bool use_specifier = false, 
+                char specifier = '%');
+
+        static std::vector<StringArg> 
+        MakeArgs(std::map<std::string, std::string> const& mapped_args, 
+                bool use_specifier = false, 
+                char specifier = '%');
+
+        StringArg& operator=(StringArg const& right);
+
+        bool operator==(StringArg const& arg) const;
+        bool operator==(std::string_view data) const;
+
+        operator std::string() const 
         {
-            m_ArgFormat = right.m_ArgFormat;
-            m_ArgSpecifier = right.specifier();
-            m_Data = right.data();
-            return *this;
-        }
+            if (specifier_.has_value())
+                return specifier_.value() + name_;
 
-        bool operator==(const StringArg& arg) const
-        {
-            return (this->format() == arg.format()) && (this->specifier() == arg.specifier());
+            return name_;
         }
-
-        bool operator==(std::string_view specifier) const
-        {
-            return specifier.find(this->arg()) != std::string::npos;
-        }
-        
-    private:
-        char m_ArgFormat;
-        std::string m_ArgSpecifier, m_Data;
     };
-
-    // input str = text %arg text %arg
-    // set args and data to it
-    // create string from args
 
     class StringBuilder
     {
+        std::optional<std::string> result_;
+
     public:
-        using ArgList = std::vector <StringArg>;
-
-        StringBuilder(std::string_view str, const ArgList& args = {});
-
         StringBuilder();
-        StringBuilder(const StringBuilder& right);
-        ~StringBuilder();
+        StringBuilder(std::string_view str, std::vector<StringArg> const& args = {});
 
+        std::string Data() const;
         void SetTemplate(std::string_view str);
 
-        StringBuilder& Arg(const StringArg& arg);
-        StringBuilder& Arg(const ArgList& args);
+        StringBuilder& Arg(StringArg const& arg);
+        StringBuilder& Arg(std::vector<StringArg> const& args);
 
-        static StringBuilder FromFile(std::string_view fileName);
-        static StringBuilder FromFile(std::string_view fileName, const ArgList& args);
+        static StringBuilder FromFile(std::string_view file_name);
+        static StringBuilder FromFile(std::string_view file_name, std::vector<StringArg> const& args);
 
         void Clear();
 
-    private:
-        void BuildString(const StringArg& arg);
-        void BuildString(const ArgList& args);
-
-    public:
-        StringBuilder& operator=(const char* arr);
+        StringBuilder& operator=(char const* str_arr);
         StringBuilder& operator=(std::string_view str);
 
-        operator const char*() const {
-            return m_StrBuild.c_str();
+        operator char const*() const 
+        {   
+            if (result_.has_value())
+               return result_.value().c_str();
+
+            return "";
         }
-        operator std::string() const {
-            return m_StrBuild;
-        }
-        operator std::string_view() const {
-            return m_StrBuild;
+        operator std::string() const 
+        {
+            if (result_.has_value())
+               return result_.value().c_str();
+
+            return "";
         }
 
     private:
-        std::string m_StrBuild;
+        void BuildString(StringArg const& arg);
+        void BuildString(std::vector<StringArg> const& args);
     };
 }
