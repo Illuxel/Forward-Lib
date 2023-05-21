@@ -1,44 +1,86 @@
 #include "fl/utils/StringBuilder.hpp"
-using namespace fl::utils;
-
 #include <gtest/gtest.h>
 
-TEST(StringArgTest, ArgEqual) {
-    StringArg arg1, arg2;
+TEST(StringArg, ArgEqual) 
+{
+    using namespace fl::utils;
 
-    arg1.SetArgSpecifier("test");
+    StringArg arg1("test"), arg2;
 
     EXPECT_FALSE(arg1 == arg2);
 
-    arg2.SetArgSpecifier("test");
+    arg2.SetName("test");
+
+    EXPECT_TRUE(arg1 == arg2);
+    EXPECT_TRUE(arg1 == "Hidden test argument!");
+}
+TEST(StringArg, ArgCopy) 
+{
+    using namespace fl::utils;
+
+    StringArg arg1("arg");
+
+    arg1.SetData("hello world");
+
+    StringArg copy(arg1);
+
+    EXPECT_TRUE(copy == arg1);
+    EXPECT_TRUE(arg1.Data() == copy.Data());
+
+    copy.SetName("NEW");
+
+    EXPECT_FALSE(copy == arg1);
+}
+
+TEST(StringArgSpec, ArgEqual) 
+{
+    using namespace fl::utils;
+
+    StringArg arg1("test", '%'), arg2('%');
+
+    EXPECT_FALSE(arg1 == arg2);
+
+    arg2.SetName("test");
 
     EXPECT_TRUE(arg1 == arg2);
     EXPECT_TRUE(arg1 == "Hidden %test argument!");
 }
-TEST(StringArgTest, ArgCopy) {
-    StringArg arg1;
-    arg1.SetArgSpecifier("arg");
+TEST(StringArgSpec, ArgCopy) 
+{
+    using namespace fl::utils;
 
+    StringArg arg1("arg", '%');
     StringArg copy(arg1);
 
     EXPECT_TRUE(copy == arg1);
 }
 
-TEST(StringBuilderTest, StringCreation) {
+TEST(StringBuilder, StringCreation) 
+{
+    using namespace fl::utils;
 
-    StringArg arg1("arg1", "text with arguments"), arg2("arg2", "like this"), arg3("arg3", "don't like this"); 
+    StringArg arg1("arg1", "text with arguments"), 
+            arg2("arg2", "like this"), 
+            arg3("arg3", "don't like this"); 
 
-    QByteArrayView arr = "Some %arg1: %arg2, %arg2, %arg3.";
-    StringBuilder strb(arr.constData());
+    StringBuilder strb("Some arg1: arg2, arg2, arg3.");
 
     strb.Arg(arg1).Arg(arg2).Arg(arg3);
 
     EXPECT_STREQ(strb, "Some text with arguments: like this, like this, don't like this.");
 }
 
-TEST(StringBuilderTest, StringBuilderCopying) {
+TEST(StringBuilderSpec, StringCreation) 
+{
+    using namespace fl::utils;
 
-    QByteArrayView arr = "Some %arg1: %arg2, %arg2, %arg3.";
-    //StringBuilder strb = arr.constData();
+    StringArg arg1("arg1", "text with arguments", '%'), 
+            arg2("arg2", "like this", '%'), 
+            arg3("arg3", "don't like this", '%'); 
 
+    StringBuilder strb("Some %arg1: %arg2, %arg2, %arg3.");
+
+    strb.Arg(arg1).Arg(arg2).Arg(arg3);
+
+    EXPECT_STREQ(strb, "Some text with arguments: like this, like this, don't like this.");
 }
