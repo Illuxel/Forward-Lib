@@ -8,7 +8,6 @@ add_executable(BenchUtils ${UTILS_BENCH_SOURCE})
 
 target_link_libraries(BenchUtils
 PUBLIC
-    Qt6::Core
     Fl::utils
     benchmark::benchmark
 )
