@@ -52,16 +52,8 @@ PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-# target_link_libraries(utils
-# PUBLIC
-#     # Qt6::Core
-# PRIVATE
-#     # Boost::system 
-#     # Boost::thread
-# )
 
 install(FILES ${FLUTILS_INCLUDE}  DESTINATION ${FLUTILS_DIR})
-install(FILES ${FLLOG_INCLUDE}    DESTINATION ${FLUTILS_DIR}/debug)
 
 install(TARGETS utils 
     EXPORT fl-targets
