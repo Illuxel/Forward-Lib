@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
-project(Forward.Lib VERSION 0.0.1
+project(ForwardLib VERSION 0.0.1
     LANGUAGES CXX
     DESCRIPTION "C++ library for writing Forward projects"
 )

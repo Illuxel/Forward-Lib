@@ -32,7 +32,18 @@ TEST(StringArg, ArgCopy)
     EXPECT_FALSE(copy == arg1);
 }
 
-TEST(StringArgSpec, ArgEqual) 
+TEST(StringArg, MakeArg) 
+{
+    using namespace fl::utils;
+
+    std::string_view str = "arg_name=arg_data";
+    auto arg = StringArg::FromString(str, '=');
+
+    EXPECT_TRUE(arg == "arg_name");
+    EXPECT_TRUE(arg.Data() == "arg_data");
+}
+
+TEST(StringArgSpecifier, ArgEqual) 
 {
     using namespace fl::utils;
 
@@ -45,7 +56,7 @@ TEST(StringArgSpec, ArgEqual)
     EXPECT_TRUE(arg1 == arg2);
     EXPECT_TRUE(arg1 == "Hidden %test argument!");
 }
-TEST(StringArgSpec, ArgCopy) 
+TEST(StringArgSpecifier, ArgCopy) 
 {
     using namespace fl::utils;
 
@@ -54,6 +65,10 @@ TEST(StringArgSpec, ArgCopy)
 
     EXPECT_TRUE(copy == arg1);
 }
+
+
+
+
 
 TEST(StringBuilder, StringCreation) 
 {

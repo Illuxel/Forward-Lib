@@ -6,14 +6,14 @@ TEST(MimeType, IsExtension)
 {
     using namespace fl::utils;
 
-    EXPECT_TRUE(MimeType::IsExtension("txt"));
-    EXPECT_TRUE(MimeType::IsExtension("m4v"));
-    EXPECT_TRUE(MimeType::IsExtension(".txt"));
-    EXPECT_TRUE(MimeType::IsExtension("TEST.txt"));
+    EXPECT_TRUE(MimeType::HasExtension("txt"));
+    EXPECT_TRUE(MimeType::HasExtension("m4v"));
+    EXPECT_TRUE(MimeType::HasExtension(".txt"));
+    EXPECT_TRUE(MimeType::HasExtension("TEST.txt"));
 
-    EXPECT_FALSE(MimeType::IsExtension("TESTtxt"));
-    EXPECT_FALSE(MimeType::IsExtension("unknown"));
-    EXPECT_FALSE(MimeType::IsExtension(".unknown"));
+    EXPECT_FALSE(MimeType::HasExtension("TESTtxt"));
+    EXPECT_FALSE(MimeType::HasExtension("unknown"));
+    EXPECT_FALSE(MimeType::HasExtension(".unknown"));
 }
 
 TEST(MimeType, FromString)

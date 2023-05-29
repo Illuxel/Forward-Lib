@@ -10,7 +10,7 @@ namespace fl::utils {
         enum Type;
 
         Type mime_type_;
-        std::string mime_format_, extension_;
+        std::string mime_format_, mime_ext_;
 
         static const std::unordered_map<std::string_view, MimeType> mime_types_;
 
@@ -42,10 +42,18 @@ namespace fl::utils {
         MimeType(std::string_view ext);
         MimeType(Type type, std::string_view format, std::string_view ext = "");
 
+        /**
+         *  @return 
+         */
         Type GetMimeType() const;
+        /**
+         *  @return 
+         */
         std::string_view GetMimeFormat() const;
-        std::string_view GetExtName() const;
-        
+        /**
+         *  @return 
+         */
+        std::string_view GetExtName(bool dot = false) const;
         /**
          *  @return true if extension is valid
          */
@@ -54,7 +62,7 @@ namespace fl::utils {
          *  @param ext extension names (txt, .txt, filename.txt)
          *  @return true if extension is valid
          */
-        static bool IsExtension(std::string_view ext);
+        static bool HasExtension(std::string_view ext);
         /**
          *  @param ext extension names (txt, .txt, filename.txt)
          *  @return MimeType object. Can be valid or not depending on provided string
@@ -62,6 +70,9 @@ namespace fl::utils {
         static MimeType FromString(std::string_view ext);
 
     private:
+        /**
+         *  Removes dot from extension
+         */
         static std::string_view SubStrExtFromString(std::string_view str);
     };
 }

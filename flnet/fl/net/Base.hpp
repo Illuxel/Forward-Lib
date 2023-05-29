@@ -16,7 +16,3 @@ namespace websocket = beast::websocket;         // from <boost/beast/websocket.h
 
 namespace net = boost::asio;                    // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;               // from <boost/asio/ip/tcp.hpp>
-
-using Request = http::request<http::string_body>;
-using Response = http::response<http::string_body>;
-using RouteFunction = std::function<http::message_generator(Request const&, Response&&)>;
