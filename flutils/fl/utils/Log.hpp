@@ -26,11 +26,15 @@ namespace fl::utils {
 
 static inline void printInfo(std::string_view call, std::string_view msg)
 {
-	std::cout << call << ": " << msg << std::endl;
+	std::cerr << call << ": " << msg << std::endl;
 }
 
 #define FL_LOG(call, msg) \
 	printInfo(call, msg)
+
+#define FL_ERR(call, msg) \
+	printInfo(call, msg); \
+	throw std::exception(msg)
 
 	//fl::utils::Log::Get()->Log(fl::utils::Logger::Level::level, __FUNCTION__, __VA_ARGS__); 
 
