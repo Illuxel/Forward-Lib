@@ -7,6 +7,8 @@ namespace fl::utils {
         { "txt", { MimeType::TextPlain, "text/plain" }},
         { "html",{ MimeType::TextHtml, "text/html" }},
         { "htm", { MimeType::TextHtml, "text/html" }},
+        { "css", { MimeType::TextCss, "text/css" }},
+        { "js",  { MimeType::TextJavaScript, "text/javascript" }},
         { "json",{ MimeType::AppJson, "application/json" }},
         { "xml", { MimeType::AppXml, "application/xml" }},
         { "pdf", { MimeType::AppPdf, "application/pdf" }},
@@ -58,9 +60,9 @@ namespace fl::utils {
     {
         return mime_format_;
     }
-    std::string_view MimeType::GetExtName(bool dot) const 
+    std::string_view MimeType::GetExtName(bool remove_dot) const 
     {
-        if (dot)
+        if (!remove_dot)
             return mime_ext_;
 
         std::string_view without = mime_ext_;
@@ -75,7 +77,7 @@ namespace fl::utils {
 
     bool MimeType::HasExtension(std::string_view ext)
     {
-        auto const& parsed_ext = SubStrExtFromString(ext);
+        auto const& parsed_ext = ExtensionOnly(ext);
         auto const& it = mime_types_.find(parsed_ext);
 
         return it != mime_types_.end() && !ext.empty();
@@ -86,7 +88,7 @@ namespace fl::utils {
         if (!HasExtension(ext))
             return MimeType();
 
-        auto const sub_ext = SubStrExtFromString(ext);
+        auto const sub_ext = ExtensionOnly(ext);
         auto type = mime_types_.at(sub_ext);
 
         type.mime_ext_.reserve(sub_ext.size() + 1);
@@ -96,7 +98,16 @@ namespace fl::utils {
         return type; 
     }
 
-    std::string_view MimeType::SubStrExtFromString(std::string_view str)
+    std::string_view MimeType::RemoveExtension(std::string_view file, bool remove_dot)
+    {
+        auto ext = MimeType::FromString(file);
+        if (!ext.IsValid())
+            return file;
+    
+        auto view = file.substr(0, file.size() - ext.GetExtName(!remove_dot).size());
+        return view;
+    }
+    std::string_view MimeType::ExtensionOnly(std::string_view str)
     {
         auto const dot_pos = str.find('.');    
         auto const is_dot = dot_pos != std::string::npos;

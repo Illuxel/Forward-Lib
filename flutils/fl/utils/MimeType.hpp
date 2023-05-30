@@ -21,6 +21,7 @@ namespace fl::utils {
             TextPlain,  
             TextHtml,   // .html, .htm
             TextCss,    
+            TextJavaScript,
 
             AppJavaScript, 
             AppJson,
@@ -53,7 +54,7 @@ namespace fl::utils {
         /**
          *  @return 
          */
-        std::string_view GetExtName(bool dot = false) const;
+        std::string_view GetExtName(bool remove_dot = true) const;
         /**
          *  @return true if extension is valid
          */
@@ -68,11 +69,18 @@ namespace fl::utils {
          *  @return MimeType object. Can be valid or not depending on provided string
          */
         static MimeType FromString(std::string_view ext);
-
+        /**
+         *  Will try to remove existing extension from file 
+         * 
+         *  @param file file name with extension
+         *  @return file without extension
+         */
+        static std::string_view RemoveExtension(std::string_view file, bool remove_dot = true);
+        
     private:
         /**
-         *  Removes dot from extension
+         *  Removes all except extension 
          */
-        static std::string_view SubStrExtFromString(std::string_view str);
+        static std::string_view ExtensionOnly(std::string_view str);
     };
 }
