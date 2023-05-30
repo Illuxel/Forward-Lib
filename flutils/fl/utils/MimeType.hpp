@@ -7,54 +7,72 @@ namespace fl::utils {
 
     class MimeType 
     {
-        enum Type;
-
-        Type mime_type_;
-        std::string mime_format_, mime_ext_;
+        enum class Type;
+        enum SubType;
 
         static const std::unordered_map<std::string_view, MimeType> mime_types_;
 
+        SubType mime_type_; 
+        //SubType mime_sub_;
+
+        std::string mime_format_, mime_ext_;
+
     public:
-        enum Type {
+        enum class Type 
+        {
+
+        };
+
+        enum SubType 
+        {
             Unknown,
 
             TextPlain,  
             TextHtml,   // .html, .htm
-            TextCss,    
-            TextJavaScript,
+            TextCss,
+            TextCsv,    
+            TextJS,
 
-            AppJavaScript, 
+            AppJS, 
             AppJson,
             AppXml,
             AppPdf,
+            AppZip,
+            AppBinary,
+            AppDoc,
+            AppDocx,
+            AppPpt,
+            AppPptx,
+            AppXls,
+            AppXlsx,
 
             ImgPng,
             ImgJpeg,    // .jpg, .jpeg, .jpe, .jif, .jfif, .jfi
             ImgGif,
+            ImgBmp,
+            ImgIco,
+            ImgSvg,
 
             AudioMpeg,  // .mp3, .m4a, .m4b, .m4p, .mpga
-            VideoMp4,   // .mp4, .m4v
-
-            AppZip,
-            AppBinary
+            VideoMp4   // .mp4, .m4v
         };
 
         MimeType();
         MimeType(std::string_view ext);
-        MimeType(Type type, std::string_view format, std::string_view ext = "");
+        MimeType(SubType type, std::string_view format, std::string_view ext = "");
 
         /**
          *  @return 
          */
-        Type GetMimeType() const;
+        std::string_view GetName(bool remove_dot = true) const;
+        /**
+         *  @return 
+         */
+        SubType GetMimeType() const;
         /**
          *  @return 
          */
         std::string_view GetMimeFormat() const;
-        /**
-         *  @return 
-         */
-        std::string_view GetExtName(bool remove_dot = true) const;
         /**
          *  @return true if extension is valid
          */
