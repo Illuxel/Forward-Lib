@@ -28,3 +28,11 @@ TEST(MimeType, FromString)
     EXPECT_FALSE(MimeType::FromString("unknown").IsValid());
     EXPECT_FALSE(MimeType::FromString(".unknown").IsValid());
 }
+
+TEST(MimeType, RemoveExtension)
+{
+    using namespace fl::utils;
+
+    EXPECT_TRUE(MimeType::RemoveExtension(".txt") == "");
+    EXPECT_TRUE(MimeType::RemoveExtension("TEST.txt") == "TEST");
+}
