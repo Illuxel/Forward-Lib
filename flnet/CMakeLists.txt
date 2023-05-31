@@ -6,38 +6,50 @@ endif()
 
 # Networking
 
-set(FLNET_INCLUDE
-    fl/net/Base.hpp
-    fl/net/AsyncListener.hpp
+set(NET_INCLUDE
+    fl/net/Core.hpp
+
     fl/net/Endpoint.hpp
-    fl/net/Socket.hpp
+    fl/net/AsyncListener.hpp
 )
-set(FLNET_SOURCE
-    ${FLNET_INCLUDE}
-    fl/net/AsyncListener.cpp
+set(NET_SOURCE
+    ${NET_INCLUDE}
+
     fl/net/Endpoint.cpp
-    fl/net/Socket.cpp
+    fl/net/AsyncListener.cpp
 )
 
 # HTTP
 
-set(FLHTTP_INCLUDE
+set(HTTP_INCLUDE
+    fl/net/http/HttpUrl.hpp
+
     fl/net/http/HttpRequest.hpp
     fl/net/http/HttpResponse.hpp
+
+    fl/net/http/WebFilesSystem.hpp
+    fl/net/http/HttpRouter.hpp
 )
-set(FLHTTP_SOURCE
-    ${FLHTTP_SOURCE}
+set(HTTP_SOURCE
+    ${HTTP_INCLUDE}   
+
+    fl/net/http/HttpUrl.cpp
+
     fl/net/http/HttpRequest.cpp
     fl/net/http/HttpResponse.cpp
+
+    fl/net/http/WebFilesSystem.cpp
+    fl/net/http/HttpRouter.cpp
 )
 
 # Auth
 
-set(FLAUTH_INCLUDE
+set(AUTH_INCLUDE
     fl/net/auth/JsonWebToken.hpp
 )
-set(FLAUTH_SOURCE
-    ${FLAUTH_INCLUDE}
+set(AUTH_SOURCE
+    ${AUTH_INCLUDE}
+    
     fl/net/auth/JsonWebToken.cpp
 )
 
@@ -49,11 +61,7 @@ if(NOT TARGET Boost)
     find_package(Boost 1.81 REQUIRED system COMPONENTS)
 endif()
 
-add_library(net STATIC 
-    ${FLNET_SOURCE} 
-    ${FLHTTP_SOURCE} 
-    ${FLAUTH_SOURCE}
-)
+add_library(net STATIC ${AUTH_SOURCE} ${HTTP_SOURCE} ${NET_SOURCE})
 
 target_include_directories(net 
 PUBLIC 
@@ -67,9 +75,9 @@ PUBLIC
     jwt-cpp::jwt-cpp
 )
 
-install(FILES ${FLNET_INCLUDE}  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/net)
-install(FILES ${FLAUTH_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/net/auth)
-install(FILES ${FLAUTH_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/net/http)
+install(FILES ${NET_INCLUDE}  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/net)
+install(FILES ${AUTH_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/net/auth)
+install(FILES ${HTTP_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/net/http)
 
 install(TARGETS net
     EXPORT fl-targets

@@ -1,8 +1,22 @@
 #pragma once
 
-#include "fl/net/Base.hpp"
+#include "fl/net/Core.hpp"
 
 namespace fl {
 
-    using Response = http::response<http::string_body>;
+    template<typename Type>
+    class HttpResponseWrapper
+    {
+    private:
+        http::response<Type> request_data_;
+
+    public:
+        HttpResponseWrapper(http::response<Type>&& request)
+            : request_data_(std::move(request)) {}
+
+
+
+    };
+
+    using HttpResponse = HttpResponseWrapper<http::string_body>;
 }
