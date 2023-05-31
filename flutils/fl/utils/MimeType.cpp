@@ -55,31 +55,22 @@ namespace fl::utils {
     MimeType::MimeType()
         : mime_type_{SubType::Unknown}
         , mime_format_{""}
-        , mime_ext_{""} 
-    {
-
-    }
+        , mime_ext_{""} {}
     MimeType::MimeType(std::string_view ext)
     {
         *this = MimeType::FromString(ext);
     }
-    MimeType::MimeType(SubType mime_type, 
-        std::string_view mime_format, 
-        std::string_view ext)
+    MimeType::MimeType(SubType mime_type,  std::string_view mime_format, std::string_view ext)
         : mime_type_{mime_type}
         , mime_format_{mime_format}
-        , mime_ext_{ext}
-    {
-        
-    }
+        , mime_ext_{ext} {}
 
     std::string_view MimeType::GetName(bool remove_dot) const 
     {
         if (!remove_dot)
             return mime_ext_;
 
-        std::string_view without = mime_ext_;
-        return without.substr(1, without.size());
+        return mime_ext_.substr(1, mime_ext_.size());
     }
     MimeType::SubType MimeType::GetMimeType() const
     {
@@ -109,7 +100,7 @@ namespace fl::utils {
         if (!HasExtension(ext))
             return MimeType();
 
-        auto const sub_ext = ExtensionOnly(ext);
+        auto sub_ext = ExtensionOnly(ext);
         auto type = mime_types_.at(sub_ext);
 
         type.mime_ext_.reserve(sub_ext.size() + 1);
@@ -119,14 +110,13 @@ namespace fl::utils {
         return type; 
     }
 
-    std::string_view MimeType::RemoveExtension(std::string_view file, bool remove_dot)
+    std::string MimeType::RemoveExtension(std::string_view file)
     {
-        auto ext = MimeType::FromString(file);
+        auto const& ext = MimeType::FromString(file);
         if (!ext.IsValid())
-            return file;
+            return file.data();
     
-        auto view = file.substr(0, file.size() - ext.GetName(!remove_dot).size());
-        return view;
+        return std::string(file.substr(0, file.size() - ext.GetName(false).size()));
     }
     std::string_view MimeType::ExtensionOnly(std::string_view str)
     {

@@ -93,7 +93,7 @@ namespace fl::utils {
          *  @param file file name with extension
          *  @return file without extension
          */
-        static std::string_view RemoveExtension(std::string_view file, bool remove_dot = true);
+        static std::string RemoveExtension(std::string_view file);
         
     private:
         /**
