@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fl/net/Base.hpp"
+#include "fl/net/Core.hpp"
 
 namespace fl {
     
@@ -20,4 +20,5 @@ namespace fl {
 
         operator net::ip::tcp::endpoint() const;
     };
+    
 } // namespace fl
