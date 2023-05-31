@@ -49,9 +49,22 @@ set(AUTH_INCLUDE
 )
 set(AUTH_SOURCE
     ${AUTH_INCLUDE}
-    
     fl/net/auth/JsonWebToken.cpp
 )
+
+if(NOT TARGET Benchmark)
+    find_package(Benchmark CONFIG REQUIRED)
+endif()
+
+if (FL_INCLUDE_BENCHMARK_COMPILE)
+    if (FL_ENABLE_BENCHMARK)
+        # add_subdirectory(bench)
+    endif()
+    
+    if (FL_ENABLE_TESING)
+        add_subdirectory(test)
+    endif()
+endif()
 
 if(NOT TARGET jwt-cpp)
     find_package(jwt-cpp REQUIRED)

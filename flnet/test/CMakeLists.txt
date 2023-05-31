@@ -1,11 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 
 set(TEST_SOURCE
-    test_flags.cpp
-    test_stringbuilder.cpp
-    # test_log.cpp
-    test_datetime.cpp
-    test_mimetype.cpp
+    test_url.cpp
+    test_reqsponse.cpp
 )
 
 include(FetchContent)
@@ -19,13 +16,13 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(TestUtils ${TEST_SOURCE})
+add_executable(TestNet ${TEST_SOURCE})
 
-target_link_libraries(TestUtils
+target_link_libraries(TestNet
 PUBLIC    
     GTest::gtest_main
-    Fl::utils
+    Fl::net
 )
 
 include(GoogleTest)
-gtest_discover_tests(TestUtils)
+gtest_discover_tests(TestNet)
