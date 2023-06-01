@@ -22,6 +22,7 @@ set(NET_SOURCE
 # HTTP
 
 set(HTTP_INCLUDE
+    fl/net/http/HttpQuery.hpp
     fl/net/http/HttpUrl.hpp
 
     fl/net/http/HttpRequest.hpp
@@ -33,6 +34,7 @@ set(HTTP_INCLUDE
 set(HTTP_SOURCE
     ${HTTP_INCLUDE}   
 
+    fl/net/http/HttpQuery.cpp
     fl/net/http/HttpUrl.cpp
 
     fl/net/http/HttpRequest.cpp
@@ -58,7 +60,7 @@ endif()
 
 if (FL_INCLUDE_BENCHMARK_COMPILE)
     if (FL_ENABLE_BENCHMARK)
-        # add_subdirectory(bench)
+        add_subdirectory(bench)
     endif()
     
     if (FL_ENABLE_TESING)

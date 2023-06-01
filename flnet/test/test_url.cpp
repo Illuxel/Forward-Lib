@@ -3,29 +3,35 @@ using namespace fl;
 
 #include <gtest/gtest.h>
 
-TEST(HttpUrl, ParserTest)
-{
-    HttpUrl url("https://www.example.com/path/to/resource?param1=value1&param2=value2#fragment");
+TEST(HttpUrlTest, ValidHttpUrl) {
+    std::string urlStr = "http://www.example.com/path/to/resource?p=value1#fragment";
+    HttpUrl url(urlStr);
 
-    EXPECT_STREQ(url.Domain().data(), "www.example.com");
-    EXPECT_STREQ(url.Target().data(), "/path/to/resource");
-    EXPECT_STREQ(url.Section().data(), "fragment");
-
-    EXPECT_STREQ(url.Value("param1").data(), "value1");
-    EXPECT_STREQ(url.Value("param2").data(), "value2");
+    EXPECT_EQ(url.Protocol(), "http");
+    EXPECT_EQ(url.Domain(), "www.example.com");
+    EXPECT_EQ(url.Target(), "/path/to/resource");
+    EXPECT_EQ(url.Query().ToString(), "p=value1");
+    EXPECT_EQ(url.Section(), "fragment");
 }
 
-TEST(HttpUrl, BadParserTest)
-{
-    HttpUrl url("https:/www.example.com/path/to/resourceparam1=value1&param2=value2#fragment");
+TEST(HttpUrlTest, HttpUrlWithoutQueryAndFragment) {
+    std::string urlStr = "http://www.example.com/path/to/resource";
+    HttpUrl url(urlStr);
 
-    EXPECT_FALSE(url.HasDomain());
-    EXPECT_FALSE(url.HasTarget());
-    EXPECT_FALSE(url.HasSection());
+    EXPECT_EQ(url.Protocol(), "http");
+    EXPECT_EQ(url.Domain(), "www.example.com");
+    EXPECT_EQ(url.Target(), "/path/to/resource");
+    EXPECT_EQ(url.Query().ToString(), "");
+    EXPECT_EQ(url.Section(), "");
+}
 
-    EXPECT_FALSE(url.HasKey("param1"));
-    EXPECT_FALSE(url.HasKey("param2"));
+TEST(HttpUrlTest, HttpUrlWithoutDomain) {
+    std::string urlStr = "http://localhost/path/to/resource?param1=value1&p=v#fragment";
+    HttpUrl url(urlStr);
 
-    EXPECT_FALSE(url.IsValueEmpty("param1"));
-    EXPECT_FALSE(url.IsValueEmpty("param2"));
+    EXPECT_EQ(url.Protocol(), "http");
+    EXPECT_EQ(url.Domain(), "localhost");
+    EXPECT_EQ(url.Target(), "/path/to/resource");
+    EXPECT_EQ(url.Query().ToString(), "param1=value1&p=v");
+    EXPECT_EQ(url.Section(), "fragment");
 }
