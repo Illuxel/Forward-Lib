@@ -30,6 +30,17 @@ namespace fl {
         return web_file->FullPath();
     }
 
+    std::string HttpRouter::GetContentPath(std::string_view content) const
+    {
+        std::string_view only_name = content.substr(1, content.size());
+        auto const& web_file = wfs_->GetWebFileInfo(only_name, utils::MimeType::HasExtension(only_name));
+
+        if (!web_file.has_value())
+            return "";
+
+        return web_file->FullPath();
+    }
+
     bool HttpRouter::IsTargetIndex(std::string_view target) const
     {   
         if (target.empty())
@@ -60,7 +71,7 @@ namespace fl {
 
     bool HttpRouter::IsContentTarget(std::string_view target) const
     {
-        std::string only_name(target.substr(1, target.size()));
+        std::string_view only_name = target.substr(1, target.size());
 
         bool is_exist = wfs_->IsWebFileExist(only_name);
         bool is_content = !IsTargetRegisted(only_name) && is_exist;

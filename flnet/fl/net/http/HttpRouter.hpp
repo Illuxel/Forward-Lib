@@ -49,7 +49,7 @@ namespace fl {
          *  @return target with path. if target invalid will return index target
          */
         std::string GetTargetPath(std::string_view target) const;
-
+        std::string GetContentPath(std::string_view content) const;
         /**
          *  @param target registered target name
          *  @return true if target is index
