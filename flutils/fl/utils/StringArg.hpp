@@ -41,7 +41,7 @@ namespace fl::utils {
 
         bool HasSpecifier() const;
 
-        static StringArg FromString(std::string_view str, char separator = '=', 
+        static StringArg FromString(std::string_view str, char delim = '=', 
             bool use_specifier = false, char specifier = '%');
 
         static std::vector<StringArg> 

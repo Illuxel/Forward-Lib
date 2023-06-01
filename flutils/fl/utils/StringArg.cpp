@@ -95,10 +95,10 @@ namespace fl::utils {
         return data.find(Joined()) != std::string::npos;
     }
 
-    StringArg StringArg::FromString(std::string_view str, char separator, 
+    StringArg StringArg::FromString(std::string_view str, char delim, 
                 bool use_specifier, char specifier) 
     {
-        auto pos = str.find(separator);
+        auto const pos = str.find(delim);
         
         if (pos == std::string::npos)
             return StringArg();
