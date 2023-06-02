@@ -40,10 +40,7 @@ namespace fl {
             view = view.substr(
                 is_sep
                  ? param.size() + 1
-                 : param.size(), 
-                is_sep 
-                 ? sep_pos + 1 // + 1 to skip &
-                 : param.size());
+                 : param.size(), view.size());
         }
     }
 
