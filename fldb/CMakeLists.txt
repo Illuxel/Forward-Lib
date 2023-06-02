@@ -12,19 +12,23 @@ set(FLDB_INCLUDE
 )
 set(FLDB_SOURCE
     ${FLDB_INCLUDE}
+    
     fl/db/Database.cpp
 )
 
 add_library(db STATIC ${FLDB_SOURCE})
+
 target_include_directories(db
 PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+PRIVATE
+    $ENV{MYSQL}/include
 )
 target_link_libraries(db
 PUBLIC
-    # Qt6::Sql
     Fl::utils
+    mysqlcppconn
 )
 
 install(FILES ${FLDB_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/db)
