@@ -18,7 +18,7 @@ namespace fl {
         // 
         std::string index_;
         // registered routes that can be accessed
-        std::map<std::string, Callback> routes_;
+        std::map<std::string, std::optional<Callback>> routes_;
         // file system to store every document info
         Ref<WebFilesSystem const> wfs_;
 
@@ -35,6 +35,11 @@ namespace fl {
         /**
          *  Register target in a system with function callback (handler)
          *  @param target   name to be registered
+         */
+        void Register(std::string_view target);
+        /**
+         *  Register target in a system with function callback (handler)
+         *  @param target   name to be registered
          *  @param handler  callback method
          */
         void Register(std::string_view target, Callback const& handler);
@@ -43,7 +48,6 @@ namespace fl {
          */
         std::optional<Callback> 
         FindRouteCallback(std::string_view target) const;
-
         /**
          *  @param target registered target name
          *  @return target with path. if target invalid will return index target

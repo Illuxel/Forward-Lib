@@ -98,6 +98,17 @@ namespace fl {
         return only_name;
     }
 
+    void HttpRouter::Register(std::string_view target) 
+    {
+        if (routes_.find(target.data()) != routes_.end())
+        {
+            FL_LOG("HttpRouter", "Target already registered");
+            return;
+        }
+
+        routes_.insert(std::make_pair(target.data(), std::nullopt));
+    }
+
     void HttpRouter::Register(std::string_view target, HttpRouter::Callback const& handler) 
     {
         if (routes_.find(target.data()) != routes_.end())
