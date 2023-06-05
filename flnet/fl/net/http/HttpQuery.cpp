@@ -4,15 +4,20 @@
 #include <algorithm>
 #include <iterator>
 
+using namespace fl::utils;
+
 namespace fl {
 
+    HttpQuery::HttpQuery() {}
     HttpQuery::HttpQuery(std::string_view query)
     {
-        using namespace fl::utils;
+        SetQuery(query);
+    }
 
-        if (query.empty()) return;
-
-        params_.emplace();
+    void HttpQuery::SetQuery(std::string_view query)
+    {
+        if (query.empty()) 
+            return;
 
         std::string_view view = query;
 
@@ -35,27 +40,48 @@ namespace fl {
             );
 
             auto const& arg = StringArg::FromString(param);
+
+            if (!params_.has_value())
+                params_.emplace();
+
             params_->insert(std::make_pair(arg.Name(), arg.Data()));
 
             view = view.substr(
                 is_sep
-                 ? param.size() + 1
-                 : param.size(), view.size());
+                ? param.size() + 1
+                : param.size(), view.size());
         }
+    }
+
+    StringArg HttpQuery::Arg(std::string_view key) const
+    {
+        StringArg arg;
+
+        if (!HasKey(key))
+            return arg;
+
+        arg.SetName(key);
+        arg.SetData(Value(key));
+
+        return arg;
     }
 
     std::string_view HttpQuery::Value(std::string_view key) const 
     {
-        if (!HasKey(key)) return "";
+        if (!HasKey(key)) 
+            return "";
+
         return params_->at(key.data());
     }
 
-    std::list<std::string> HttpQuery::Keys() const
+    std::vector<std::string> HttpQuery::Keys() const
     {
-        std::list<std::string> keys;
+        std::vector<std::string> keys;
 
-        if (!HasKeys())
+        if (IsEmpty())
             return keys;
+
+        keys.reserve(params_->size());
 
         std::transform(
             params_->cbegin(), 
@@ -69,10 +95,10 @@ namespace fl {
 
     std::string HttpQuery::ToString() const
     {
-        if (!HasKeys())
-            return "";
-
         std::string temp;
+
+        if (IsEmpty())
+            return temp;
 
         for (auto const& [key, val] : params_.value())
         {
@@ -84,28 +110,48 @@ namespace fl {
 
         return temp;
     }
-
-    bool HttpQuery::HasKeys() const
+    
+    std::vector<StringArg> HttpQuery::ToArgs() const 
     {
-        return params_.has_value();
+        std::vector<StringArg> args;
+
+        if (IsEmpty())
+            return args;
+
+        args.reserve(params_->size());
+
+        std::transform(
+            params_->cbegin(), 
+            params_->cend(), 
+            std::back_inserter(args), 
+            [](auto const& pair){ return StringArg(pair.first, pair.second); }
+        );
+
+        return args;
     }
+    std::vector<StringArg> HttpQuery::ToArgs(char specifier) const 
+    {
+        auto& args = ToArgs();
+
+        for (auto& arg : args)
+            arg.SetSpecifier(specifier);
+
+        return args;
+    }
+
+    bool HttpQuery::IsEmpty() const
+    {
+        if (!params_.has_value())
+            return true;
+
+        return params_->empty();
+    }
+
     bool HttpQuery::HasKey(std::string_view key) const 
     {
-        if (!HasKeys()) 
+        if (IsEmpty())
             return false;
 
         return params_->find(key.data()) != params_->cend();
-    }
-
-    bool HttpQuery::IsValueEmpty(std::string_view key) const
-    {
-        if (!HasKeys()) 
-            return false;
-
-        auto const& it = params_->find(key.data());
-        auto const has_value = it != params_->cend()
-                            || it->second.empty();
-
-        return has_value;
     }
 }

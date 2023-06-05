@@ -16,11 +16,11 @@ namespace fl {
 
         if (!valid_) return;
 
-        protocol_ = match[1];
-        domain_ = match[2];
-        target_ = match[3];
-        query_ = match[4];
-        section_ = match[5];
+        protocol_.emplace(match[1].str());
+        domain_.emplace(match[2].str());
+        target_.emplace(match[3].str());
+        query_.emplace(match[4].str());
+        section_.emplace(match[5].str());
     }
 
     std::string_view HttpUrl::Protocol() const
@@ -46,7 +46,9 @@ namespace fl {
 
     HttpQuery HttpUrl::Query() const
     {
-        if (!query_) return "";
+        if (!query_) 
+            return HttpQuery("");
+
         return HttpQuery(query_.value());
     }
 
