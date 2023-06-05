@@ -7,7 +7,7 @@ cd ..
 mkdir build-cmake
 cd build-cmake
 
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build . --config Release
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+cmake --build . --config Debug
 
 cd ../scripts
