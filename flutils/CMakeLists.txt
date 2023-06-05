@@ -4,7 +4,17 @@ if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
   set(CMAKE_INSTALL_LIBDIR "lib")
 endif()
 
-set(FLUTILS_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/utils)
+if (FL_INCLUDE_BENCHMARK_COMPILE)
+    if (FL_ENABLE_BENCHMARK)
+        add_subdirectory(bench)
+    endif()
+
+    if (FL_ENABLE_TESING)
+        add_subdirectory(test)
+    endif()
+endif()
+
+set(FLUTILS_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/utils)
 
 set(FLUTILS_INCLUDE
     fl/utils/Memory.hpp
@@ -29,25 +39,7 @@ set(FLUTILS_SOURCE
     fl/utils/Log.cpp
 )
 
-if(NOT TARGET Benchmark)
-    find_package(Benchmark CONFIG REQUIRED)
-endif()
-
-if (FL_INCLUDE_BENCHMARK_COMPILE)
-    if (FL_ENABLE_BENCHMARK)
-        add_subdirectory(bench)
-    endif()
-
-    if (FL_ENABLE_TESING)
-        add_subdirectory(test)
-    endif()
-endif()
-
-add_library(utils 
-STATIC 
-    ${FLUTILS_SOURCE} 
-    ${FLLOG_SOURCE}
-)
+add_library(utils STATIC ${FLUTILS_SOURCE})
 
 target_include_directories(utils 
 PUBLIC 
@@ -55,8 +47,7 @@ PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-install(FILES ${FLUTILS_INCLUDE}  DESTINATION ${FLUTILS_DIR})
-
+install(FILES ${FLUTILS_INCLUDE}  DESTINATION ${FLUTILS_INSTALL_DIR})
 install(TARGETS utils 
     EXPORT fl-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
