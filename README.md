@@ -12,7 +12,9 @@ Description: Soon
 
 ## Dependencies
 
-Soon
+- OpenSSL
+- Boost 
+- JWT-CPP
 
 ## How to install
 
