@@ -2,8 +2,3 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-
-add_compile_definitions(
-    _WIN32_WINNT=0x0A00
-    _WIN32_WINDOWS=0x0A00
-)
