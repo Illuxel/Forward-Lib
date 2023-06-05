@@ -43,7 +43,8 @@ namespace fl {
     {
         if (!std::filesystem::is_directory(web_root)) 
         {
-            FL_ERR("WebFilesSystem", "Unknown directory");
+            FL_LOG("WebFilesSystem", "Unknown directory");
+            return;
         }
 
         web_root_ = web_root;
