@@ -3,7 +3,7 @@ using namespace fl;
 
 #include <gtest/gtest.h>
 
-TEST(HttpUrlTest, ValidHttpUrl) {
+TEST(HttpUrlTest, ValidUrl) {
     std::string urlStr = "http://www.example.com/path/to/resource?p=value1#fragment";
     HttpUrl url(urlStr);
 
@@ -14,7 +14,7 @@ TEST(HttpUrlTest, ValidHttpUrl) {
     EXPECT_EQ(url.Section(), "fragment");
 }
 
-TEST(HttpUrlTest, HttpUrlWithoutQueryAndFragment) {
+TEST(HttpUrlTest, UrlWithoutQueryAndFragment) {
     std::string urlStr = "http://www.example.com/path/to/resource";
     HttpUrl url(urlStr);
 
@@ -25,7 +25,7 @@ TEST(HttpUrlTest, HttpUrlWithoutQueryAndFragment) {
     EXPECT_EQ(url.Section(), "");
 }
 
-TEST(HttpUrlTest, HttpUrlWithoutDomain) {
+TEST(HttpUrlTest, UrlWithoutDomain) {
     std::string urlStr = "http://localhost/path/to/resource?param1=value1&p=v#fragment";
     HttpUrl url(urlStr);
 
