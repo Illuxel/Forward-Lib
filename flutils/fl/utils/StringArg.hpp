@@ -34,10 +34,11 @@ namespace fl::utils {
         void SetData(std::string_view arg_data);
 
         std::optional<char> Specifier() const;
-        std::string_view Name() const;
+        
+        std::string Name() const;
         std::string Joined() const;
 
-        std::string_view Data() const;
+        std::string Data() const;
 
         bool HasSpecifier() const;
 

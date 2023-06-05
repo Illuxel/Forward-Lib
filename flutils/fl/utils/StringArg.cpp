@@ -54,7 +54,7 @@ namespace fl::utils {
     {
         return specifier_;
     }
-    std::string_view StringArg::Name() const
+    std::string StringArg::Name() const
     {
         return name_;
     }
@@ -66,7 +66,7 @@ namespace fl::utils {
         return name_;
     }
 
-    std::string_view StringArg::Data() const
+    std::string StringArg::Data() const
     {
         return *arg_data_;
     }
