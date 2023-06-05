@@ -1,42 +1,56 @@
 cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
-project(ForwardLib VERSION 0.0.1
-    LANGUAGES CXX
+project(ForwardLib 
+    VERSION 0.0.1
+    LANGUAGES CXX C
     DESCRIPTION "C++ library for writing Forward projects"
 )
 
-option(FL_INCLUDE_BENCHMARK_COMPILE "Enabling sources, will add google bench includes" ON) 
+option(BUILD_SHARED_LIBS "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)" OFF)
+
 option(FL_ENABLE_TESING "Enabling testing, will add google test feautures in C++" ON)
 option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" ON)
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
     set(CMAKE_INSTALL_LIBDIR "lib")
-endif()
-if (NOT DEFINED CMAKE_INSTALL_BINDIR)
-    set(CMAKE_INSTALL_BINDIR "bin")
 endif()
 if (NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
     set(CMAKE_INSTALL_INCLUDEDIR "include")
 endif()
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+if (WIN32)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    add_compile_definitions(
+        _WIN32_WINNT=0x0A00
+        _WIN32_WINDOWS=0x0A00
+    )
+elseif(APPLE)
+
+elseif(UNIX)
+
+endif()
 
 include(cmake/cxx-common.cmake)
-include(cmake/boost-common.cmake)
 include(GNUInstallDirs)
 
-set(namespace Fl)
-set(FLAPI_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fl)
+add_subdirectory(vendor)
 
-set(FLAPI_INCLUDE
+set(FL_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fl)
+
+set(namespace Fl)
+
+set(FL_INCLUDE
     fl/forward/Account.hpp
     fl/forward/Channel.hpp
     fl/forward/Chat.hpp
     fl/forward/ForwardMessage.hpp
     fl/forward/Message.hpp
 )
-set(FLAPI_SOURCE
-    ${FLAPI_INCLUDE}
+set(FL_SOURCE
+    ${FL_INCLUDE}
+
     fl/forward/Account.cpp
     fl/forward/Channel.cpp
     fl/forward/Chat.cpp
@@ -52,17 +66,19 @@ set(FLCLIENT_SOURCE
     fl/forward/Client.cpp
 )
 
-if (MSVC)
-    source_group("cmake-common" 
-    FILES 
-        "cmake/cxx-common.cmake"
-        "cmake/project-common.cmake"
-        "cmake/fl-install.cmake"
-        "cmake/fl-config.cmake"
-    )
-endif()
+#--------------< Including sublibs >--------------#
 
-add_library(flapi ${FLAPI_SOURCE})
+add_subdirectory(flutils)
+add_subdirectory(flnet)
+add_subdirectory(fldb)
+
+add_library(${namespace}::utils ALIAS utils)
+add_library(${namespace}::net ALIAS net)
+add_library(${namespace}::db ALIAS db)
+
+#--------------< API >--------------#
+
+add_library(flapi ${FL_SOURCE})
 add_library(${namespace}::flapi ALIAS flapi)
 
 target_include_directories(flapi
@@ -85,44 +101,30 @@ PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_link_libraries(client
-PUBLIC
-    ${namespace}::flapi
-)
-
-add_subdirectory(flutils)
-add_subdirectory(flnet)
-add_subdirectory(fldb)
-
-add_library(${namespace}::utils ALIAS utils)
-add_library(${namespace}::net ALIAS net)
-add_library(${namespace}::db ALIAS db)
-
-if (WIN32)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-    add_definitions(-D_WIN32_WINNT=0x0A00)
-elseif(APPLE)
-elseif(UNIX)
-endif()
+target_link_libraries(client PUBLIC ${namespace}::flapi)
 
 #--------------< Exporting targets >--------------#
+
+if (MSVC)
+    source_group("cmake-common" 
+    FILES 
+        "cmake/cxx-common.cmake"
+        "cmake/project-common.cmake"
+        "cmake/fl-install.cmake"
+        "cmake/fl-config.cmake"
+    )
+endif()
 
 install(TARGETS flapi client
     EXPORT fl-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(
-FILES 
-    ${FLCLIENT_INCLUDE} 
-    ${FLAPI_INCLUDE} 
-DESTINATION 
-    ${CMAKE_INSTALL_INCLUDEDIR}/fl/forward
-)
-
+install(FILES ${FL_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/forward)
+install(FILES ${FLCLIENT_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/api)
+ 
 install(EXPORT fl-targets
     FILE fl-targets.cmake
     NAMESPACE ${namespace}::
