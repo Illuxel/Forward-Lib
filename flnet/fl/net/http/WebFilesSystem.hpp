@@ -18,7 +18,7 @@ namespace fl {
 
         // returns filename with extension
         std::string File() const {
-            return Name + std::string(Ext.GetExtName(false));
+            return Name + Ext.GetExtName(false);
         }
         // returns path file name and ext
         std::string FullPath() const {
