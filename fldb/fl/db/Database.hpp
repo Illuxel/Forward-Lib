@@ -2,14 +2,18 @@
 
 #include "fl/utils/Memory.hpp"
 
-#include <mysql/jdbc.h>
+#include <jdbc/mysql_driver.h>
+#include <jdbc/mysql_connection.h>
+
+#include <jdbc/cppconn/statement.h>
+#include <jdbc/cppconn/prepared_statement.h>
 
 namespace fl::db {
 
     class Database
     {
-        sql::mysql::MySQL_Driver* driver_;
-        sql::Connection* connection_;
+        Scope<sql::mysql::MySQL_Driver> driver_;
+        Scope<sql::Connection> connection_;
 
     private:
         static std::unordered_map<std::string, Ref<Database>> databases_;
@@ -29,9 +33,15 @@ namespace fl::db {
         bool Connect(std::string_view host, 
                     std::string_view user, 
                     std::string_view password);
-        void Disconnect() const;
+
+        void SetActiveSchema(std::string_view scheme);
+
+        Ref<sql::ResultSet> Execute(std::string_view query);
+        // Ref<sql::PreparedStatement> Prepare(std::string_view query);
 
         bool IsConnected() const; 
+
+        void Disconnect() const;
 
         Database(const Database&) = delete;
         Database& operator=(const Database&) = delete;

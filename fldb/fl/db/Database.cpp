@@ -6,10 +6,7 @@ namespace fl::db {
 
     Database::Database(sql::mysql::MySQL_Driver* driver)
         : driver_(driver) {}
-    Database::~Database() 
-    {
-        delete connection_;
-    }
+    Database::~Database() {}
 
     Ref<Database> Database::Innit(std::string_view db_name)
     {
@@ -43,7 +40,7 @@ namespace fl::db {
     {
         try
         {
-            connection_ = driver_->connect(options);
+            connection_.reset(driver_->connect(options));
         }
         catch(std::exception const& e)
         {
@@ -58,7 +55,7 @@ namespace fl::db {
     {
         try
         {
-            connection_ = driver_->connect(host.data(), user.data(), password.data());
+            connection_.reset(driver_->connect(host.data(), user.data(), password.data()));
         }
         catch(std::exception const& e)
         {
@@ -67,12 +64,31 @@ namespace fl::db {
         
         return IsConnected();
     }
-    void Database::Disconnect() const 
+
+    void Database::SetActiveSchema(std::string_view scheme)
     {
         if (!IsConnected())
             return;
 
-        connection_->close();
+        connection_->setSchema(scheme.data());
+    }
+
+    Ref<sql::ResultSet> Database::Execute(std::string_view query)
+    {
+        Scope<sql::Statement> statement(connection_->createStatement());
+        Ref<sql::ResultSet> result;
+
+        try
+        {
+            Scope<sql::ResultSet> set(statement->executeQuery(query.data()));
+            result = std::move(set);
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+        
+        return result;
     }
 
     bool Database::IsConnected() const 
@@ -82,5 +98,14 @@ namespace fl::db {
 
         return connection_->isValid(); 
     }
+
+    void Database::Disconnect() const 
+    {
+        if (!IsConnected())
+            return;
+
+        connection_->close();
+    }
+
     
 } // namespace fl::db 
