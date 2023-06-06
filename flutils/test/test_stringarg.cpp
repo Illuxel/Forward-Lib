@@ -5,8 +5,6 @@ using namespace fl;
 
 TEST(StringArg, ArgEqual) 
 {
-    using namespace fl;
-
     StringArg arg1("test"), arg2;
 
     EXPECT_FALSE(arg1 == arg2);
@@ -18,8 +16,6 @@ TEST(StringArg, ArgEqual)
 }
 TEST(StringArg, ArgCopy) 
 {
-    using namespace fl;
-
     StringArg arg1("arg");
 
     arg1.SetData("hello world");
@@ -36,8 +32,6 @@ TEST(StringArg, ArgCopy)
 
 TEST(StringArg, MakeArg) 
 {
-    using namespace fl;
-
     std::string_view str = "arg_name=arg_data";
     auto arg = StringArg::FromString(str, '=');
 
@@ -47,8 +41,6 @@ TEST(StringArg, MakeArg)
 
 TEST(StringArgSpecifier, ArgEqual) 
 {
-    using namespace fl;
-
     StringArg arg1("test", '%'), arg2('%');
 
     EXPECT_FALSE(arg1 == arg2);
@@ -60,8 +52,6 @@ TEST(StringArgSpecifier, ArgEqual)
 }
 TEST(StringArgSpecifier, ArgCopy) 
 {
-    using namespace fl;
-
     StringArg arg1("arg", '%');
     StringArg copy(arg1);
 

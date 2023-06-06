@@ -67,7 +67,7 @@ namespace fl {
         /**
          *  @return 
          */
-        std::string_view GetExtName(bool remove_dot = true) const;
+        std::string GetExtName(bool remove_dot = true) const;
         /**
          *  @return 
          */
@@ -79,7 +79,7 @@ namespace fl {
         /**
          *  @return 
          */
-        std::string_view GetFormat() const;
+        std::string GetFormat() const;
 
         /**
          * 

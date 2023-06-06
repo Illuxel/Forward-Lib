@@ -1,11 +1,10 @@
 #include "fl/utils/MimeType.hpp"
+using namespace fl;
 
 #include <gtest/gtest.h>
 
 TEST(MimeType, IsExtension)
 {
-    using namespace fl;
-
     EXPECT_TRUE(MimeType::HasExtension("txt"));
     EXPECT_TRUE(MimeType::HasExtension("m4v"));
     EXPECT_TRUE(MimeType::HasExtension(".txt"));
@@ -18,21 +17,30 @@ TEST(MimeType, IsExtension)
 
 TEST(MimeType, FromString)
 {
-    using namespace fl;
+    auto txt1 = MimeType::FromString("txt");
+    auto txt2 = MimeType::FromString(".txt");
+    auto txt3 = MimeType::FromString("TEST.txt");
 
-    EXPECT_TRUE(MimeType::FromString("txt").IsValid());
-    EXPECT_TRUE(MimeType::FromString(".txt").IsValid());
-    EXPECT_TRUE(MimeType::FromString("TEST.txt").IsValid());
+    EXPECT_TRUE(txt1.IsValid());
+    EXPECT_TRUE(txt2.IsValid());
+    EXPECT_TRUE(txt3.IsValid());
 
-    EXPECT_FALSE(MimeType::FromString("TESTtxt").IsValid());
+    EXPECT_EQ(txt1.GetType(), MimeType::Text);
+    EXPECT_EQ(txt1.GetSubType(), MimeType::SubType::Plain);
+    EXPECT_EQ(txt1.GetFormat(), "text/plain");
+
+    auto bad = MimeType::FromString("TESTtxt");
+
+    EXPECT_FALSE(bad.IsValid());
+    EXPECT_EQ(bad.GetSubType(), MimeType::SubType::Unknown);
+    EXPECT_EQ(bad.GetFormat(), "application/*");
+
     EXPECT_FALSE(MimeType::FromString("unknown").IsValid());
     EXPECT_FALSE(MimeType::FromString(".unknown").IsValid());
 }
 
 TEST(MimeType, RemoveExtension)
 {
-    using namespace fl;
-
     EXPECT_TRUE(MimeType::RemoveExtension(".txt") == "");
     EXPECT_TRUE(MimeType::RemoveExtension("TEST.txt") == "TEST");
 }

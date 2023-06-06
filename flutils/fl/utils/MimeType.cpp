@@ -79,7 +79,7 @@ namespace fl {
     MimeType::MimeType()
         : type_{MimeType::App}
         , sub_type_{SubType::Unknown}
-        , sub_type_str_{""}
+        , sub_type_str_{"*"}
         , ext_name_{""} {}
     MimeType::MimeType(std::string_view ext)
     {
@@ -91,7 +91,7 @@ namespace fl {
         , sub_type_str_{sub_type_str}
         , ext_name_{ext} {}
 
-    std::string_view MimeType::GetExtName(bool remove_dot) const 
+    std::string MimeType::GetExtName(bool remove_dot) const 
     {
         if (!remove_dot)
             return std::string('.' + ext_name_);
@@ -107,7 +107,7 @@ namespace fl {
     {
         return sub_type_;
     }
-    std::string_view MimeType::GetFormat() const 
+    std::string MimeType::GetFormat() const 
     {
         return CreateTypeString(type_) + sub_type_str_;
     }
@@ -115,7 +115,8 @@ namespace fl {
     bool MimeType::IsUnknown() const 
     {
         return type_ == MimeType::App
-             && sub_type_ != MimeType::SubType::Unknown;
+             && sub_type_ != MimeType::SubType::Unknown
+             && sub_type_str_ == "*";
     }
     bool MimeType::IsValid() const 
     {
