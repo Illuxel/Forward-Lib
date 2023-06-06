@@ -57,13 +57,12 @@ namespace fl {
         Type type_;
         SubType sub_type_; 
 
-        std::string ext_name_, mime_format_;
+        std::string ext_name_, sub_type_str_;
 
+        MimeType(Type type, SubType sub_type, std::string_view format, std::string_view ext = "");
     public:
-
         MimeType();
         MimeType(std::string_view ext);
-        MimeType(Type type, SubType sub_type, std::string_view format, std::string_view ext = "");
 
         /**
          *  @return 
@@ -83,6 +82,10 @@ namespace fl {
         std::string_view GetFormat() const;
 
         /**
+         * 
+         */
+        bool IsUnknown() const;
+        /**
          *  @return true if extension is valid
          */
         bool IsValid() const;
@@ -98,6 +101,7 @@ namespace fl {
          *  @return MimeType object. Can be valid or not depending on provided string
          */
         static MimeType FromString(std::string_view ext);
+
         /**
          *  Will try to remove existing extension from file 
          * 

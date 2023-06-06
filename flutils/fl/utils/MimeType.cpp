@@ -79,16 +79,16 @@ namespace fl {
     MimeType::MimeType()
         : type_{MimeType::App}
         , sub_type_{SubType::Unknown}
-        , mime_format_{""}
+        , sub_type_str_{""}
         , ext_name_{""} {}
     MimeType::MimeType(std::string_view ext)
     {
         *this = MimeType::FromString(ext);
     }
-    MimeType::MimeType(Type type, SubType sub_type,  std::string_view mime_format, std::string_view ext)
+    MimeType::MimeType(Type type, SubType sub_type,  std::string_view sub_type_str, std::string_view ext)
         : type_{type}
         , sub_type_{sub_type}
-        , mime_format_{mime_format}
+        , sub_type_str_{sub_type_str}
         , ext_name_{ext} {}
 
     std::string_view MimeType::GetExtName(bool remove_dot) const 
@@ -109,13 +109,18 @@ namespace fl {
     }
     std::string_view MimeType::GetFormat() const 
     {
-        return mime_format_;
+        return CreateTypeString(type_) + sub_type_str_;
     }
 
+    bool MimeType::IsUnknown() const 
+    {
+        return type_ == MimeType::App
+             && sub_type_ != MimeType::SubType::Unknown;
+    }
     bool MimeType::IsValid() const 
     {
-        return sub_type_ != MimeType::SubType::Unknown
-            || !mime_format_.empty();
+        return type_ != MimeType::App
+            && sub_type_ != MimeType::SubType::Unknown;
     }
 
     bool MimeType::HasExtension(std::string_view ext)
@@ -135,7 +140,6 @@ namespace fl {
         auto mime_type = mime_types_.at(only_ext);
 
         mime_type.ext_name_ = only_ext;
-        mime_type.mime_format_.append(CreateTypeString(mime_type.GetType()));
 
         return mime_type; 
     }
