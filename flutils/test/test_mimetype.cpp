@@ -4,7 +4,7 @@
 
 TEST(MimeType, IsExtension)
 {
-    using namespace fl::utils;
+    using namespace fl;
 
     EXPECT_TRUE(MimeType::HasExtension("txt"));
     EXPECT_TRUE(MimeType::HasExtension("m4v"));
@@ -18,7 +18,7 @@ TEST(MimeType, IsExtension)
 
 TEST(MimeType, FromString)
 {
-    using namespace fl::utils;
+    using namespace fl;
 
     EXPECT_TRUE(MimeType::FromString("txt").IsValid());
     EXPECT_TRUE(MimeType::FromString(".txt").IsValid());
@@ -31,7 +31,7 @@ TEST(MimeType, FromString)
 
 TEST(MimeType, RemoveExtension)
 {
-    using namespace fl::utils;
+    using namespace fl;
 
     EXPECT_TRUE(MimeType::RemoveExtension(".txt") == "");
     EXPECT_TRUE(MimeType::RemoveExtension("TEST.txt") == "TEST");
