@@ -1,79 +1,10 @@
 #include "fl/utils/StringBuilder.hpp"
+using namespace fl;
+
 #include <gtest/gtest.h>
 
-TEST(StringArg, ArgEqual) 
+TEST(StringBuilder, StringCreationRef) 
 {
-    using namespace fl::utils;
-
-    StringArg arg1("test"), arg2;
-
-    EXPECT_FALSE(arg1 == arg2);
-
-    arg2.SetName("test");
-
-    EXPECT_TRUE(arg1 == arg2);
-    EXPECT_TRUE(arg1 == "Hidden test argument!");
-}
-TEST(StringArg, ArgCopy) 
-{
-    using namespace fl::utils;
-
-    StringArg arg1("arg");
-
-    arg1.SetData("hello world");
-
-    StringArg copy(arg1);
-
-    EXPECT_TRUE(copy == arg1);
-    EXPECT_TRUE(arg1.Data() == copy.Data());
-
-    copy.SetName("NEW");
-
-    EXPECT_FALSE(copy == arg1);
-}
-
-TEST(StringArg, MakeArg) 
-{
-    using namespace fl::utils;
-
-    std::string_view str = "arg_name=arg_data";
-    auto arg = StringArg::FromString(str, '=');
-
-    EXPECT_TRUE(arg == "arg_name");
-    EXPECT_TRUE(arg.Data() == "arg_data");
-}
-
-TEST(StringArgSpecifier, ArgEqual) 
-{
-    using namespace fl::utils;
-
-    StringArg arg1("test", '%'), arg2('%');
-
-    EXPECT_FALSE(arg1 == arg2);
-
-    arg2.SetName("test");
-
-    EXPECT_TRUE(arg1 == arg2);
-    EXPECT_TRUE(arg1 == "Hidden %test argument!");
-}
-TEST(StringArgSpecifier, ArgCopy) 
-{
-    using namespace fl::utils;
-
-    StringArg arg1("arg", '%');
-    StringArg copy(arg1);
-
-    EXPECT_TRUE(copy == arg1);
-}
-
-
-
-
-
-TEST(StringBuilder, StringCreation) 
-{
-    using namespace fl::utils;
-
     StringArg arg1("arg1", "text with arguments"), 
             arg2("arg2", "like this"), 
             arg3("arg3", "don't like this"); 
@@ -85,10 +16,8 @@ TEST(StringBuilder, StringCreation)
     EXPECT_STREQ(strb, "Some text with arguments: like this, like this, don't like this.");
 }
 
-TEST(StringBuilderSpec, StringCreation) 
+TEST(StringBuilderSpec, StringCreationRef) 
 {
-    using namespace fl::utils;
-
     StringArg arg1("arg1", "text with arguments", '%'), 
             arg2("arg2", "like this", '%'), 
             arg3("arg3", "don't like this", '%'); 
