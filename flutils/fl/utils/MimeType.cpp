@@ -1,49 +1,73 @@
 #include "MimeType.hpp"
 
-namespace fl::utils {
+namespace fl {
 
     const std::unordered_map<std::string_view, MimeType> MimeType::mime_types_ = 
     {
-        { "txt",  { MimeType::TextPlain,    "text/plain" }},
-        { "html", { MimeType::TextHtml,     "text/html" }},
-        { "htm",  { MimeType::TextHtml,     "text/html" }},
-        { "csv",  { MimeType::TextCsv,      "text/csv" }},
-        { "css",  { MimeType::TextCss,      "text/css" }},
-        { "js",   { MimeType::TextJS,       "text/javascript" }},
-        { "jpg",  { MimeType::ImgJpeg,      "image/jpeg" }},
-        { "jpeg", { MimeType::ImgJpeg,      "image/jpeg" }},
-        { "jpe",  { MimeType::ImgJpeg,      "image/jpeg" }},
-        { "jif",  { MimeType::ImgJpeg,      "image/jpeg" }},
-        { "jfif", { MimeType::ImgJpeg,      "image/jpeg" }},
-        { "jfi",  { MimeType::ImgJpeg,      "image/jpeg" }},
-        { "png",  { MimeType::ImgPng,       "image/png" }},
-        { "gif",  { MimeType::ImgGif,       "image/gif" }},
-        { "bmp",  { MimeType::ImgBmp,       "image/bmp" }},
-        { "ico",  { MimeType::ImgIco,       "image/x-icon" }},
-        { "svg",  { MimeType::ImgSvg,       "image/svg+xml" }},
-        { "mp3",  { MimeType::AudioMpeg,    "audio/mpeg" }},
-        { "m4a",  { MimeType::AudioMpeg,    "audio/mpeg" }},
-        { "m4b",  { MimeType::AudioMpeg,    "audio/mpeg" }},
-        { "m4p",  { MimeType::AudioMpeg,    "audio/mpeg" }},
-        { "mpga", { MimeType::AudioMpeg,    "audio/mpeg" }},
-        { "mp4",  { MimeType::VideoMp4,     "video/mp4" }},
-        { "m4v",  { MimeType::VideoMp4,     "video/mp4" }},
-        { "json", { MimeType::AppJson,      "application/json" }},
-        { "xml",  { MimeType::AppXml,       "application/xml" }},
-        { "pdf",  { MimeType::AppPdf,       "application/pdf" }},
-        { "zip",  { MimeType::AppZip,       "application/zip" }},
-        { "7z",   { MimeType::AppZip,       "application/x-7z-compressed" }},
-        { "bin",  { MimeType::AppBinary,    "application/octet-stream" }},
-        { "doc",  { MimeType::AppDoc,       "application/msword" }},
-        { "xls",  { MimeType::AppXls,       "application/vnd.ms-excel" }},
-        { "ppt",  { MimeType::AppPpt,       "application/vnd.ms-powerpoint" }},
-        { "docx", { MimeType::AppDocx,      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" }},
-        { "xlsx", { MimeType::AppXlsx,      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }},
-        { "pptx", { MimeType::AppPptx,      "application/vnd.openxmlformats-officedocument.presentationml.presentation" }}
+        { "txt",  { Type::Text, SubType::Plain,  "plain" }},
+        { "html", { Type::Text, SubType::Html,   "html" }},
+        { "htm",  { Type::Text, SubType::Html,   "html" }},
+        { "csv",  { Type::Text, SubType::Csv,    "csv" }},
+        { "css",  { Type::Text, SubType::Css,    "css" }},
+        { "json", { Type::Text, SubType::Json, "json" }},
+        { "js",   { Type::Text, SubType::JavaScript,"javascript" }},
+        { "jpg",  { Type::Img, SubType::Jpeg,    "jpeg" }},
+        { "jpeg", { Type::Img, SubType::Jpeg,    "jpeg" }},
+        { "jpe",  { Type::Img, SubType::Jpeg,    "jpeg" }},
+        { "jif",  { Type::Img, SubType::Jpeg,    "jpeg" }},
+        { "jfif", { Type::Img, SubType::Jpeg,    "jpeg" }},
+        { "jfi",  { Type::Img, SubType::Jpeg,    "jpeg" }},
+        { "png",  { Type::Img, SubType::Png,     "png" }},
+        { "gif",  { Type::Img, SubType::Gif,     "gif" }},
+        { "bmp",  { Type::Img, SubType::Bmp,     "bmp" }},
+        { "ico",  { Type::Img, SubType::Ico,     "x-icon" }},
+        { "svg",  { Type::Img, SubType::Svg,     "svg+xml" }},
+        { "mp3",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
+        { "m4a",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
+        { "m4b",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
+        { "m4p",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
+        { "mpga", { Type::Audio, SubType::Mpeg,  "mpeg" }},
+        { "mp4",  { Type::Video, SubType::Mp4,   "mp4" }},
+        { "m4v",  { Type::Video, SubType::Mp4,   "mp4" }},
+        { "json", { Type::App, SubType::Json, "json" }},
+        { "js",   { Type::App, SubType::JavaScript,"javascript" }},
+        { "xml",  { Type::App, SubType::Xml,     "xml" }},
+        { "pdf",  { Type::App, SubType::Pdf,     "pdf" }},
+        { "zip",  { Type::App, SubType::Zip,     "zip" }},
+        { "7z",   { Type::App, SubType::Zip,     "x-7z-compressed" }},
+        { "bin",  { Type::App, SubType::Binary,  "octet-stream" }},
+        { "doc",  { Type::App, SubType::Doc,     "msword" }},
+        { "xls",  { Type::App, SubType::Xls,     "vnd.ms-excel" }},
+        { "ppt",  { Type::App, SubType::Ppt,     "vnd.ms-powerpoint" }},
+        { "docx", { Type::App, SubType::Docx,    "vnd.openxmlformats-officedocument.wordprocessingml.document" }},
+        { "xlsx", { Type::App, SubType::Xlsx,    "vnd.openxmlformats-officedocument.spreadsheetml.sheet" }},
+        { "pptx", { Type::App, SubType::Pptx,    "vnd.openxmlformats-officedocument.presentationml.presentation" }}
     };
 
     static inline std::string CreateTypeString(MimeType::Type type)
     {
+        switch (type)
+        {
+        case MimeType::Text: 
+            return "text/";
+        case MimeType::App: 
+            return "application/";
+        case MimeType::Img: 
+            return "image/";
+        case MimeType::Audio: 
+            return "audio/";
+        case MimeType::Video: 
+            return "video/";
+        case MimeType::Msg: 
+            return "message/";
+        case MimeType::Multi: 
+            return "multipart/";
+        case MimeType::Model: 
+            return "model/";
+        case MimeType::Example: 
+            return "example/";
+        }
+
         return "";
     }
 
@@ -53,44 +77,51 @@ namespace fl::utils {
     }
 
     MimeType::MimeType()
-        : mime_type_{SubType::Unknown}
+        : type_{MimeType::App}
+        , sub_type_{SubType::Unknown}
         , mime_format_{""}
-        , mime_ext_{""} {}
+        , ext_name_{""} {}
     MimeType::MimeType(std::string_view ext)
     {
         *this = MimeType::FromString(ext);
     }
-    MimeType::MimeType(SubType mime_type,  std::string_view mime_format, std::string_view ext)
-        : mime_type_{mime_type}
+    MimeType::MimeType(Type type, SubType sub_type,  std::string_view mime_format, std::string_view ext)
+        : type_{type}
+        , sub_type_{sub_type}
         , mime_format_{mime_format}
-        , mime_ext_{ext} {}
+        , ext_name_{ext} {}
 
-    std::string_view MimeType::GetName(bool remove_dot) const 
+    std::string_view MimeType::GetExtName(bool remove_dot) const 
     {
         if (!remove_dot)
-            return mime_ext_;
+            return std::string('.' + ext_name_);
 
-        return mime_ext_.substr(1, mime_ext_.size());
+        return ext_name_;
     }
-    MimeType::SubType MimeType::GetMimeType() const
+
+    MimeType::Type MimeType::GetType() const
     {
-        return mime_type_;
+        return type_;
     }
-    std::string_view MimeType::GetMimeFormat() const 
+    MimeType::SubType MimeType::GetSubType() const
+    {
+        return sub_type_;
+    }
+    std::string_view MimeType::GetFormat() const 
     {
         return mime_format_;
     }
 
     bool MimeType::IsValid() const 
     {
-        return mime_type_ != MimeType::Unknown
+        return sub_type_ != MimeType::SubType::Unknown
             || !mime_format_.empty();
     }
 
     bool MimeType::HasExtension(std::string_view ext)
     {
-        auto const& parsed_ext = ExtensionOnly(ext);
-        auto const& it = mime_types_.find(parsed_ext);
+        auto const& only_ext = ExtensionOnly(ext);
+        auto const& it = mime_types_.find(only_ext);
 
         return it != mime_types_.end() && !ext.empty();
     }
@@ -100,14 +131,13 @@ namespace fl::utils {
         if (!HasExtension(ext))
             return MimeType();
 
-        auto sub_ext = ExtensionOnly(ext);
-        auto type = mime_types_.at(sub_ext);
+        auto only_ext = ExtensionOnly(ext);
+        auto mime_type = mime_types_.at(only_ext);
 
-        type.mime_ext_.reserve(sub_ext.size() + 1);
-        type.mime_ext_.append(".");
-        type.mime_ext_.append(sub_ext);
+        mime_type.ext_name_ = only_ext;
+        mime_type.mime_format_.append(CreateTypeString(mime_type.GetType()));
 
-        return type; 
+        return mime_type; 
     }
 
     std::string MimeType::RemoveExtension(std::string_view file)
@@ -116,7 +146,7 @@ namespace fl::utils {
         if (!ext.IsValid())
             return file.data();
     
-        return std::string(file.substr(0, file.size() - ext.GetName(false).size()));
+        return std::string(file.substr(0, file.size() - ext.GetExtName(false).size()));
     }
     std::string_view MimeType::ExtensionOnly(std::string_view str)
     {
