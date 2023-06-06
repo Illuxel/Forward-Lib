@@ -4,7 +4,7 @@
 
 TEST(DateTime, DateTimeToCFormat)
 {
-    using namespace fl::utils;
+    using namespace fl;
 
     std::string out = DateTime::ConvertToCFormat("dd-MM-yyyy hh-mm-ss");
 
@@ -13,7 +13,7 @@ TEST(DateTime, DateTimeToCFormat)
 
 TEST(DateTime, DateTimeNow)
 {
-    using namespace fl::utils;
+    using namespace fl;
 
     std::string now = DateTime::Now().ToString("dd-MM-yyyy hh-mm-ss");
     std::string latenow = DateTime::Now().ToString("dd-MM-yyyy hh-mm-ss");
@@ -25,7 +25,7 @@ TEST(DateTime, DateTimeNow)
 
 TEST(DateTime, Exception)
 {
-    using namespace fl::utils;
+    using namespace fl;
 
     std::string now = DateTime::Now().ToString("dafsd   4252  2s");
     std::string latenow = DateTime::Now().ToString("strange text");

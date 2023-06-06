@@ -1,5 +1,5 @@
 #include "fl/utils/Flags.hpp"
-using namespace fl::utils;
+using namespace fl;
 
 #include <gtest/gtest.h>
 
