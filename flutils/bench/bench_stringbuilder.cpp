@@ -1,5 +1,5 @@
 #include "fl/utils/StringBuilder.hpp"
-using namespace fl::utils;
+using namespace fl;
 
 #include <iostream>
 

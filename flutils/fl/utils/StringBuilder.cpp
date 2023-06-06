@@ -5,22 +5,18 @@
 
 #include <fstream>
 
-namespace fl::utils {
+namespace fl {
     
     StringBuilder::StringBuilder() {}
-    StringBuilder::StringBuilder(std::string_view str, std::vector<StringArg> const& args) 
+    StringBuilder::StringBuilder(std::string_view templ, std::vector<StringArg> const& args) 
     {
-        result_.emplace(str);
+        result_.emplace(templ);
         BuildString(args);
     }
 
-    std::string StringBuilder::Data() const
+    void StringBuilder::SetTemplate(std::string_view templ)
     {
-        return result_.value_or("");
-    }
-    void StringBuilder::SetTemplate(std::string_view str)
-    {
-        result_.emplace(str);
+        result_.emplace(templ);
     }
 
     StringBuilder& StringBuilder::Arg(StringArg const& arg) 
@@ -33,6 +29,30 @@ namespace fl::utils {
         this->BuildString(args);
         return *this;
     }
+
+    StringArg StringBuilder::AsArg(std::string_view name) const 
+    {
+        return StringArg(name, result_.value_or(""));
+    }
+    StringArg StringBuilder::AsArg(std::string_view name, char specifier) const 
+    {
+        return StringArg(name, result_.value_or(""), specifier);
+    }
+
+    std::string StringBuilder::Data() const
+    {
+        return result_.value_or("");
+    }
+
+    void StringBuilder::Clear() 
+    {
+        result_.reset();
+    }
+
+    // StringBuilder StringBuilder::MakeString(std::string_view templ)
+    // {
+
+    // }
 
     StringBuilder StringBuilder::FromFile(std::string_view file_name)
     {
@@ -55,30 +75,19 @@ namespace fl::utils {
         return StringBuilder::FromFile(file_name).Arg(args);
     }
 
-    void StringBuilder::Clear() 
-    {
-        if (!result_.has_value())
-            return;
-
-        result_.value().clear();
-    }
-
-    StringBuilder &StringBuilder::operator=(char const* arr)
+    StringBuilder& StringBuilder::operator=(char const* arr)
     {
         SetTemplate(arr);
         return *this;
     }
-    StringBuilder &StringBuilder::operator=(std::string_view str)
+    StringBuilder& StringBuilder::operator=(std::string_view templ)
     {
-        SetTemplate(str);
+        SetTemplate(templ);
         return *this;
     }
 
     void StringBuilder::BuildString(StringArg const& arg)
     {
-        if (!result_.has_value())
-            return;
-
         std::string& result = result_.value();
 
         if (result.empty())
@@ -102,6 +111,6 @@ namespace fl::utils {
     void StringBuilder::BuildString(std::vector<StringArg> const& args) 
     {
         for (auto& arg : args)
-            this->BuildString(arg);
+            BuildString(arg);
     }
 }

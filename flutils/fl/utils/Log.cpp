@@ -1,6 +1,6 @@
 #include "fl/utils/Log.hpp"
 
-namespace fl::utils {
+namespace fl {
 
 	std::unordered_map<std::string, Ref<Logger>> Log::logs_{};
 

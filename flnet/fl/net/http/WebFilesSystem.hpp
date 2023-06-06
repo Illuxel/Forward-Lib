@@ -12,16 +12,28 @@ namespace fl {
 
     struct WebFileMeta
     {
-        std::string Name; fl::utils::MimeType Ext;
+        std::string Name, LastFolder; 
+        MimeType Ext;
         std::filesystem::path Path;
 
+        // returns filename with extension
+        std::string File() const {
+            return Name + std::string(Ext.GetExtName(false));
+        }
         // returns path file name and ext
         std::string FullPath() const {
-            return Path.string() + '/' + FileName();
+            return Path.string() + '/' + File();
         }
-        // returns filename with extension
-        std::string FileName() const {
-            return Name + std::string(Ext.GetName(false));
+
+        // return target file name with extension or without
+        std::string TargetName(bool extension = true) const {
+            return '/' + Name + (extension
+                      ? std::string(Ext.GetExtName(false))
+                      : "");
+        }
+        // return target file folder and file name
+        std::string TargetPath() const {
+            return '/' + LastFolder + '/' + File();
         }
     };
 
@@ -42,40 +54,15 @@ namespace fl {
 
         void SetWebRoot(std::string_view web_root);
         std::string_view GetWebRoot() const;
-        /**
-         *  @param file or name to be searched 
-         *  @param extension should be included
-         * 
-         *  @return concat path and file name
-         */
-        std::string GetWebFilePath(std::string_view file, bool extension = true) const;
-        /**
-         *  Finds name in a searching directory
-         *  @param file or name to be searched
-         *  @param extension should be included
-         * 
-         *  @return 
-         */
-        std::optional<WebFileMeta> 
-        GetWebFileInfo(std::string_view file, bool extension) const;
-        /**
-         *  Checks if file found in root
-         *  @param file to be searched
-         *  @param extension should be included
-         * 
-         *  @return 
-         */
+
+        // search file by name
+        std::optional<WebFileMeta> FindWebFile(std::string_view file, bool extension) const;
+
         bool IsWebFileExist(std::string_view file, bool extension = true) const;   // TODO: Implement caching 
 
     private: 
-        /**
-         *  Finds name in a searching directory
-         *  @param file to be searched ONLY with extnesion 
-         * 
-         *  @return 
-         */
         std::optional<WebFileMeta> 
-        GetWebFileInfo(std::string_view file) const;
+        FindWebFile(std::string_view file) const;
 
     };
 

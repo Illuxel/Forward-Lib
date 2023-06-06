@@ -17,15 +17,15 @@ namespace fl {
 
         void SetQuery(std::string_view query);
 
-        utils::StringArg Arg(std::string_view key) const;
+        StringArg Arg(std::string_view key) const;
         std::string_view Value(std::string_view key) const;
 
         std::vector<std::string> Keys() const;
 
         std::string ToString() const;
 
-        std::vector<utils::StringArg> ToArgs() const;
-        std::vector<utils::StringArg> ToArgs(char specifier) const;
+        std::vector<StringArg> ToArgs() const;
+        std::vector<StringArg> ToArgs(char specifier) const;
 
         bool IsEmpty() const;
         

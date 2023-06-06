@@ -6,7 +6,7 @@
 
 #include <optional>
 
-namespace fl::utils {
+namespace fl {
     
     class StringArg 
     {

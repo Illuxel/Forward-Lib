@@ -4,7 +4,7 @@
 #include <map>
 using namespace std::chrono;
 
-namespace fl::utils {
+namespace fl {
 
     DateTime::DateTime() 
         : time_point_(std::chrono::system_clock::now()) {}
@@ -106,4 +106,4 @@ namespace fl::utils {
         date_time_.emplace(*std::localtime(&time));
     }
 
-} // namespace fl::utils
+} // namespace fl

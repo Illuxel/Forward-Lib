@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iterator>
 
-using namespace fl::utils;
+using namespace fl;
 
 namespace fl {
 

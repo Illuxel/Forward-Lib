@@ -1,6 +1,6 @@
 #include "fl/utils/Flags.hpp"
 
-namespace fl::utils
+namespace fl
 {
     
 }

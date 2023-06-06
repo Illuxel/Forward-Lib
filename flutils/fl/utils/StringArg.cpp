@@ -1,6 +1,6 @@
 #include "fl/utils/StringArg.hpp"
 
-namespace fl::utils {
+namespace fl {
     
     StringArg::StringArg() {}
 

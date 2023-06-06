@@ -17,12 +17,18 @@ namespace fl {
             }
             else if (entry.is_regular_file())
             {
-                std::string file = entry.path().filename().string();
-                std::string name = utils::MimeType::RemoveExtension(file);
-                utils::MimeType extension = utils::MimeType::FromString(file);
+                std::string last_folder = entry.path()
+                                               .parent_path()
+                                               .filename().string();
+                std::string file = entry.path()
+                                        .filename().string();
+
+                std::string name = MimeType::RemoveExtension(file);
+                MimeType extension = MimeType::FromString(file);
                             
                 WebFileMeta wf = { 
-                    name,
+                    name, 
+                    last_folder,
                     extension,
                     entry.path().parent_path()
                 };
@@ -55,62 +61,60 @@ namespace fl {
         return web_root_;
     }
 
-    std::string WebFilesSystem::GetWebFilePath(std::string_view file, bool extension) const
+    std::optional<WebFileMeta> 
+    WebFilesSystem::FindWebFile(std::string_view file_name, bool extension) const
     {
-        auto const& web_meta = GetWebFileInfo(file, extension);
-        if (!web_meta.has_value())
-            return "";
+        if (extension)
+            return FindWebFile(file_name);
 
-        return std::string(web_meta->FullPath());
+        static std::optional<WebFileMeta> cached;
+
+        if (cached.has_value() && cached->File() == file_name)
+            return cached;
+
+        auto const& it = std::find_if(files_.begin(), files_.end(), 
+        [&file_name](auto const& pair){
+            
+            std::string_view simplified = pair.first;
+            if (file_name != simplified)
+                return false;
+
+            cached.emplace(pair.second);
+            return true;
+        });
+
+        if (it == files_.end())
+            return std::nullopt;
+
+        return it->second;
+    }
+    std::optional<WebFileMeta> 
+    WebFilesSystem::FindWebFile(std::string_view file_name) const 
+    {
+        static std::optional<WebFileMeta> cached;
+
+        if (cached.has_value() && cached->File() == file_name)
+            return cached;
+
+        auto const& it = std::find_if(files_.begin(), files_.end(), 
+        [&file_name](auto const& pair){
+
+            std::string_view file = pair.second.File();
+            if (file_name != file)
+                return false;
+
+            cached.emplace(pair.second);
+            return true;
+        });
+
+        if (it == files_.end())
+            return std::nullopt;
+
+        return it->second;
     }
 
     bool WebFilesSystem::IsWebFileExist(std::string_view file, bool extension) const
     {
-        auto is_exist = GetWebFileInfo(file, extension).has_value();
-        return is_exist;
-    }
-
-    std::optional<WebFileMeta> 
-    WebFilesSystem::GetWebFileInfo(std::string_view file, bool extension) const
-    {
-        if (extension)
-            return GetWebFileInfo(file);
-
-        static std::optional<WebFileMeta> cached;
-
-        if (cached.has_value() && cached->FileName() == file)
-            return cached;
-
-        for (auto const& [simplified, file_info] : files_)
-        {
-            if (file == simplified)
-            {
-                cached.emplace(file_info);
-                return file_info;
-            }
-        }
-
-        return std::nullopt;
-    }
-    std::optional<WebFileMeta> 
-    WebFilesSystem::GetWebFileInfo(std::string_view file) const 
-    {
-        static std::optional<WebFileMeta> cached;
-
-        if (cached.has_value() && cached->FileName() == file)
-            return cached;
-
-        for (auto const& [simplified, file_info] : files_)
-        {
-            std::string full_name = file_info.FileName();
-
-            if (file == full_name)
-            {
-                cached.emplace(file_info);
-                return file_info;
-            }
-        }
-
-        return std::nullopt;
+        return FindWebFile(file, extension).has_value();
     }
 }

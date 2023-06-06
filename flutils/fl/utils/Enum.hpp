@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-namespace fl::utils {
+namespace fl {
 
     template<typename EnumType>
     class Enum
@@ -10,4 +10,4 @@ namespace fl::utils {
     public:
         static_assert(std::is_enum_v<EnumType>, "Enum class requires an enum type.");
     };
-} // namespace fl::utils
+} // namespace fl

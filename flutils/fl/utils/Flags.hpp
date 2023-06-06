@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-namespace fl::utils {
+namespace fl {
 
     template <typename Enum>
     class EnumFlags
@@ -85,7 +85,7 @@ namespace fl::utils {
 }
 
 #define ENABLE_ENUM_FLAGS(Enum, FlagsName) \
-    using FlagsName = fl::utils::EnumFlags<Enum>
+    using FlagsName = fl::EnumFlags<Enum>
 
 #define DECLARE_ENUM_OPERATORS(Enum) \
     static_assert(std::is_enum_v<Enum>, "EnumFlags requires an enum type."); \

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <unordered_map>
 
-namespace fl::utils {
+namespace fl {
 
 	class Log
 	{
@@ -24,7 +24,7 @@ namespace fl::utils {
 	};
 }
 
-static inline void printInfo(std::string_view call, std::string_view msg)
+static inline void printInfo(std::string const& call, std::string const& msg)
 {
 	std::cerr << call << ": " << msg << std::endl;
 }
@@ -36,7 +36,7 @@ static inline void printInfo(std::string_view call, std::string_view msg)
 	printInfo(call, msg); \
 	throw std::exception(msg)
 
-	//fl::utils::Log::Get()->Log(fl::utils::Logger::Level::level, __FUNCTION__, __VA_ARGS__); 
+	//fl::Log::Get()->Log(fl::Logger::Level::level, __FUNCTION__, __VA_ARGS__); 
 
 // #define FL_INFO(...) FL_LOG(INFO, __VA_ARGS__)
 // #define FL_DEBUG(...) FL_LOG(DEBUG, __VA_ARGS__)
