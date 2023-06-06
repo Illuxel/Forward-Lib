@@ -75,7 +75,7 @@ namespace fl {
         auto const& it = std::find_if(files_.begin(), files_.end(), 
         [&file_name](auto const& pair){
             
-            std::string_view simplified = pair.first;
+            auto simplified = pair.first;
             if (file_name != simplified)
                 return false;
 
@@ -99,7 +99,7 @@ namespace fl {
         auto const& it = std::find_if(files_.begin(), files_.end(), 
         [&file_name](auto const& pair){
 
-            std::string_view file = pair.second.File();
+            auto file = pair.second.File();
             if (file_name != file)
                 return false;
 
