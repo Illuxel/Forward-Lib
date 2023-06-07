@@ -32,8 +32,8 @@ namespace fl {
                       : "");
         }
         // return target file folder and file name
-        std::string TargetPath() const {
-            return '/' + LastFolder + '/' + File();
+        std::string TargetPath(bool extension = true) const {
+            return '/' + LastFolder + TargetName(extension);
         }
     };
 
@@ -44,7 +44,7 @@ namespace fl {
         // all stored files in web site 
         // key: simplified file name only vale
         // value: full meta info about file
-        std::map<std::string, WebFileMeta> files_;
+        std::list<WebFileMeta> files_;
 
     public:
         /**
@@ -56,14 +56,12 @@ namespace fl {
         std::string_view GetWebRoot() const;
 
         // search file by name
-        std::optional<WebFileMeta> FindWebFile(std::string_view file, bool extension) const;
+        std::optional<WebFileMeta> FindWebFileByTarget(std::string_view target, bool extension) const;
+        // 
+        std::optional<WebFileMeta> FindWebFileByTargetPath(std::string_view target) const;
 
-        bool IsWebFileExist(std::string_view file, bool extension = true) const;   // TODO: Implement caching 
-
-    private: 
-        std::optional<WebFileMeta> 
-        FindWebFile(std::string_view file) const;
-
+        bool IsWebFileTargetExist(std::string_view target, bool extension) const;  
+        bool IsWebFileTargetPathExist(std::string_view target, bool extension) const;
     };
 
 }

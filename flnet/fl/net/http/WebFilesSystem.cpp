@@ -3,17 +3,17 @@
 
 namespace fl {
 
-    std::map<std::string, WebFileMeta> 
+    std::list<WebFileMeta> 
     IterateFiles(std::filesystem::path const& directory)
     {
-        std::map<std::string, WebFileMeta> files;
+        std::list<WebFileMeta> files;
 
         for (const auto& entry : std::filesystem::directory_iterator(directory))
         {
             if (entry.is_directory())
             {
                 auto const& subdirectoryFiles = IterateFiles(entry.path());
-                files.insert(subdirectoryFiles.begin(), subdirectoryFiles.end());
+                files.insert(files.end(), subdirectoryFiles.begin(), subdirectoryFiles.end());
             }
             else if (entry.is_regular_file())
             {
@@ -33,7 +33,7 @@ namespace fl {
                     entry.path().parent_path()
                 };
 
-                files.insert(std::make_pair(name, wf));
+                files.push_back(wf);
             }
         }
 
@@ -62,59 +62,65 @@ namespace fl {
     }
 
     std::optional<WebFileMeta> 
-    WebFilesSystem::FindWebFile(std::string_view file_name, bool extension) const
+    WebFilesSystem::FindWebFileByTarget(std::string_view target, bool extension) const
     {
-        if (extension)
-            return FindWebFile(file_name);
-
         static std::optional<WebFileMeta> cached;
 
-        if (cached.has_value() && cached->File() == file_name)
+        if (cached.has_value()
+         && cached->TargetName(extension) == target)
             return cached;
 
         auto const& it = std::find_if(files_.begin(), files_.end(), 
-        [&file_name](auto const& pair){
+        [&target, &extension](auto const& file_info){
             
-            auto simplified = pair.first;
-            if (file_name != simplified)
+            auto file = file_info.TargetName(extension);
+            if (target != file)
                 return false;
 
-            cached.emplace(pair.second);
+            cached.emplace(file_info);
             return true;
         });
 
-        if (it == files_.end())
-            return std::nullopt;
+        if (it != files_.end())
+            return *it;
 
-        return it->second;
+        return std::nullopt;
     }
+
     std::optional<WebFileMeta> 
-    WebFilesSystem::FindWebFile(std::string_view file_name) const 
+    WebFilesSystem::FindWebFileByTargetPath(std::string_view target) const
     {
         static std::optional<WebFileMeta> cached;
 
-        if (cached.has_value() && cached->File() == file_name)
+        bool extension = MimeType::HasExtension(target);
+
+        if (cached.has_value()
+         && cached->TargetPath(extension) == target)
             return cached;
 
         auto const& it = std::find_if(files_.begin(), files_.end(), 
-        [&file_name](auto const& pair){
-
-            auto file = pair.second.File();
-            if (file_name != file)
+        [&target, &extension](auto const& file_info)
+        {
+            if (target != file_info.TargetPath(extension))
                 return false;
 
-            cached.emplace(pair.second);
+            cached.emplace(file_info);
+
             return true;
         });
 
-        if (it == files_.end())
-            return std::nullopt;
+        if (it != files_.end())
+            return *it;
 
-        return it->second;
+        return std::nullopt;
     }
 
-    bool WebFilesSystem::IsWebFileExist(std::string_view file, bool extension) const
+    bool WebFilesSystem::IsWebFileTargetExist(std::string_view target, bool extension) const
     {
-        return FindWebFile(file, extension).has_value();
+        return FindWebFileByTarget(target, extension).has_value();
+    }
+    bool WebFilesSystem::IsWebFileTargetPathExist(std::string_view target, bool extension) const
+    {
+        return FindWebFileByTargetPath(target).has_value();
     }
 }

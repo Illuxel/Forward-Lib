@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.24)
 
 set(TEST_SOURCE
-    test_wfs.cpp
     test_query.cpp
     test_url.cpp
+    test_wfs.cpp
+    test_router.cpp
     test_reqsponse.cpp
 )
 

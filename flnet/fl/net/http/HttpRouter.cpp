@@ -1,124 +1,43 @@
 #include "fl/net/http/HttpRouter.hpp"
-
 #include "fl/utils/Log.hpp"
+
+using namespace fl;
 
 namespace fl {
 
-    HttpRouter::HttpRouter(std::string_view web_root, std::string_view index)
-        : index_(index)
+    HttpRouter::HttpRouter(std::string_view web_root
+        , std::string_view index
+        , std::string_view ext)
     {
-        wfs_ = MakeRef<WebFilesSystem>(web_root);
+        index_.push_back('/');
+        index_.append(index);
+        def_ext_ = MimeType::FromString(ext);
+        index_.append(def_ext_.GetExtName(false));
+        wfs_ = MakeScope<WebFilesSystem>(web_root);
     }
 
-    void HttpRouter::SetMainPage(std::string_view index)
+    void HttpRouter::AddConentFolder(std::string_view folder_name)
     {
-        index_ = index;
-    }
-    std::string_view HttpRouter::GetMainPage() const
-    {
-        return index_;
-    }
-
-    std::string HttpRouter::GetTargetPath(std::string_view target) const
-    {
-        auto const& valid_route = PrepareRoute(target);
-        auto const& web_file = wfs_->GetWebFileInfo(valid_route, utils::MimeType::HasExtension(valid_route));
-
-        if (!web_file.has_value())
-            return "";
-
-        return web_file->FullPath();
-    }
-
-    std::string HttpRouter::GetContentPath(std::string_view content) const
-    {
-        std::string_view only_name = content.substr(1, content.size());
-        auto const& web_file = wfs_->GetWebFileInfo(only_name, utils::MimeType::HasExtension(only_name));
-
-        if (!web_file.has_value())
-            return "";
-
-        return web_file->FullPath();
-    }
-
-    bool HttpRouter::IsTargetIndex(std::string_view target) const
-    {   
-        if (target.empty())
-            return false;
-
-        // auto index_name = MimeType::RemoveExtension(index_); 
-        // auto target_name = target.substr(1, target.size());
-
-        if (target.back() == '/')
-            return true;
-
-        return false;
-    }
-    bool HttpRouter::IsTargetRegisted(std::string_view target) const
-    {
-        bool is_registed = routes_.find(target.data()) != routes_.end();
-        return is_registed;
-    }
-    bool HttpRouter::IsTargetLegal(std::string_view target)
-    {
-        if (target.empty() ||
-            target.front() != '/' ||
-            target.find("..") != std::string_view::npos)
-            return false;
-
-        return true;
-    }
-
-    bool HttpRouter::IsContentTarget(std::string_view target) const
-    {
-        std::string_view only_name = target.substr(1, target.size());
-
-        bool is_exist = wfs_->IsWebFileExist(only_name);
-        bool is_content = !IsTargetRegisted(only_name) && is_exist;
-
-        return is_content;
-    }
-
-    std::string HttpRouter::PrepareRoute(std::string_view target) const
-    {
-        if (IsTargetIndex(target))
-            return index_;
-
-        if (!IsTargetLegal(target))
-        {
-            FL_LOG("HttpRouter", "illegal route");
-            return index_;
-        }
-
-        std::string only_name(target.substr(1, target.size()));
-
-        if (!wfs_->IsWebFileExist(only_name,  utils::MimeType::HasExtension(only_name)))
-            return index_;
-
-        return only_name;
+        content_folder_.push_back(folder_name.data());
     }
 
     void HttpRouter::Register(std::string_view target) 
     {
-        if (routes_.find(target.data()) != routes_.end())
-        {
-            FL_LOG("HttpRouter", "Target already registered");
-            return;
-        }
-
-        routes_.insert(std::make_pair(target.data(), std::nullopt));
+        this->Register(target, std::nullopt);
     }
-
-    void HttpRouter::Register(std::string_view target, HttpRouter::Callback const& handler) 
+    void HttpRouter::Register(std::string_view target, std::optional<HttpRouter::Callback> const& handler) 
     {
-        if (routes_.find(target.data()) != routes_.end())
+        auto valid_route = MakeValidRoute(target);
+
+        if (routes_.find(valid_route.data()) != routes_.end())
         {
             FL_LOG("HttpRouter", "Target already registered");
             return;
         }
 
-        routes_.insert(std::make_pair(target.data(), handler));
+        routes_.insert(std::make_pair(valid_route, handler));
     }
+    
     std::optional<HttpRouter::Callback> HttpRouter::FindRouteCallback(std::string_view target) const
     {
         auto const& it = routes_.find(target.data());
@@ -129,4 +48,66 @@ namespace fl {
         return std::nullopt;
     }
 
+    std::string HttpRouter::GetTargetPath(std::string_view target) const
+    {
+        auto valid_route = MakeValidRoute(target);
+        auto const& web_file = wfs_->FindWebFileByTarget(valid_route, MimeType::HasExtension(valid_route));
+
+        if (!web_file.has_value())
+            return "";
+
+        return web_file->FullPath();
+    }
+    std::string HttpRouter::GetContentPath(std::string_view content) const
+    {
+        auto const& web_file = wfs_->FindWebFileByTargetPath(content);
+
+        if (!web_file.has_value())
+            return "";
+
+        return web_file->FullPath();
+    }
+
+    bool HttpRouter::IsTarget(std::string_view target) const
+    {
+        auto valid_route = MakeValidRoute(target);
+        return routes_.find(valid_route.data()) != routes_.end();
+    }
+    bool HttpRouter::IsTargetIndex(std::string_view target) const
+    {   
+        if (target.empty())
+            return false;
+
+        if (target.back() == '/')
+            return true;
+
+        // check default index name
+        if (target == index_)
+            return true;
+        if (target == MimeType::RemoveExtension(index_))
+            return true;
+
+        return false;
+    }
+
+    std::string HttpRouter::MakeValidRoute(std::string_view target) const
+    {
+        if (target.empty() ||
+            target.front() != '/' ||
+            target.find("..") != std::string_view::npos)
+            return index_;
+
+        if (IsTargetIndex(target))
+            return index_;
+
+        if (!MimeType::HasExtension(target))
+            return std::string(target.data() + def_ext_.GetExtName(false));
+
+        return target.data();
+    }
+
+    bool HttpRouter::IsContent(std::string_view target) const
+    {
+        return wfs_->IsWebFileTargetPathExist(target, true);
+    }
 }
