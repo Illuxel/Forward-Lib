@@ -74,7 +74,7 @@ if (WIN32)
         message(FATAL_ERROR "Can not find MySQL Connector library")
     endif()
     
-    message(STATUS "Found MySQL Connector library at path: ${MYSQL_CONNECTOR_LIB}")
+    message(STATUS "Found MySQL Connector: ${MYSQL_CONNECTOR_LIB}")
 
 else()
 endif()
@@ -86,10 +86,14 @@ endif()
 set(FLDB_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/db)
 set(FLDB_INCLUDE 
     fl/db/Database.hpp
+    # fl/db/SqliteDatabase.hpp
+    # fl/db/MySqlDatabase.hpp
 )
 set(FLDB_SOURCE
     ${FLDB_INCLUDE}
     fl/db/Database.cpp
+    # fl/db/SqliteDatabase.cpp
+    # fl/db/MySqlDatabase.cpp
 )
 
 add_library(db STATIC ${FLDB_SOURCE})
