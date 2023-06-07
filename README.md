@@ -1,13 +1,11 @@
-## Forward library for messenger
+## Forward library for server dev 
 
 Description: Soon
 
 ## List of task
 
 - [x] Lib ported to CMake.
-- [ ] Add basic logging system. 
-- [ ] Add basic strucure types.
-- [ ] Add basic net system (web, file send).
+- [x] Add basic net system.
 - [ ] Add auth sytem (SSL, encryption, 2 factor auth).
 
 ## Dependencies
@@ -15,7 +13,8 @@ Description: Soon
 - OpenSSL
 - Boost 
 - JWT-CPP
+- MySQL Connector C++
+- SqLite
 
 ## How to install
 
-Soon
