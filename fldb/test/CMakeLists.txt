@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 
-set(TEST_SOURCE test_database.cpp)
+set(TEST_SOURCE 
+test_mysql.cpp
+)
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
