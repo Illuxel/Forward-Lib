@@ -5,7 +5,8 @@ namespace fl::db {
     std::unordered_map<std::string, Ref<Database>> Database::databases_;
 
     Database::Database(sql::mysql::MySQL_Driver* driver)
-        : driver_(driver) {}
+        : driver_(driver)
+        , is_scheme(false) {}
     Database::~Database() {}
 
     Ref<Database> Database::Innit(std::string_view db_name)
@@ -36,7 +37,7 @@ namespace fl::db {
         return databases_.find(db_name.data()) != databases_.end();
     }
 
-    bool Database::Connect(sql::ConnectOptionsMap options) 
+    bool Database::Connect(sql::ConnectOptionsMap options)
     {
         try
         {
@@ -51,7 +52,7 @@ namespace fl::db {
     }
     bool Database::Connect(std::string_view host, 
                 std::string_view user, 
-                std::string_view password) 
+                std::string_view password)
     {
         try
         {
@@ -64,19 +65,39 @@ namespace fl::db {
         
         return IsConnected();
     }
+    void Database::Close() const 
+    {
+        if (!IsConnected())
+            return;
+
+        connection_->close();
+    }
 
     void Database::SetActiveSchema(std::string_view scheme)
     {
         if (!IsConnected())
             return;
 
+        is_scheme = true;
         connection_->setSchema(scheme.data());
     }
 
-    Ref<sql::ResultSet> Database::Execute(std::string_view query)
+    Ref<sql::ResultSet> Database::Execute(std::string_view query) const
     {
-        Scope<sql::Statement> statement(connection_->createStatement());
         Ref<sql::ResultSet> result;
+
+        if (!IsConnected())
+        {
+            FL_LOG("Database", "is not connected");
+            return result;
+        }
+        if (!is_scheme)
+        {
+            FL_LOG("Database", "scheme was not set");
+            return result;
+        }
+
+        Scope<sql::Statement> statement(connection_->createStatement());
 
         try
         {
@@ -99,13 +120,31 @@ namespace fl::db {
         return connection_->isValid(); 
     }
 
-    void Database::Disconnect() const 
-    {
-        if (!IsConnected())
-            return;
-
-        connection_->close();
+    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, bool value) {
+        statement->setBoolean(index, value);
     }
-
-    
+    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, int32_t value) {
+        statement->setInt(index, value);
+    }
+     void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, uint32_t value) {
+        statement->setUInt(index, value);
+    }
+    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, int64_t value) {
+        statement->setInt64(index, value);
+    }
+    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, uint64_t value) {
+        statement->setUInt64(index, value);
+    }
+    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, double value) {
+        statement->setDouble(index, value);
+    }
+    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, const char* value) {
+        statement->setString(index, value);
+    }
+    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, std::string_view value) {
+        statement->setString(index, value.data());
+    }
+    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index,  DateTime const& date) {
+        statement->setDateTime(index, date.ToString("YYYY-MM-DD hh:mm:ss"));
+    }
 } // namespace fl::db 

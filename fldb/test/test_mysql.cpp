@@ -3,7 +3,7 @@ using namespace fl::db;
 
 #include <gtest/gtest.h>
 
-TEST(MySQLDB, Test) {
+TEST(MySql, Test) {
     
     Database::Innit("test");
 
@@ -13,5 +13,7 @@ TEST(MySQLDB, Test) {
 
     EXPECT_TRUE(db->IsConnected());
 
-    db->Disconnect();
+    db->Close();
+
+    Database::Remove("test");
 } 
