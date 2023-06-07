@@ -5,15 +5,15 @@ using namespace fl;
 
 TEST(DateTime, DateTimeToCFormat)
 {
-    std::string out = DateTime::ConvertToCFormat("dd-MM-yyyy hh-mm-ss");
+    std::string out = DateTime::ConvertToCFormat("DD-MM-YYYY hh-mm-ss");
 
     EXPECT_STREQ(out.c_str(), "%d-%m-%Y %H-%M-%S");
 }
 
 TEST(DateTime, DateTimeNow)
 {
-    std::string now = DateTime::Now().ToString("dd-MM-yyyy hh-mm-ss");
-    std::string latenow = DateTime::Now().ToString("dd-MM-yyyy hh-mm-ss");
+    std::string now = DateTime::Now().ToString("DD-MM-YYYY hh-mm-ss");
+    std::string latenow = DateTime::Now().ToString("DD-MM-YYYY hh-mm-ss");
 
     EXPECT_STREQ(now.c_str(), latenow.c_str());
 }

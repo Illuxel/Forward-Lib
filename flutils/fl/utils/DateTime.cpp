@@ -89,8 +89,8 @@ namespace fl {
             {"mm", "%M"},       // minutes (0-59)
             {"ss", "%S"},       // seconds (0-59)
             {"MM", "%m"},       // month (1-12)
-            {"dd", "%d"},       // day (1-31)
-            {"yyyy", "%Y"}      // year (e.g., 2021)
+            {"DD", "%d"},       // day (1-31)
+            {"YYYY", "%Y"}      // year (e.g., 2021)
         });
 
         StringBuilder build(format, c_style_format);

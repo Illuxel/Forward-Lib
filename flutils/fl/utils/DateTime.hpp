@@ -37,8 +37,8 @@ namespace fl {
          *   mm    - minutes (0-59)
          *   ss    - seconds (0-59)
          *   MM    - month (1-12)
-         *   dd    - day (1-31)
-         *   yyyy  - year (e.g., 2021)
+         *   DD    - day (1-31)
+         *   YYYY  - year (e.g., 2021)
          */
         std::string ToString(std::string_view format) const;
         /**
@@ -51,8 +51,8 @@ namespace fl {
          *   mm     -  %M minutes (0-59)
          *   ss     -  %S seconds (0-59)
          *   MM     -  %m month (1-12)
-         *   dd     -  %d day (1-31)
-         *   yyyy   -  %Y year (e.g., 2021)
+         *   DD     -  %d day (1-31)
+         *   YYYY   -  %Y year (e.g., 2021)
          * 
          *   returns c format datetime
          */
