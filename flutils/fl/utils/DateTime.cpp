@@ -15,13 +15,6 @@ namespace fl {
         : time_point_(std::move(right.time_point_))
         , date_time_(std::move(right.date_time_)) {}
 
-    DateTime& DateTime::operator=(DateTime const& right) 
-    {
-        date_time_ = right.date_time_;
-        time_point_ = right.time_point_;
-        return *this;
-    }
-
     short DateTime::Seconds() const 
     {
         return duration_cast<std::chrono::seconds>(time_point_.time_since_epoch())
@@ -104,6 +97,18 @@ namespace fl {
 
         auto time = system_clock::to_time_t(time_point_);
         date_time_.emplace(*std::localtime(&time));
+    }
+
+    DateTime& DateTime::operator=(DateTime const& right) 
+    {
+        date_time_ = right.date_time_;
+        time_point_ = right.time_point_;
+        return *this;
+    }
+
+    bool DateTime::operator==(DateTime const& right)
+    {
+        return time_point_ == right.time_point_;
     }
 
 } // namespace fl

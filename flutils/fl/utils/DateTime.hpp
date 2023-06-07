@@ -20,8 +20,6 @@ namespace fl {
         DateTime(DateTime const& right);
         DateTime(DateTime&& right);
 
-        DateTime& operator=(DateTime const& right);
-
         short Hours() const;
         short Minutes() const;
         short Seconds() const;
@@ -57,6 +55,17 @@ namespace fl {
          *   returns c format datetime
          */
         static std::string ConvertToCFormat(std::string_view format);
+
+        DateTime& operator=(DateTime const& right);
+
+        bool operator==(DateTime const& right);
+
+        operator std::chrono::system_clock::time_point() const {
+            return time_point_;
+        }
+        operator std::tm() const {
+            return date_time_.value_or(std::tm());
+        }
 
     private:
         void DateTime::CacheTm() const;
