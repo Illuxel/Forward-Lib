@@ -35,12 +35,14 @@ set(NET_INCLUDE
 
     fl/net/Endpoint.hpp
     fl/net/AsyncListener.hpp
+    fl/net/SslServer.hpp
 )
 set(NET_SOURCE
     ${NET_INCLUDE}
 
     fl/net/Endpoint.cpp
     fl/net/AsyncListener.cpp
+    fl/net/SslServer.cpp
 )
 
 # HTTP
