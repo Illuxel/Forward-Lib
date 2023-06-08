@@ -27,10 +27,6 @@ if(NOT TARGET Boost)
 
 endif()
 
-if (NOT TARGET jwt-cpp)
-    find_package(jwt-cpp REQUIRED)
-endif()
-
 # Networking
 
 set(NET_INTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/net)
@@ -72,19 +68,7 @@ set(HTTP_SOURCE
     fl/net/http/HttpRouter.cpp
 )
 
-# Auth
-
-set(AUTH_INTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/net/auth)
-
-set(AUTH_INCLUDE
-    fl/net/auth/JsonWebToken.hpp
-)
-set(AUTH_SOURCE
-    ${AUTH_INCLUDE}
-    fl/net/auth/JsonWebToken.cpp
-)
-
-add_library(net STATIC ${AUTH_SOURCE} ${HTTP_SOURCE} ${NET_SOURCE})
+add_library(net STATIC ${HTTP_SOURCE} ${NET_SOURCE})
 
 target_include_directories(net 
 PUBLIC 
@@ -92,17 +76,15 @@ PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_link_libraries(net
-INTERFACE
-    OpenSSL::SSL    
 PUBLIC    
+    OpenSSL::Crypto
+    OpenSSL::SSL    
     Boost::system 
-    jwt-cpp::jwt-cpp
     Fl::utils
 )
 
 install(FILES ${NET_INCLUDE}  DESTINATION ${NET_INTALL_DIR})
 install(FILES ${HTTP_INCLUDE} DESTINATION ${HTTP_INTALL_DIR})
-install(FILES ${AUTH_INCLUDE} DESTINATION ${AUTH_INTALL_DIR})
 
 install(TARGETS net
     EXPORT fl-targets
