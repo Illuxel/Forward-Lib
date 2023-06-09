@@ -1,24 +1,42 @@
 #include "fl/net/AsyncListener.hpp"
-
+#include "fl/utils/Log.hpp"
 namespace fl {
 
     AsyncListener::AsyncListener(net::io_context& ioc,
         Endpoint const& endpoint,
         AsyncAcceptFunc const& call_back)
         : io_context_(ioc)
-        , acceptor_ (net::make_strand(io_context_), endpoint)
-        , call_back_(call_back) {}
+        , acceptor_ (io_context_)
+        , call_back_(call_back) 
+        , endpoint_(endpoint) {}
 
     bool AsyncListener::Listen()
     {
         beast::error_code ec;
-        return Listen(ec);
+
+        if (Listen(ec))
+            return true;
+
+        FL_LOG("Listener", ec.message());
+
+        return false;
     }
     bool AsyncListener::Listen(beast::error_code ec)
     {
+        // Open the acceptor
+        acceptor_.open(endpoint_.Protocol(), ec);
+
+        if(ec)
+            return false;
+
         // Allow address reuse
         acceptor_.set_option(net::socket_base::reuse_address(true), ec);
 
+        if(ec)
+            return false;
+
+        // Bind to the server address
+        acceptor_.bind(endpoint_, ec);
         if(ec)
             return false;
 
@@ -28,11 +46,7 @@ namespace fl {
         if(ec)
             return false;
 
-        net::dispatch(
-            acceptor_.get_executor(),
-            beast::bind_front_handler(
-                &AsyncListener::Accept,
-                this->shared_from_this()));
+        Accept();
 
         return true;
     }
@@ -41,7 +55,8 @@ namespace fl {
     {
         acceptor_.async_accept(
             net::make_strand(io_context_),
-            beast::bind_front_handler(call_back_));
+            beast::bind_front_handler(
+                call_back_));
     }
         
 } // namespace fl

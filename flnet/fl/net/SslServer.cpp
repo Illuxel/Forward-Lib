@@ -73,4 +73,13 @@ namespace fl {
         }
     }
 
+    void SslServer::OnSocketAccept(beast::error_code ec, tcp::socket&& socket)
+    {
+        if (ec) {
+            FL_LOG("SslServer Accept", ec.what());
+            return;
+        }
+
+        listener_->Accept();
+    }
 }
