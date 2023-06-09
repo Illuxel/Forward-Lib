@@ -1,12 +1,49 @@
 #include "fl/net/http/HttpQuery.hpp"
 #include "fl/utils/StringArg.hpp"
 
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <codecvt>
+
 #include <algorithm>
 #include <iterator>
 
-using namespace fl;
-
 namespace fl {
+
+    std::string UrlEncodeUtf8(std::string_view input) {
+        std::ostringstream encoded;
+        encoded << std::hex << std::uppercase << std::setfill('0');
+
+        for (const unsigned char c : input) {
+            if (c <= 0x7F) {
+                if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+                    encoded << c;
+                } else {
+                    encoded << '%' << std::setw(2) << static_cast<int>(c);
+                }
+            } else {
+                encoded << '%' << std::setw(2) << static_cast<int>(c);
+            }
+        }
+        return encoded.str();
+    }
+    std::string UrlDecodeUtf8(std::string_view input) {
+        std::ostringstream decoded;
+        for (std::size_t i = 0; i < input.size(); ++i) {
+            if (input[i] == '%') {
+                auto hexCode = input.substr(i + 1, 2);
+                unsigned char decodedChar = std::stoi(hexCode.data(), nullptr, 16);
+                decoded << decodedChar;
+                i += 2; // Skip the two hexadecimal characters
+            } else if (input[i] == '+') {
+                decoded << ' '; // Replace '+' with space
+            } else {
+                decoded << input[i]; // Append other characters as is
+            }
+        }
+        return decoded.str();
+    }
 
     HttpQuery::HttpQuery() {}
     HttpQuery::HttpQuery(std::string_view query)
@@ -73,6 +110,12 @@ namespace fl {
 
         return params_->at(key.data());
     }
+    // std::wstring HttpQuery::ValueUtf8(std::string_view key) const 
+    // {
+    //     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+
+    //     return converter.from_bytes(Value(key).data());
+    // }
 
     std::vector<std::string> HttpQuery::Keys() const
     {

@@ -2,9 +2,13 @@
 
 #include "fl/utils/StringArg.hpp"
 
+#include <string>
 #include <unordered_map>
 
 namespace fl {
+
+    std::string UrlEncodeUtf8(std::string_view input);
+    std::string UrlDecodeUtf8(std::string_view input);
 
     class HttpQuery
     {
@@ -18,7 +22,9 @@ namespace fl {
         void SetQuery(std::string_view query);
 
         StringArg Arg(std::string_view key) const;
+
         std::string_view Value(std::string_view key) const;
+        //std::wstring ValueUtf8(std::string_view key) const;
 
         std::vector<std::string> Keys() const;
 

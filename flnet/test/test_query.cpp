@@ -3,6 +3,20 @@ using namespace fl;
 
 #include <gtest/gtest.h>
 
+TEST(URICoding, Encode) {
+    EXPECT_TRUE(UrlEncodeUtf8("Hello World") == "Hello%20World");
+    EXPECT_TRUE(UrlEncodeUtf8("abc123!@#$%^&*()+-=") == "abc123%21%40%23%24%25%5E%26%2A%28%29%2B-%3D");
+    EXPECT_TRUE(UrlEncodeUtf8("äöü") == "%C3%A4%C3%B6%C3%BC");
+    EXPECT_TRUE(UrlEncodeUtf8("你好") == "%E4%BD%A0%E5%A5%BD");
+}
+TEST(URICoding, Decode) {
+
+    EXPECT_TRUE("Hello World" == UrlDecodeUtf8("Hello%20World"));
+    EXPECT_TRUE("abc123!@#$%^&*()+-=" == UrlDecodeUtf8("abc123%21%40%23%24%25%5E%26%2A%28%29%2B-%3D"));
+    EXPECT_TRUE("äöü" == UrlDecodeUtf8("%C3%A4%C3%B6%C3%BC"));
+    EXPECT_TRUE("你好" == UrlDecodeUtf8("%E4%BD%A0%E5%A5%BD"));
+}
+
 TEST(HttpQueryTest, ValidQuery) {
     std::string queryStr = "p=value1";
     HttpQuery query(queryStr);
