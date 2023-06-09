@@ -12,9 +12,9 @@
 
 namespace fl::db {
 
-    class Database
+    class Database final
     {
-        Scope<sql::mysql::MySQL_Driver> driver_;
+        sql::mysql::MySQL_Driver* driver_;
         Scope<sql::Connection> connection_;
         bool is_scheme;
 
