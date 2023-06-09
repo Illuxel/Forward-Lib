@@ -51,7 +51,7 @@ namespace fl {
         : is_valid(false)
     {
         auto decoded = UrlDecodeUtf8(query);
-        SetQuery(query);
+        SetQuery(decoded);
     }
 
     void HttpQuery::SetQuery(std::string_view query)

@@ -10,7 +10,7 @@ namespace fl {
         : valid_(false)
     {
         auto decoded = UrlDecodeUtf8(url);
-        SetUrl(url);
+        SetUrl(decoded);
     }
 
     void HttpUrl::SetUrl(std::string_view url)
