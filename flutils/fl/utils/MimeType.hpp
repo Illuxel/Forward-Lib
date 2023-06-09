@@ -33,6 +33,7 @@ namespace fl {
             Json,
             Xml,
             Pdf,
+            Exe,
             Zip,
             Binary,
             Doc,

@@ -34,6 +34,7 @@ namespace fl {
         { "xml",  { Type::App, SubType::Xml,     "xml" }},
         { "pdf",  { Type::App, SubType::Pdf,     "pdf" }},
         { "zip",  { Type::App, SubType::Zip,     "zip" }},
+        { "exe",  { Type::App, SubType::Exe,     "x-msdownload" }},
         { "7z",   { Type::App, SubType::Zip,     "x-7z-compressed" }},
         { "bin",  { Type::App, SubType::Binary,  "octet-stream" }},
         { "doc",  { Type::App, SubType::Doc,     "msword" }},
