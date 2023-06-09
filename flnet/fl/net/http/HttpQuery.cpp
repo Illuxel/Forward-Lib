@@ -139,6 +139,14 @@ namespace fl {
         return args;
     }
 
+    size_t HttpQuery::Size() const
+    {
+        if (!params_.has_value())
+            return 0;
+
+        return params_->size();
+    }
+
     bool HttpQuery::IsEmpty() const
     {
         if (!params_.has_value())

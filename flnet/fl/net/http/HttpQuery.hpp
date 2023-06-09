@@ -27,8 +27,10 @@ namespace fl {
         std::vector<StringArg> ToArgs() const;
         std::vector<StringArg> ToArgs(char specifier) const;
 
+        size_t Size() const;
+
         bool IsEmpty() const;
-        
+
         bool HasKey(std::string_view key) const;
     };
 } // namespace fl
