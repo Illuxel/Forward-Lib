@@ -11,12 +11,14 @@ namespace fl {
 
     public:
         HttpUrl();
-        HttpUrl(std::string const& url);
+        HttpUrl(std::string_view url);
     
-        std::string_view Protocol() const;
-        std::string_view Domain() const;
-        std::string_view Target() const;
-        std::string_view Section() const;
+        void SetUrl(std::string_view url);
+
+        std::string Protocol() const;
+        std::string Domain() const;
+        std::string Target() const;
+        std::string Section() const;
 
         HttpQuery Query() const;
 

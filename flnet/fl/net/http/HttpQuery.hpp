@@ -14,7 +14,7 @@ namespace fl {
     {
         using Parameters = std::unordered_map<std::string, std::string>;
         std::optional<Parameters> params_;
-
+        bool is_valid;
     public:
         HttpQuery();
         HttpQuery(std::string_view query);
@@ -22,9 +22,7 @@ namespace fl {
         void SetQuery(std::string_view query);
 
         StringArg Arg(std::string_view key) const;
-
         std::string_view Value(std::string_view key) const;
-        //std::wstring ValueUtf8(std::string_view key) const;
 
         std::vector<std::string> Keys() const;
 
@@ -35,7 +33,7 @@ namespace fl {
 
         size_t Size() const;
 
-        bool IsEmpty() const;
+        bool IsValid() const;
 
         bool HasKey(std::string_view key) const;
     };

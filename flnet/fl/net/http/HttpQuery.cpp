@@ -45,9 +45,12 @@ namespace fl {
         return decoded.str();
     }
 
-    HttpQuery::HttpQuery() {}
+    HttpQuery::HttpQuery() 
+        : is_valid(false){}
     HttpQuery::HttpQuery(std::string_view query)
+        : is_valid(false)
     {
+        auto decoded = UrlDecodeUtf8(query);
         SetQuery(query);
     }
 
@@ -70,7 +73,7 @@ namespace fl {
 
             if (!is_delim) break;
 
-            std::string_view param = view.substr(0, 
+            auto const& param = view.substr(0, 
                 is_sep
                 ? sep_pos
                 : view.size()
@@ -88,6 +91,9 @@ namespace fl {
                 ? param.size() + 1
                 : param.size(), view.size());
         }
+
+        if (params_.has_value())
+            is_valid = true;
     }
 
     StringArg HttpQuery::Arg(std::string_view key) const
@@ -102,7 +108,6 @@ namespace fl {
 
         return arg;
     }
-
     std::string_view HttpQuery::Value(std::string_view key) const 
     {
         if (!HasKey(key)) 
@@ -110,18 +115,12 @@ namespace fl {
 
         return params_->at(key.data());
     }
-    // std::wstring HttpQuery::ValueUtf8(std::string_view key) const 
-    // {
-    //     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-
-    //     return converter.from_bytes(Value(key).data());
-    // }
 
     std::vector<std::string> HttpQuery::Keys() const
     {
         std::vector<std::string> keys;
 
-        if (IsEmpty())
+        if (!IsValid())
             return keys;
 
         keys.reserve(params_->size());
@@ -140,7 +139,7 @@ namespace fl {
     {
         std::string temp;
 
-        if (IsEmpty())
+        if (!IsValid())
             return temp;
 
         for (auto const& [key, val] : params_.value())
@@ -153,12 +152,11 @@ namespace fl {
 
         return temp;
     }
-    
     std::vector<StringArg> HttpQuery::ToArgs() const 
     {
         std::vector<StringArg> args;
 
-        if (IsEmpty())
+        if (!IsValid())
             return args;
 
         args.reserve(params_->size());
@@ -190,17 +188,14 @@ namespace fl {
         return params_->size();
     }
 
-    bool HttpQuery::IsEmpty() const
+    bool HttpQuery::IsValid() const 
     {
-        if (!params_.has_value())
-            return true;
-
-        return params_->empty();
+        return is_valid;
     }
 
     bool HttpQuery::HasKey(std::string_view key) const 
     {
-        if (IsEmpty())
+        if (!IsValid())
             return false;
 
         return params_->find(key.data()) != params_->cend();

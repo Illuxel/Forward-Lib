@@ -21,7 +21,7 @@ TEST(HttpQueryTest, ValidQuery) {
     std::string queryStr = "p=value1";
     HttpQuery query(queryStr);
 
-    EXPECT_FALSE(query.IsEmpty());
+    EXPECT_TRUE(query.IsValid());
     EXPECT_TRUE(query.HasKey("p"));
 
     EXPECT_STREQ(query.Value("p").data(), "value1");
@@ -34,7 +34,7 @@ TEST(HttpQueryTest, MultipleQuery) {
     std::string queryStr = "param1=value1&p=v";
     HttpQuery query(queryStr);
 
-    EXPECT_FALSE(query.IsEmpty());
+    EXPECT_TRUE(query.IsValid());
 
     EXPECT_TRUE(query.HasKey("param1"));
     EXPECT_TRUE(query.HasKey("p"));

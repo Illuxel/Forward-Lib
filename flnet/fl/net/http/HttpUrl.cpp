@@ -6,13 +6,21 @@ namespace fl {
     
     HttpUrl::HttpUrl()
         : valid_(false) {}
-    HttpUrl::HttpUrl(std::string const& url)
+    HttpUrl::HttpUrl(std::string_view url)
         : valid_(false)
+    {
+        auto decoded = UrlDecodeUtf8(url);
+        SetUrl(url);
+    }
+
+    void HttpUrl::SetUrl(std::string_view url)
     {
         std::smatch match;
         std::regex urlRegex("^(?:(https?):\\/\\/)?(?:([^\\/\\?#]+))?([^\\?#]*)(?:\\?([^#]*))?(?:#(.*))?$");
 
-        valid_ = std::regex_match(url, match, urlRegex);
+        std::string copy(url.data());
+
+        valid_ = std::regex_match(copy, match, urlRegex);
 
         if (!valid_) return;
 
@@ -23,33 +31,26 @@ namespace fl {
         section_.emplace(match[5].str());
     }
 
-    std::string_view HttpUrl::Protocol() const
+    std::string HttpUrl::Protocol() const
     {
-        if (!protocol_) return "";
-        return protocol_.value();
+        return protocol_.value_or("");
     }
-    std::string_view HttpUrl::Domain() const
+    std::string HttpUrl::Domain() const
     {
-        if (!domain_) return "";
-        return domain_.value();
+        return domain_.value_or("");
     }
-    std::string_view HttpUrl::Target() const
+    std::string HttpUrl::Target() const
     {
-        if (!target_) return "";
-        return target_.value();
+        return target_.value_or("");
     }
-    std::string_view HttpUrl::Section() const
+    std::string HttpUrl::Section() const
     {
-        if (!section_) return "";
-        return section_.value();
+        return section_.value_or("");
     }
 
     HttpQuery HttpUrl::Query() const
     {
-        if (!query_) 
-            return HttpQuery("");
-
-        return HttpQuery(query_.value());
+        return HttpQuery(query_.value_or(""));
     }
 
     bool HttpUrl::HasProtocol() const 
