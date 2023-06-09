@@ -29,7 +29,7 @@ namespace fl {
     {
         auto valid_route = MakeValidRoute(target);
 
-        if (routes_.find(valid_route.data()) != routes_.end())
+        if (routes_.find(valid_route) != routes_.end())
         {
             FL_LOG("HttpRouter", "Target already registered");
             return;
@@ -40,7 +40,8 @@ namespace fl {
     
     std::optional<HttpRouter::Callback> HttpRouter::FindRouteCallback(std::string_view target) const
     {
-        auto const& it = routes_.find(target.data());
+        auto valid_route = MakeValidRoute(target);
+        auto const& it = routes_.find(valid_route);
 
         if (it != routes_.end())
             return it->second;
