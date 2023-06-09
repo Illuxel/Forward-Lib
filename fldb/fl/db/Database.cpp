@@ -5,8 +5,11 @@ namespace fl::db {
     std::unordered_map<std::string, Ref<Database>> Database::databases_;
 
     Database::Database(sql::mysql::MySQL_Driver* driver)
-        : driver_(driver)
-        , is_scheme(false) {}
+        : is_scheme(false) 
+        , driver_(driver)
+    {
+
+    }
     Database::~Database() {}
 
     Ref<Database> Database::Innit(std::string_view db_name)
@@ -14,8 +17,8 @@ namespace fl::db {
         if (HasDatabase(db_name))
             return Get(db_name);
 
-        Database* db = new Database(sql::mysql::get_driver_instance());
-        databases_.insert(std::make_pair(db_name, db));
+        auto db = new Database(sql::mysql::get_driver_instance());
+        databases_.insert(std::make_pair(db_name, std::move(db)));
 
         return Get(db_name);
     }
@@ -29,7 +32,9 @@ namespace fl::db {
         if (!HasDatabase(db_name))
             return;
 
+        auto db = databases_.at(db_name.data());
         databases_.erase(db_name.data());
+        db->Close();
     }
 
     bool Database::HasDatabase(std::string_view db_name) 
@@ -39,6 +44,9 @@ namespace fl::db {
 
     bool Database::Connect(sql::ConnectOptionsMap options)
     {
+        if (IsConnected())
+            return true;
+
         try
         {
             connection_.reset(driver_->connect(options));
@@ -51,9 +59,12 @@ namespace fl::db {
         return IsConnected();
     }
     bool Database::Connect(std::string_view host, 
-                std::string_view user, 
-                std::string_view password)
+        std::string_view user, 
+        std::string_view password)
     {
+        if (IsConnected())
+            return true;
+
         try
         {
             connection_.reset(driver_->connect(host.data(), user.data(), password.data()));
@@ -144,7 +155,7 @@ namespace fl::db {
     void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, std::string_view value) {
         statement->setString(index, value.data());
     }
-    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index,  DateTime const& date) {
+    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, DateTime const& date) {
         statement->setDateTime(index, date.ToString("YYYY-MM-DD hh:mm:ss"));
     }
 } // namespace fl::db 
