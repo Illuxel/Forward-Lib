@@ -28,9 +28,9 @@ namespace fl {
 
         void Listen(Ref<Endpoint const> const& endpoint);
 
-        void SetupSslCert(std::string_view filename, 
+        void SetupFileSslCert(std::string_view filename, 
             net::ssl::context::file_format format = net::ssl::context::pem);
-        void SetupSslCertKey(std::string_view filename, std::string_view pass = "",
+        void SetupFileSslCertKey(std::string_view filename, std::string_view pass = "",
             net::ssl::context::file_format format = net::ssl::context::pem);
 
         virtual void OnSocketAccept(beast::error_code ec, tcp::socket&& socket);

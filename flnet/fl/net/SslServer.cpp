@@ -41,7 +41,7 @@ namespace fl {
         io_context_.run();
     }
 
-    void SslServer::SetupSslCert(std::string_view filename, 
+    void SslServer::SetupFileSslCert(std::string_view filename, 
                 net::ssl::context::file_format format) 
     {
         boost::system::error_code ec;
@@ -49,11 +49,9 @@ namespace fl {
         secure_context_.use_certificate_chain_file(filename.data(), ec);
 
         if (ec)
-        {
-            FL_LOG("Cert setup", ec.what());
-        }
+            FL_LOG("Cert setup", ec.message());
     }
-    void SslServer::SetupSslCertKey(std::string_view filename, std::string_view pass, 
+    void SslServer::SetupFileSslCertKey(std::string_view filename, std::string_view pass, 
                 net::ssl::context::file_format format)
     {
         boost::system::error_code ec;
@@ -68,15 +66,13 @@ namespace fl {
         secure_context_.use_private_key_file(filename.data(), format, ec);
 
         if (ec)
-        {
-            FL_LOG("Cert key setup", ec.what());
-        }
+            FL_LOG("Cert key setup", ec.message());
     }
 
     void SslServer::OnSocketAccept(beast::error_code ec, tcp::socket&& socket)
     {
         if (ec) {
-            FL_LOG("SslServer Accept", ec.what());
+            FL_LOG("SslServer Accept", ec.message());
             return;
         }
 
