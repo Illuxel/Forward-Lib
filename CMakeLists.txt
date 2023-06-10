@@ -6,10 +6,10 @@ project(ForwardLib
     DESCRIPTION ""
 )
 
-option(BUILD_SHARED_LIBS "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)" OFF)
+option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 
-option(FL_ENABLE_TESING "Enabling testing, will add google test feautures in C++" ON)
-option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" ON)
+option(FL_ENABLE_TESING "Enabling testing, will add google test feautures in C++" OFF)
+option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -34,6 +34,7 @@ endif()
 
 include(cmake/cxx-common.cmake)
 include(GNUInstallDirs)
+
 
 add_subdirectory(vendor)
 
@@ -78,7 +79,7 @@ add_library(${namespace}::db ALIAS db)
 
 #--------------< API >--------------#
 
-add_library(flapi ${FL_SOURCE})
+add_library(flapi SHARED ${FL_SOURCE})
 add_library(${namespace}::flapi ALIAS flapi)
 
 target_include_directories(flapi
@@ -93,7 +94,7 @@ PUBLIC
     ${namespace}::db
 )
 
-add_library(client ${FLCLIENT_SOURCE})
+add_library(client SHARED ${FLCLIENT_SOURCE})
 add_library(${namespace}::client ALIAS client)
 
 target_include_directories(client
