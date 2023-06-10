@@ -1,5 +1,8 @@
 #include "fl/net/AsyncListener.hpp"
 #include "fl/utils/Log.hpp"
+
+std::mutex acceptMutex;
+
 namespace fl {
 
     AsyncListener::AsyncListener(net::io_context& ioc,
@@ -53,6 +56,8 @@ namespace fl {
 
     void AsyncListener::Accept()
     {
+        std::lock_guard<std::mutex> lock(acceptMutex);
+
         acceptor_.async_accept(
             net::make_strand(io_context_),
             beast::bind_front_handler(
