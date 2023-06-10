@@ -12,9 +12,9 @@ Description: Soon
 
 - OpenSSL
 - Boost 
-- JWT-CPP
-- MySQL Connector C++
-- SqLite
+<!-- - JWT-CPP -->
+- MySQL Connector C++ 1.1.13
+<!-- - SqLite -->
 
 ## How to install
 
