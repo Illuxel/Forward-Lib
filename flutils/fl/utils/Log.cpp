@@ -1,5 +1,7 @@
 #include "fl/utils/Log.hpp"
 
+#include <mutex>
+
 namespace fl {
 
 	std::unordered_map<std::string, Ref<Logger>> Log::logs_{};
@@ -34,4 +36,12 @@ namespace fl {
 		logs_.erase(name);
 		logger.reset();
 	}
+}
+
+std::mutex printMutex;
+
+void printInfo(std::string const& call, std::string const& msg)
+{
+	std::lock_guard<std::mutex> lock(printMutex);
+	std::cout << call << ": " << msg << std::endl;
 }

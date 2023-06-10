@@ -24,10 +24,7 @@ namespace fl {
 	};
 }
 
-static inline void printInfo(std::string const& call, std::string const& msg)
-{
-	std::cerr << call << ": " << msg << std::endl;
-}
+void printInfo(std::string const& call, std::string const& msg);
 
 #define FL_LOG(call, msg) \
 	printInfo(call, msg)
