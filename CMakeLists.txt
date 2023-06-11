@@ -38,13 +38,14 @@ endif()
 
 if(NOT TARGET Boost)
 
-    if (NOT BUILD_SHARED_LIBS)
-        set(Boost_USE_STATIC_RUNTIME ON)
+    if (WIN32)
+        if (NOT BUILD_SHARED_LIBS)
+            set(Boost_USE_STATIC_RUNTIME ON)
+        endif()
+        list(APPEND CMAKE_PREFIX_PATH $ENV{BOOST})
     endif()
 
-    list(APPEND CMAKE_PREFIX_PATH $ENV{BOOST})
     find_package(Boost REQUIRED system COMPONENTS)
-
 endif()
 
 include(cmake/cxx-common.cmake)
