@@ -3,6 +3,8 @@
 #include <chrono>
 #include <ctime>
 
+#include <string>
+
 #include <optional>
 
 namespace fl {
@@ -68,7 +70,7 @@ namespace fl {
         }
 
     private:
-        void DateTime::CacheTm() const;
+        void CacheTm() const;
 
     };  
     
