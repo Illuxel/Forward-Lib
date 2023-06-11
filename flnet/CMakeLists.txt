@@ -63,10 +63,11 @@ PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_link_libraries(net
-PUBLIC    
+PRIVATE
     OpenSSL::Crypto
     OpenSSL::SSL    
     Boost::system 
+PUBLIC    
     Fl::utils
 )
 

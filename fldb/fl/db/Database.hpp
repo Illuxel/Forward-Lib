@@ -100,3 +100,7 @@ namespace fl::db {
         void BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, DateTime const& date);
     };
 }
+
+#ifdef _DEBUG
+    #pragma comment(linker, "/ignore:4099")
+#endif

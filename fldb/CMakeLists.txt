@@ -4,10 +4,6 @@ if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
   set(CMAKE_INSTALL_LIBDIR "lib")
 endif()
 
-if (FL_ENABLE_TESING)
-    add_subdirectory(test)
-endif()
-
 if (WIN32)
 
     set(MYSQL_CONNECTOR_LIB_NAME)
@@ -20,6 +16,7 @@ if (WIN32)
         "C:\\Program Files\\MySQL\\Connector C++"
         "C:\\Program Files\\MySQL\\*\\include"
         "C:\\Program Files\\MySQL\\*\\lib"
+        "C:\\Program Files\\MySQL\\*\\lib64"
     )
 
     if (BUILD_SHARED_LIBS)
@@ -30,7 +27,7 @@ if (WIN32)
         set(MYSQL_CONNECTOR_LIB_EXT ".lib")
         # To statically build MySQL Connector C++
         add_compile_definitions(
-            CPPCONN_LIB_BUILD
+            CPPCONN_PUBLIC_FUNC=
         ) 
     endif()
 
@@ -41,14 +38,10 @@ if (WIN32)
     message(STATUS "Finding MySQL Connecotr lib: ${MYSQL_CONNECTOR_LIB_NAME}")
 
     find_path(MYSQL_CONNECTOR_PATH
-    NAME LICENSE
+    NAME include
     PATHS
         ${MYSQL_CONNECTOR_POSSIBLE_PATH}
     ENV MYSQL_CONNECTOR
-    PATH_SUFFIXES
-        include
-        lib
-        lib64
     NO_DEFAULT_PATH
     )   
 
@@ -67,7 +60,11 @@ if (WIN32)
     ENV MYSQL_CONNECTOR
     PATH_SUFFIXES
         lib
+        lib/vs14
+        lib/vs14/debug
         lib64
+        lib64/vs14
+        lib64/vs14/debug
     NO_DEFAULT_PATH
     )
 
@@ -78,6 +75,10 @@ if (WIN32)
     message(STATUS "Found MySQL Connector: ${MYSQL_CONNECTOR_LIB}")
 
 else()
+endif()
+
+if (FL_ENABLE_TESING)
+    add_subdirectory(test)
 endif()
 
 set(FLDB_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/db)
@@ -91,6 +92,8 @@ set(FLDB_SOURCE
 
 add_library(db STATIC ${FLDB_SOURCE})
 
+set_target_properties(db PROPERTIES LINK_FLAGS "/ignore:4099")
+
 target_include_directories(db
 PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -100,11 +103,12 @@ PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_link_libraries(db
-PUBLIC
+PRIVATE
     OpenSSL::Crypto
     OpenSSL::SSL    
     Boost::system
     ${MYSQL_CONNECTOR_LIB}
+PUBLIC
     Fl::utils
 )
 

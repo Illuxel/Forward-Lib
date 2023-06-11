@@ -43,7 +43,7 @@ if(NOT TARGET Boost)
     endif()
 
     list(APPEND CMAKE_PREFIX_PATH $ENV{BOOST})
-    find_package(Boost REQUIRED system thread date_time COMPONENTS)
+    find_package(Boost REQUIRED system COMPONENTS)
 
 endif()
 
