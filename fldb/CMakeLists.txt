@@ -8,21 +8,6 @@ if (FL_ENABLE_TESING)
     add_subdirectory(test)
 endif()
 
-if(NOT TARGET OPENSSL)
-    find_package(OpenSSL 1.1.1 REQUIRED)
-endif()
-
-if(NOT TARGET Boost)
-
-    if (NOT BUILD_SHARED_LIBS)
-        set(Boost_USE_STATIC_RUNTIME ON)
-    endif()
-
-    list(APPEND CMAKE_PREFIX_PATH $ENV{BOOST})
-    find_package(Boost REQUIRED system COMPONENTS)
-
-endif()
-
 if (WIN32)
 
     set(MYSQL_CONNECTOR_LIB_NAME)
@@ -33,6 +18,8 @@ if (WIN32)
     set(MYSQL_CONNECTOR_POSSIBLE_PATH
         "C:\\Program Files\\MySQL"
         "C:\\Program Files\\MySQL\\Connector C++"
+        "C:\\Program Files\\MySQL\\*\\include"
+        "C:\\Program Files\\MySQL\\*\\lib"
     )
 
     if (BUILD_SHARED_LIBS)
@@ -41,9 +28,10 @@ if (WIN32)
     else()
         set(MYSQL_CONNECTOR_LIB_TYPE "-static")
         set(MYSQL_CONNECTOR_LIB_EXT ".lib")
-
         # To statically build MySQL Connector C++
-        add_compile_definitions(CPPCONN_LIB_BUILD) 
+        add_compile_definitions(
+            CPPCONN_LIB_BUILD
+        ) 
     endif()
 
     string(APPEND MYSQL_CONNECTOR_LIB_NAME ${MYSQL_CONNECTOR_LIB_NAME_ONLY})
@@ -114,9 +102,9 @@ PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_link_libraries(db
-INTERFACE
-    OpenSSL::SSL    
 PUBLIC
+    OpenSSL::Crypto
+    OpenSSL::SSL    
     Boost::system
     ${MYSQL_CONNECTOR_LIB}
     Fl::utils

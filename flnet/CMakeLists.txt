@@ -12,21 +12,6 @@ if (FL_ENABLE_TESING)
     add_subdirectory(test)
 endif()
 
-if(NOT TARGET OPENSSL)
-    find_package(OpenSSL 1.1.1 REQUIRED)
-endif()
-
-if(NOT TARGET Boost)
-
-    if (NOT BUILD_SHARED_LIBS)
-        set(Boost_USE_STATIC_RUNTIME ON)
-    endif()
-
-    list(APPEND CMAKE_PREFIX_PATH $ENV{BOOST})
-    find_package(Boost REQUIRED system COMPONENTS)
-
-endif()
-
 # Networking
 
 set(NET_INTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/net)
