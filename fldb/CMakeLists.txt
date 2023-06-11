@@ -91,8 +91,6 @@ set(FLDB_SOURCE
 
 add_library(db STATIC ${FLDB_SOURCE})
 
-set_target_properties(db PROPERTIES LINK_FLAGS "/ignore:4099")
-
 target_include_directories(db
 PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
