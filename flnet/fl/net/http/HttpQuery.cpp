@@ -172,7 +172,7 @@ namespace fl {
     }
     std::vector<StringArg> HttpQuery::ToArgs(char specifier) const 
     {
-        auto& args = ToArgs();
+        auto args = ToArgs();
 
         for (auto& arg : args)
             arg.SetSpecifier(specifier);
