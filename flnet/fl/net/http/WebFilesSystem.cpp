@@ -1,6 +1,9 @@
 #include "WebFilesSystem.hpp"
 #include "fl/utils/Log.hpp"
 
+#include <algorithm>
+
+
 namespace fl {
 
     std::list<WebFileMeta> 
