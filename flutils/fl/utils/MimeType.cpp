@@ -5,12 +5,11 @@ namespace fl {
     const std::unordered_map<std::string_view, MimeType> MimeType::mime_types_ = 
     {
         { "txt",  { Type::Text, SubType::Plain,  "plain" }},
-        { "html", { Type::Text, SubType::Html,   "html" }},
         { "htm",  { Type::Text, SubType::Html,   "html" }},
+        { "html", { Type::Text, SubType::Html,   "html" }},
         { "csv",  { Type::Text, SubType::Csv,    "csv" }},
         { "css",  { Type::Text, SubType::Css,    "css" }},
-        { "json", { Type::Text, SubType::Json, "json" }},
-        { "js",   { Type::Text, SubType::JavaScript,"javascript" }},
+        { "php",  { Type::Text, SubType::Php,    "php" }},
         { "jpg",  { Type::Img, SubType::Jpeg,    "jpeg" }},
         { "jpeg", { Type::Img, SubType::Jpeg,    "jpeg" }},
         { "jpe",  { Type::Img, SubType::Jpeg,    "jpeg" }},
@@ -22,6 +21,7 @@ namespace fl {
         { "bmp",  { Type::Img, SubType::Bmp,     "bmp" }},
         { "ico",  { Type::Img, SubType::Ico,     "x-icon" }},
         { "svg",  { Type::Img, SubType::Svg,     "svg+xml" }},
+        { "svgz",  { Type::Img, SubType::Svg,     "svg+xml" }},
         { "mp3",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
         { "m4a",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
         { "m4b",  { Type::Audio, SubType::Mpeg,  "mpeg" }},

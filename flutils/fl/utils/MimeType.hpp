@@ -29,6 +29,7 @@ namespace fl {
             Html,   // .html, .htm
             Css,
             Csv,    
+            Php,
             JavaScript,
             Json,
             Xml,
