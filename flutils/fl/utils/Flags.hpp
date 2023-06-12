@@ -89,39 +89,33 @@ namespace fl {
 
 #define DECLARE_ENUM_OPERATORS(Enum) \
     static_assert(std::is_enum_v<Enum>, "EnumFlags requires an enum type."); \
-    \
     inline constexpr Enum operator|(Enum lhs, Enum rhs) noexcept \
     {                                                            \
         return static_cast<Enum>(                                \
             static_cast<std::underlying_type_t<Enum>>(lhs) |     \
             static_cast<std::underlying_type_t<Enum>>(rhs));     \
     }                                                            \
-    \
     inline constexpr Enum operator&(Enum lhs, Enum rhs) noexcept \
     {                                                            \
         return static_cast<Enum>(                                \
             static_cast<std::underlying_type_t<Enum>>(lhs) &     \
             static_cast<std::underlying_type_t<Enum>>(rhs));     \
     }                                                            \
-    \
     inline constexpr Enum operator^(Enum lhs, Enum rhs) noexcept \
     {                                                            \
         return static_cast<Enum>(                                \
             static_cast<std::underlying_type_t<Enum>>(lhs) ^     \
             static_cast<std::underlying_type_t<Enum>>(rhs));     \
     }                                                            \
-    \
     inline constexpr Enum operator~(Enum value) noexcept         \
     {                                                            \
         return static_cast<Enum>(~static_cast<std::underlying_type_t<Enum>>(value)); \
     }                                                            \
-    \
     inline constexpr Enum& operator|=(Enum& lhs, Enum rhs) noexcept \
     {                                                               \
         return lhs = lhs | rhs;                                     \
     }                                                               \
-    \
     inline constexpr Enum& operator&=(Enum& lhs, Enum rhs) noexcept \
     {                                                               \
         return lhs = lhs & rhs;                                     \
-    }                                                               
+    }
