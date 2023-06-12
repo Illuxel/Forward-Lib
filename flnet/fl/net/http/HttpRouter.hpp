@@ -47,6 +47,8 @@ namespace fl {
         // returns prepared target or index 
         std::string MakeValidRoute(std::string_view target) const;
 
+        static bool IsTargetValid(std::string_view target);
+
         bool IsContent(std::string_view content) const;
     };
 }

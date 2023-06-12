@@ -93,9 +93,7 @@ namespace fl {
 
     std::string HttpRouter::MakeValidRoute(std::string_view target) const
     {
-        if (target.empty() ||
-            target.front() != '/' ||
-            target.find("..") != std::string_view::npos)
+        if (!IsTargetValid(target))
             return index_;
 
         if (IsTargetIndex(target))
@@ -105,6 +103,16 @@ namespace fl {
             return std::string(target.data() + def_ext_.GetExtName(false));
 
         return target.data();
+    }
+
+    bool HttpRouter::IsTargetValid(std::string_view target)
+    {
+        if (target.empty() ||
+            target.front() != '/' ||
+            target.find("..") != std::string_view::npos)
+            return false;
+        
+        return true;
     }
 
     bool HttpRouter::IsContent(std::string_view target) const
