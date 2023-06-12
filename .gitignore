@@ -1,3 +1,5 @@
 .vscode
 build
-vendor
+
+vendor/benchmark
+vendor/googletest
