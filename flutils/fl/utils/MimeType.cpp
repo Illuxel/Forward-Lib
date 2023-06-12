@@ -2,7 +2,7 @@
 
 namespace fl {
 
-    const std::unordered_map<std::string_view, MimeType> MimeType::mime_types_ = 
+    const std::map<std::string_view, MimeType> MimeType::mime_types_ = 
     {
         { "txt",  { Type::Text, SubType::Plain,  "plain" }},
         { "htm",  { Type::Text, SubType::Html,   "html" }},
@@ -10,6 +10,7 @@ namespace fl {
         { "csv",  { Type::Text, SubType::Csv,    "csv" }},
         { "css",  { Type::Text, SubType::Css,    "css" }},
         { "php",  { Type::Text, SubType::Php,    "php" }},
+        { "js",   { Type::Text, SubType::JavaScript,"javascript" }},
         { "jpg",  { Type::Img, SubType::Jpeg,    "jpeg" }},
         { "jpeg", { Type::Img, SubType::Jpeg,    "jpeg" }},
         { "jpe",  { Type::Img, SubType::Jpeg,    "jpeg" }},
@@ -30,7 +31,6 @@ namespace fl {
         { "mp4",  { Type::Video, SubType::Mp4,   "mp4" }},
         { "m4v",  { Type::Video, SubType::Mp4,   "mp4" }},
         { "json", { Type::App, SubType::Json, "json" }},
-        { "js",   { Type::App, SubType::JavaScript,"javascript" }},
         { "xml",  { Type::App, SubType::Xml,     "xml" }},
         { "pdf",  { Type::App, SubType::Pdf,     "pdf" }},
         { "zip",  { Type::App, SubType::Zip,     "zip" }},

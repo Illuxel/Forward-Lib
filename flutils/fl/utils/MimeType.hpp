@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
+#include <map>
 
 namespace fl {
 
@@ -54,7 +54,7 @@ namespace fl {
         };
 
     private:
-        static const std::unordered_map<std::string_view, MimeType> mime_types_;
+        static const std::map<std::string_view, MimeType> mime_types_;
 
         Type type_;
         SubType sub_type_; 
