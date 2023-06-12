@@ -11,7 +11,7 @@ namespace fl {
     {
         std::list<WebFileMeta> files;
 
-        for (const auto& entry : std::filesystem::directory_iterator(directory))
+        for (auto const& entry : std::filesystem::directory_iterator(directory))
         {
             if (entry.is_directory())
             {
