@@ -13,7 +13,7 @@ TEST(WebFileMeta, Data) {
     };
 
     EXPECT_EQ(wf.File(), "file_name.txt");
-    EXPECT_EQ(wf.FullPath(), "C:\\Test/file_name.txt");
+    EXPECT_EQ(wf.FullPath(), "C:\\Test/folder_name/file_name.txt");
 
     EXPECT_EQ(wf.TargetName(), "/file_name.txt");
     EXPECT_EQ(wf.TargetName(false), "/file_name");
