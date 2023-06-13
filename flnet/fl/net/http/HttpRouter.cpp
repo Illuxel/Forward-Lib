@@ -1,8 +1,6 @@
 #include "fl/net/http/HttpRouter.hpp"
 #include "fl/utils/Log.hpp"
 
-using namespace fl;
-
 namespace fl {
 
     HttpRouter::HttpRouter(std::string_view web_root
