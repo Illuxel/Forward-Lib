@@ -12,7 +12,7 @@ namespace fl {
     {
         std::string Name; MimeType Ext;
         std::string Relative;
-        std::filesystem::path Path;
+        std::filesystem::path Base;
 
         std::string File(bool extension = true) const {
             return Name + (extension
@@ -21,16 +21,16 @@ namespace fl {
         }
         // returns path file name and ext
         std::string FullPath() const {
-            return Path.string() + '/' + File();
+            return Base.string() + TargetPath();
         }
 
-        // return target file name with extension or without
+        // return target file name
         std::string TargetName(bool extension = true) const {
             return '/' + File(extension);
         }
-        // return target file folder and file name
+        // return relative path and file
         std::string TargetPath(bool extension = true) const {
-            if (Relative == Path.filename())
+            if (Relative == Base.filename())
                 return TargetName(extension);
 
             return '/' + Relative + TargetName(extension);
@@ -68,11 +68,11 @@ namespace fl {
         void SetWebRoot(std::string_view web_root);
         std::string_view GetWebRoot() const;
 
-        std::list<WebFileMeta> FindByLastFolder(std::string_view folder);
+        // std::list<WebFileMeta> FindByLastFolder(std::string_view folder);
         // search file by name
         std::optional<WebFileMeta> FindByTargetName(std::string_view target, bool extension) const;
         // 
-        std::optional<WebFileMeta> FindByTargetPath(std::string_view target) const;
+        std::optional<WebFileMeta> FindByTargetPath(std::string_view target, bool extension = true) const;
 
         bool IsTargetNameExist(std::string_view target, bool extension) const;  
         bool IsTargetPathExist(std::string_view target, bool extension) const;

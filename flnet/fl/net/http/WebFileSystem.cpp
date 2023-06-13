@@ -101,11 +101,9 @@ namespace fl {
     }
 
     std::optional<WebFileMeta> 
-    WebFilesSystem::FindByTargetPath(std::string_view target) const
+    WebFilesSystem::FindByTargetPath(std::string_view target, bool extension) const
     {
         static std::optional<WebFileMeta> cached;
-
-        bool extension = MimeType::HasExtension(target);
 
         if (cached.has_value()
          && cached->TargetPath(extension) == target)
@@ -134,6 +132,6 @@ namespace fl {
     }
     bool WebFilesSystem::IsTargetPathExist(std::string_view target, bool extension) const
     {
-        return FindByTargetPath(target).has_value();
+        return FindByTargetPath(target, extension).has_value();
     }
 }
