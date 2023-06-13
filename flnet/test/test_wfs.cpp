@@ -1,4 +1,4 @@
-#include "fl/net/http/WebFilesSystem.hpp"
+#include "fl/net/http/WebFileSystem.hpp"
 using namespace fl;
 
 #include <gtest/gtest.h>
@@ -7,8 +7,8 @@ TEST(WebFileMeta, Data) {
 
     WebFileMeta wf = {
         "file_name",
-        "folder_name",
         MimeType::FromString("txt"),
+        "folder_name",
         "C:\\Test"
     };
 
@@ -18,4 +18,9 @@ TEST(WebFileMeta, Data) {
     EXPECT_EQ(wf.TargetName(), "/file_name.txt");
     EXPECT_EQ(wf.TargetName(false), "/file_name");
     EXPECT_EQ(wf.TargetPath(), "/folder_name/file_name.txt");
+}
+
+TEST(WebFileSystem, TargetFileSearch) {
+
+
 }
