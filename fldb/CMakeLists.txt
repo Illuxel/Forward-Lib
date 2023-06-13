@@ -92,7 +92,7 @@ set(FLDB_SOURCE
 
 add_library(db STATIC ${FLDB_SOURCE})
 
-target_link_options(db PRIVATE "/ignore:4099")
+target_link_options(db PUBLIC "/ignore:4099")
 
 target_include_directories(db
 PUBLIC 
