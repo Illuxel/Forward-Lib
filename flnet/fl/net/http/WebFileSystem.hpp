@@ -2,9 +2,10 @@
 
 #include "fl/utils/MimeType.hpp"
 
+#include <vector>
+
 #include <optional>
 #include <filesystem>
-#include <unordered_set>
 
 namespace fl {
 
@@ -42,14 +43,6 @@ namespace fl {
         }
     };
 
-    struct WebFileMetaHash 
-    {
-        std::size_t operator()(WebFileMeta const& file) const 
-        {
-            return std::hash<std::string>()(file.TargetPath());
-        }
-    };
-
     class WebFilesSystem
     {
         // web documents directory
@@ -57,7 +50,7 @@ namespace fl {
         // all stored files in web site 
         // key: simplified file name only vale
         // value: full meta info about file
-        std::unordered_set<WebFileMeta, WebFileMetaHash> files_;
+        std::vector<WebFileMeta> files_;
 
     public:
         /**

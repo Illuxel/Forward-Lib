@@ -5,10 +5,10 @@
 
 namespace fl {
 
-    std::unordered_set<WebFileMeta, WebFileMetaHash> 
+    std::vector<WebFileMeta> 
     IterateFiles(std::filesystem::path const& dir, std::filesystem::path base = "")
     {
-        std::unordered_set<WebFileMeta, WebFileMetaHash> files;
+        std::vector<WebFileMeta> files;
 
         if (base.empty())
             base = dir;
@@ -18,7 +18,7 @@ namespace fl {
             if (entry.is_directory())
             {
                 auto const& subdirectoryFiles = IterateFiles(entry.path(), base);
-                files.insert(subdirectoryFiles.begin(), subdirectoryFiles.end());
+                files.insert(files.end(), subdirectoryFiles.begin(), subdirectoryFiles.end());
             }
             else if (entry.is_regular_file())
             {
@@ -46,7 +46,7 @@ namespace fl {
                     base
                 };
 
-                files.insert(wf);
+                files.push_back(wf);
             }
         }
 
@@ -79,23 +79,21 @@ namespace fl {
     {
         static std::optional<WebFileMeta> cached;
 
-        if (cached.has_value()
-         && cached->TargetName(extension) == target)
+        if (cached.has_value() && cached->TargetName(extension) == target)
             return cached;
 
-        auto const& it = std::find_if(files_.begin(), files_.end(), 
+        auto const& it = std::find_if(files_.cbegin(), files_.cend(), 
         [&target, &extension](auto const& file_info) 
         {
             auto target_name = file_info.TargetName(extension);
-            if (target != target_name)
-                return false;
-
-            cached.emplace(file_info);
-            return true;
+            return target == target_name;
         });
 
         if (it != files_.end())
+        {
+            cached.emplace(*it);
             return *it;
+        }
 
         return std::nullopt;
     }
@@ -105,23 +103,21 @@ namespace fl {
     {
         static std::optional<WebFileMeta> cached;
 
-        if (cached.has_value()
-         && cached->TargetPath(extension) == target)
+        if (cached.has_value() && cached->TargetPath(extension) == target)
             return cached;
 
         auto const& it = std::find_if(files_.begin(), files_.end(), 
         [&target, &extension](auto const& file_info)
         {
             auto target_path = file_info.TargetPath(extension);
-            if (target != target_path)
-                return false;
-
-            cached.emplace(file_info);
-            return true;
+            return target == target_path;
         });
 
-        if (it != files_.end())
+        if (it != files_.end()) 
+        {
+            cached.emplace(*it);
             return *it;
+        }
 
         return std::nullopt;
     }
