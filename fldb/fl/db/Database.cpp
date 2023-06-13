@@ -44,6 +44,11 @@ namespace fl::db {
 
     bool Database::Connect(sql::ConnectOptionsMap options)
     {
+        std::exception ec;
+        return Connect(options, ec);
+    }
+    bool Database::Connect(sql::ConnectOptionsMap options, std::exception& ec)
+    {
         if (IsConnected())
             return true;
 
@@ -51,16 +56,24 @@ namespace fl::db {
         {
             connection_.reset(driver_->connect(options));
         }
-        catch(std::exception const& e)
+        catch(std::exception e)
         {
-            std::cerr << e.what() << '\n';
+            ec = e;
         }
 
         return IsConnected();
     }
+
     bool Database::Connect(std::string_view host, 
         std::string_view user, 
         std::string_view password)
+    {
+        std::exception ec;
+        return Connect(host, user, password, ec);
+    }
+    bool Database::Connect(std::string_view host, 
+        std::string_view user, 
+        std::string_view password, std::exception& ec)
     {
         if (IsConnected())
             return true;
@@ -71,11 +84,12 @@ namespace fl::db {
         }
         catch(std::exception const& e)
         {
-            std::cerr << e.what() << '\n';
+            ec = e;
         }
         
         return IsConnected();
     }
+
     void Database::Close() const 
     {
         if (!IsConnected())

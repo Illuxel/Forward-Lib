@@ -34,9 +34,11 @@ namespace fl::db {
         static bool HasDatabase(std::string_view db_name);
 
         bool Connect(sql::ConnectOptionsMap options);
-        bool Connect(std::string_view host, 
-                    std::string_view user, 
-                    std::string_view password);
+        bool Connect(sql::ConnectOptionsMap options, std::exception& ec);
+
+        bool Connect(std::string_view host, std::string_view user, std::string_view password);
+        bool Connect(std::string_view host, std::string_view user, std::string_view password, std::exception& ec);
+
         void Close() const;
 
         void SetActiveSchema(std::string_view scheme);
