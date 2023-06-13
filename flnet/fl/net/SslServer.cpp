@@ -47,7 +47,7 @@ namespace fl {
         boost::system::error_code ec;
 
         secure_context_.use_certificate_chain_file(filename.data(), ec);
-
+        
         if (ec)
             FL_LOG("Cert setup", ec.message());
     }

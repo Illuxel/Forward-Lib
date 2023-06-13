@@ -39,7 +39,7 @@ set(HTTP_INCLUDE
     fl/net/http/HttpRequest.hpp
     fl/net/http/HttpResponse.hpp
 
-    fl/net/http/WebFilesSystem.hpp
+    fl/net/http/WebFileSystem.hpp
     fl/net/http/HttpRouter.hpp
 )
 set(HTTP_SOURCE
@@ -51,7 +51,7 @@ set(HTTP_SOURCE
     fl/net/http/HttpRequest.cpp
     fl/net/http/HttpResponse.cpp
 
-    fl/net/http/WebFilesSystem.cpp
+    fl/net/http/WebFileSystem.cpp
     fl/net/http/HttpRouter.cpp
 )
 
