@@ -48,9 +48,6 @@ set(HTTP_SOURCE
     fl/net/http/HttpQuery.cpp
     fl/net/http/HttpUrl.cpp
 
-    fl/net/http/HttpRequest.cpp
-    fl/net/http/HttpResponse.cpp
-
     fl/net/http/WebFileSystem.cpp
     fl/net/http/HttpRouter.cpp
 )

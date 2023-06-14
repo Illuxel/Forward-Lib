@@ -6,38 +6,43 @@
 
 namespace fl {
 
-    // template<typename Type>
-    // class HttpRequestWrapper
-    // {
-    //     http::request<Type> request_data_;
+    template<typename Type>
+    class HttpRequestWrapper
+    {
+        http::request<Type> request_data_;
 
-    // public:
-    //     HttpRequestWrapper(http::request<Type>&& request) 
-    //         : request_data_(std::move(request)) {}
+    public:
+        HttpRequestWrapper(http::request<Type>&& request) 
+            : request_data_(std::move(request)) {}
 
-    //     template<typename ...BodyArgs>
-    //     HttpRequestWrapper(std::piecewise_construct_t t, std::tuple<BodyArgs...> body_args) 
-    //         : request_data_{t, std::forward<BodyArgs>(body_args)...} {}
+        template<typename ...Args>
+        HttpRequestWrapper(std::piecewise_construct_t t, std::tuple<Args...> body_args) 
+            : request_data_{t, std::forward<Args>(body_args)...} {}
 
-    //     http::verb GetMethod() const{
-    //         return request_data_.method();
-    //     }
-    //     HttpUrl GetUrl() const {
-    //         return HttpUrl(request_data_.target());
-    //     }
+        int Version() const {
+            return request_data_.version();
+        }
+        bool Alive() const {
+            return request_data_.keep_alive();
+        }
+        http::verb Method() const {
+            return request_data_.method();
+        }
 
-    //     int GetVersion() const {
-    //         return request_data_.version();
-    //     }
+        HttpUrl Target() const {
+            return HttpUrl(request_data_.target());
+        }
+        HttpQuery Query() const {
+            HttpQuery query(Target().Query());
 
-    //     bool Alive() const {
-    //         return request_data_.keep_alive();
-    //     }
-    //     bool Alive(bool alive) const {
-    //         return request_data_.keep_alive(alive);
-    //     }
-    // };
+            if (query.IsValid())
+                return query;
 
-    using HttpRequest = http::request<http::string_body>;
-    using HttpRequestEmpty = http::request<http::empty_body>;
+            query.SetQuery(request_data_.body());
+            return query;
+        }
+    };
+
+    using HttpRequest = HttpRequestWrapper<http::string_body>;
+    using HttpRequestEmpty = HttpRequestWrapper<http::empty_body>;
 }
