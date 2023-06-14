@@ -11,13 +11,24 @@ namespace fl {
         index_.append(index);
         def_ext_ = MimeType::FromString(ext);
         index_.append(def_ext_.GetExtName(false));
+
         wfs_ = MakeScope<WebFilesSystem>(web_root);
+    }
+
+    std::string HttpRouter::GetPreparedTarget(std::string_view name) const 
+    {
+        auto const& it = routes_.find(name.data());
+
+        if (it == routes_.end())
+            return "";
+
+        return it->second;
     }
 
     std::string HttpRouter::GetRoutePath(std::string_view target) const
     {
-        auto const& valid_route = MakeRouteFromName(target);
-        auto const& web_file = wfs_->FindByTargetName(valid_route, MimeType::HasExtension(valid_route));
+        auto const& prep_route = GetPreparedTarget(target);
+        auto const& web_file = wfs_->FindByTargetName(prep_route, MimeType::HasExtension(prep_route));
 
         if (!web_file.has_value())
             return "";
@@ -36,39 +47,25 @@ namespace fl {
 
     void HttpRouter::RegisterRoute(std::string_view target) 
     {
-        auto const& valid_route = MakeRouteFromName(target);
-        routes_.insert(valid_route);
+        auto const& prep_route = PrepareRouteName(target);
+        routes_.insert(std::make_pair(target.data(), prep_route));
     }
-    void HttpRouter::AddConentFolder(std::string_view folder_name)
+    void HttpRouter::RegisterContent(std::string_view folder_name)
     {
         content_folder_.insert(folder_name.data());
     }
 
-    std::string HttpRouter::MakeRouteFromName(std::string_view target) const
-    {
-        if (!IsTargetValid(target))
-            return index_;
-
-        if (IsTargetIndex(target))
-            return index_;
-
-        if (!MimeType::HasExtension(target))
-            return std::string(target.data() + def_ext_.GetExtName(false));
-
-        return target.data();
-    }
-
     bool HttpRouter::IsTarget(std::string_view target) const
     {
-        auto const& valid_route = MakeRouteFromName(target);
-        return routes_.find(valid_route.data()) != routes_.end();
+        return routes_.find(target.data()) != routes_.end();
     }
     bool HttpRouter::IsContent(std::string_view target) const
     {
-        return wfs_->IsTargetPathExist(target, true);
+        return !IsTarget(target)
+            && wfs_->IsTargetPathExist(target, true);
     }
 
-    bool HttpRouter::IsTargetValid(std::string_view target)
+    bool HttpRouter::IsTargetLegal(std::string_view target)
     {
         if (target.empty() ||
             target.front() != '/' ||
@@ -93,5 +90,19 @@ namespace fl {
             return true;
 
         return false;
+    }
+
+    std::string HttpRouter::PrepareRouteName(std::string_view target) const
+    {
+        if (!IsTargetLegal(target))
+            return index_;
+
+        if (IsTargetIndex(target))
+            return index_;
+
+        if (!MimeType::HasExtension(target))
+            return std::string(target.data() + def_ext_.GetExtName(false));
+
+        return target.data();
     }
 }
