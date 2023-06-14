@@ -29,11 +29,11 @@ namespace fl {
             return request_data_.method();
         }
 
-        HttpUrl Target() const {
+        HttpUrl Url() const {
             return HttpUrl(request_data_.target());
         }
         HttpQuery Query() const {
-            HttpQuery query(Target().Query());
+            HttpQuery query(Url().Query());
 
             if (query.IsValid())
                 return query;
