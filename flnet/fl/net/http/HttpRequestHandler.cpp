@@ -49,38 +49,36 @@ namespace fl {
         if (!HttpRouter::IsTargetLegal(url.Target()))
             return bad_request_(req, http::status::bad_request);
 
-        std::ifstream file;
-        HttpResponse res {http::status::ok, req.Version()};
-        res.SetHeader(http::field::server, BOOST_BEAST_VERSION_STRING);
-        res.SetAlive(req.Alive());
-
         if (router_->IsContent(url.Target()))        // if user asked for content
         {
             std::string path = router_->GetContentPath(url.Target());
 
-            file.open(path);
+            beast::error_code ec;
+            http::file_body::value_type body;
+            body.open(path.c_str(), beast::file_mode::scan, ec);
 
-            if(!file.is_open())
+            if(ec == beast::errc::no_such_file_or_directory)
+                return bad_request_(req, http::status::not_found);
+
+            if(ec)
                 return bad_request_(req, http::status::internal_server_error);
 
-            std::string file_content((std::istreambuf_iterator<char>(file)),
-                                    std::istreambuf_iterator<char>());
+            HttpResponseFile resFile{http::status::ok, req.Version()};
+            resFile.SetHeader(http::field::server, BOOST_BEAST_VERSION_STRING);
+            resFile.SetAlive(req.Alive());
+            resFile.SetHeader(http::field::content_type, MimeType::FromString(path).GetFormat());
+            resFile.SetHeader(http::field::content_type, MimeType::FromString(path).GetFormat());
+            resFile.Body() = std::move(body);
+            resFile.Prepare();
 
-            file.close();
-
-            res.SetHeader(http::field::content_type, MimeType::FromString(path).GetFormat());
-            res.SetSize(file_content.size());
-            res.Body() = std::move(file_content);
-
-            return std::move(res);                 
+            return std::move(resFile);                 
         }
 
         if (!router_->IsTarget(url.Target()))              
             return bad_request_(req, http::status::not_found);  
 
         std::string path = router_->GetRoutePath(url.Target());
-
-        file.open(path);
+        std::ifstream file(path);
 
         if(!file.is_open())
             return bad_request_(req, http::status::internal_server_error);
@@ -136,16 +134,19 @@ namespace fl {
         std::copy_if(handlers_.begin(), handlers_.end(), std::back_inserter(routed_callbacks), target_only);
         std::copy_if(handlers_.begin(), handlers_.end(), std::back_inserter(routed_callbacks), all_handler);
 
-        res.SetHeader(http::field::content_type, MimeType::FromString(path).GetFormat());
-        res.SetSize(file_content.size());
-        res.Body() = std::move(file_content);
+        HttpResponse resHtml {http::status::ok, req.Version()};
+        resHtml.SetHeader(http::field::server, BOOST_BEAST_VERSION_STRING);
+        resHtml.SetAlive(req.Alive());
+        resHtml.SetHeader(http::field::content_type, MimeType::FromString(path).GetFormat());
+        resHtml.SetSize(file_content.size());
+        resHtml.Body() = std::move(file_content);
 
         std::for_each(std::execution::par, routed_callbacks.begin(), routed_callbacks.end(), 
-        [&req, &res](Data const& data) {
+        [&req, &resHtml](Data const& data) {
             if (data.Handler.has_value())
-                res = data.Handler.value()(req, std::move(res));
+                resHtml = data.Handler.value()(req, std::move(resHtml));
         }); 
 
-        return std::move(res);
+        return std::move(resHtml);
     }
 }
