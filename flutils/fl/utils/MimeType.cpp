@@ -34,8 +34,8 @@ namespace fl {
         { "xml",  { Type::App, SubType::Xml,     "xml" }},
         { "pdf",  { Type::App, SubType::Pdf,     "pdf" }},
         { "zip",  { Type::App, SubType::Zip,     "zip" }},
-        { "exe",  { Type::App, SubType::Exe,     "x-msdownload" }},
         { "7z",   { Type::App, SubType::Zip,     "x-7z-compressed" }},
+        { "exe",  { Type::App, SubType::Exe,     "x-msdownload" }},
         { "bin",  { Type::App, SubType::Binary,  "octet-stream" }},
         { "doc",  { Type::App, SubType::Doc,     "msword" }},
         { "xls",  { Type::App, SubType::Xls,     "vnd.ms-excel" }},
@@ -121,10 +121,9 @@ namespace fl {
     }
     bool MimeType::IsValid() const 
     {
-        return type_ != MimeType::App
-            && sub_type_ != MimeType::SubType::Unknown;
+        return sub_type_ != MimeType::SubType::Unknown;
     }
-
+    
     bool MimeType::HasExtension(std::string_view ext)
     {
         auto const& only_ext = ExtensionOnly(ext);

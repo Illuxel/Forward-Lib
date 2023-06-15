@@ -10,7 +10,7 @@ namespace fl {
     public:
         enum Type 
         {
-            Text,
+            Text = 0,
             App,
             Img,
             Audio,
@@ -21,9 +21,9 @@ namespace fl {
             Example
         };
 
-        enum class SubType 
+        enum SubType 
         {
-            Unknown,
+            Unknown = 9,
 
             Plain,  
             Html,   // .html, .htm
