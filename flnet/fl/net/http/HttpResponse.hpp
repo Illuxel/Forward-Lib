@@ -4,18 +4,18 @@
 
 namespace fl {
 
-    template<typename Type>
+    template<typename Body>
     class HttpResponseWrapper
     {
-        http::response<Type> response_data_;
+        http::response<Body> response_data_;
 
     public:
         HttpResponseWrapper(http::status status, int version)
             : response_data_{status, version} {}
 
-        HttpResponseWrapper(http::response<Type>&& response)
+        HttpResponseWrapper(http::response<Body>&& response)
             : response_data_{std::move(response)} {}
-        HttpResponseWrapper(http::response<Type> const& response)
+        HttpResponseWrapper(http::response<Body> const& response)
             : response_data_{response} {}
 
         template<typename ...BodyArgs>
@@ -32,10 +32,10 @@ namespace fl {
             response_data_.content_length(size);
         }
 
-        std::string& Body() & {
+        auto& Body() & {
             return response_data_.body();
         }
-        std::string&& Body() && {
+        auto&& Body() && {
             return std::move(response_data_.body());
         }
 
@@ -49,5 +49,6 @@ namespace fl {
     };
 
     using HttpResponse = HttpResponseWrapper<http::string_body>;
+    using HttpResponseFile = HttpResponseWrapper<http::file_body>;
     using HttpResponseEmpty = HttpResponseWrapper<http::empty_body>;
 }
