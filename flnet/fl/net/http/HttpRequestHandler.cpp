@@ -74,20 +74,6 @@ namespace fl {
             return std::move(resFile);                 
         }
 
-        if (!router_->IsTarget(url.Target()))              
-            return bad_request_(req, http::status::not_found);  
-
-        std::string path = router_->GetRoutePath(url.Target());
-        std::ifstream file(path);
-
-        if(!file.is_open())
-            return bad_request_(req, http::status::internal_server_error);
-
-        std::string file_content((std::istreambuf_iterator<char>(file)),
-                                std::istreambuf_iterator<char>());
-
-        file.close();
-
         auto method_handler_only = 
         [&](Data const& data) {
             bool is_method;         
@@ -127,6 +113,20 @@ namespace fl {
                 && data.Handler.has_value();
         };
 
+        if (!router_->IsTarget(url.Target()))              
+            return bad_request_(req, http::status::not_found);  
+
+        std::string path = router_->GetRoutePath(url.Target());
+        std::ifstream file(path);
+
+        if(!file.is_open())
+            return bad_request_(req, http::status::internal_server_error);
+
+        std::string file_content((std::istreambuf_iterator<char>(file)),
+                                std::istreambuf_iterator<char>());
+
+        file.close();
+
         std::vector<Data> routed_callbacks;
 
         std::copy_if(handlers_.begin(), handlers_.end(), std::back_inserter(routed_callbacks), method_handler_only);
@@ -145,7 +145,7 @@ namespace fl {
         [&req, &resHtml](Data const& data) {
             if (data.Handler.has_value())
                 resHtml = data.Handler.value()(req, std::move(resHtml));
-        }); 
+        });
 
         return std::move(resHtml);
     }
