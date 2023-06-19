@@ -12,12 +12,6 @@ if (FL_ENABLE_TESING)
     add_subdirectory(test)
 endif()
 
-if (MSVC)
-    add_compile_definitions(
-        BOOST_JSON_NO_LIB=1
-    )
-endif()
-
 # Networking
 
 set(NET_INTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/net)
@@ -40,6 +34,8 @@ set(NET_SOURCE
 
 set(HTTP_INTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/net/http)
 set(HTTP_INCLUDE
+    fl/net/http/Core.hpp
+
     fl/net/http/HttpQuery.hpp
     fl/net/http/HttpUrl.hpp
 

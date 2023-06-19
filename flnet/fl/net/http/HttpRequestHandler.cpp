@@ -51,10 +51,10 @@ namespace fl {
 
         if (router_->IsContent(url.Target()))        // if user asked for content
         {
-            std::string path = router_->GetContentPath(url.Target());
-
             beast::error_code ec;
             http::file_body::value_type body;
+            std::string path = router_->GetContentPath(url.Target());
+
             body.open(path.c_str(), beast::file_mode::scan, ec);
 
             if(ec == beast::errc::no_such_file_or_directory)
@@ -135,8 +135,8 @@ namespace fl {
         std::copy_if(handlers_.begin(), handlers_.end(), std::back_inserter(routed_callbacks), all_handler);
 
         HttpResponse resHtml {http::status::ok, req.Version()};
-        resHtml.SetHeader(http::field::server, BOOST_BEAST_VERSION_STRING);
         resHtml.SetAlive(req.Alive());
+        resHtml.SetHeader(http::field::server, BOOST_BEAST_VERSION_STRING);
         resHtml.SetHeader(http::field::content_type, MimeType::FromString(path).GetFormat());
         resHtml.SetSize(file_content.size());
         resHtml.Body() = std::move(file_content);

@@ -1,11 +1,6 @@
 #pragma once
 
-#include "fl/utils/MimeType.hpp"
-
-#include <vector>
-
-#include <optional>
-#include <filesystem>
+#include "fl/net/http/Core.hpp"
 
 namespace fl {
 

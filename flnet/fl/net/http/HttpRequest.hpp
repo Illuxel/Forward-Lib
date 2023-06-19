@@ -1,7 +1,5 @@
 #pragma once
 
-#include "fl/net/Core.hpp"
-
 #include "fl/net/http/HttpUrl.hpp"
 
 namespace fl {
@@ -40,6 +38,10 @@ namespace fl {
 
             query.SetQuery(request_data_.body());
             return query;
+        }
+        
+        auto Body() const {
+            return request_data_.body();
         }
     };
 
