@@ -1,8 +1,9 @@
 #pragma once
 
+#include "fl/utils/Log.hpp"
+
 #include "fl/utils/Memory.hpp"
 #include "fl/utils/DateTime.hpp"
-#include "fl/utils/Log.hpp"
 
 #include <mysql_driver.h>
 #include <mysql_connection.h>
@@ -11,7 +12,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/variant.h>
 
-namespace fl::db {
+namespace fl {
 
     class Database final
     {
@@ -48,6 +49,12 @@ namespace fl::db {
         template<typename ...Args>
         Ref<sql::ResultSet> PrepareQuery(std::string_view query, Args&&... args)
         {
+            std::exception ec;
+            return PrepareQuery(query, ec,  std::forward<Args>(args)...);
+        }
+        template<typename ...Args>
+        Ref<sql::ResultSet> PrepareQuery(std::string_view query, std::exception& ec, Args&&... args)
+        {
             Ref<sql::ResultSet> result;
 
             if (!IsConnected())
@@ -61,44 +68,44 @@ namespace fl::db {
                 return result;
             }
 
-            Ref<sql::PreparedStatement> statement(connection_->prepareStatement(query.data()));
-
-            int index = 1;
-            (BindValue(statement, index++, std::forward<Args>(args)), ...);
-
             try
             {
-                Scope<sql::ResultSet> set(statement->executeQuery());
-                result = std::move(set);
+                int index = 1;
+                Scope<sql::PreparedStatement> statement(connection_->prepareStatement(query.data()));
+                (BindValue(statement, index++, std::forward<Args>(args)), ...);
+
+                Scope<sql::ResultSet> scope(statement->executeQuery());
+                result = std::move(scope);
             }
-            catch(const std::exception& e)
+            catch(std::exception const& e)
             {
-                std::cerr << e.what() << '\n';
+                ec = e;
             }
 
             return result;
         }
 
         bool IsConnected() const; 
+        bool IsActiveSchema() const;
 
         Database(const Database&) = delete;
         Database& operator=(const Database&) = delete;
 
     private:
         template<typename T>
-        void BindValue(Ref<sql::PreparedStatement> const& statement, int index, T&& value)
+        void BindValue(Scope<sql::PreparedStatement> const& statement, int index, T&& value)
         {
             BindValueImpl(statement, index, std::forward<T>(value));
         }
 
-        void BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, bool value);
-        void BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, int32_t value);
-        void BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, uint32_t value);
-        void BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, int64_t value);
-        void BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, uint64_t value);
-        void BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, double value);
-        void BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, const char* value);
-        void BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, std::string_view value);
-        void BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, DateTime const& date);
+        void BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, bool value);
+        void BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, int32_t value);
+        void BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, uint32_t value);
+        void BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, int64_t value);
+        void BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, uint64_t value);
+        void BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, double value);
+        void BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, const char* value);
+        void BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, std::string_view value);
+        void BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, DateTime const& date);
     };
 }

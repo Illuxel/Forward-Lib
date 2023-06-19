@@ -1,6 +1,6 @@
 #include "fl/db/Database.hpp"
 
-namespace fl::db {
+namespace fl {
     
     std::unordered_map<std::string, Ref<Database>> Database::databases_;
 
@@ -10,7 +10,10 @@ namespace fl::db {
     {
 
     }
-    Database::~Database() {}
+    Database::~Database() 
+    {
+        connection_->close();
+    }
 
     Ref<Database> Database::Innit(std::string_view db_name)
     {
@@ -59,6 +62,7 @@ namespace fl::db {
         catch(std::exception e)
         {
             ec = e;
+            connection_ = nullptr;
         }
 
         return IsConnected();
@@ -144,32 +148,36 @@ namespace fl::db {
 
         return connection_->isValid(); 
     }
+    bool Database::IsActiveSchema() const 
+    {
+        return is_scheme;
+    }
 
-    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, bool value) {
+    void Database::BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, bool value) {
         statement->setBoolean(index, value);
     }
-    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, int32_t value) {
+    void Database::BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, int32_t value) {
         statement->setInt(index, value);
     }
-     void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, uint32_t value) {
+     void Database::BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, uint32_t value) {
         statement->setUInt(index, value);
     }
-    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, int64_t value) {
+    void Database::BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, int64_t value) {
         statement->setInt64(index, value);
     }
-    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, uint64_t value) {
+    void Database::BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, uint64_t value) {
         statement->setUInt64(index, value);
     }
-    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, double value) {
+    void Database::BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, double value) {
         statement->setDouble(index, value);
     }
-    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, const char* value) {
+    void Database::BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, const char* value) {
         statement->setString(index, value);
     }
-    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, std::string_view value) {
+    void Database::BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, std::string_view value) {
         statement->setString(index, value.data());
     }
-    void Database::BindValueImpl(Ref<sql::PreparedStatement> const& statement, int index, DateTime const& date) {
+    void Database::BindValueImpl(Scope<sql::PreparedStatement> const& statement, int index, DateTime const& date) {
         statement->setDateTime(index, date.ToString("YYYY-MM-DD hh:mm:ss"));
     }
 } // namespace fl::db 

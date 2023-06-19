@@ -8,8 +8,8 @@ project(ForwardLib
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 
-option(FL_ENABLE_TESING "Enabling testing, will add google test feautures in C++" OFF)
-option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
+option(FL_ENABLE_TESING "Enabling testing, will add google test feautures in C++" ON)
+option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 

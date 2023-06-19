@@ -1,5 +1,5 @@
 #include "fl/db/Database.hpp"
-using namespace fl::db;
+using namespace fl;
 
 #include <gtest/gtest.h>
 
