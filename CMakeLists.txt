@@ -36,16 +36,22 @@ if(NOT TARGET OPENSSL)
     find_package(OpenSSL 1.1.1 REQUIRED)
 endif()
 
-if(NOT TARGET Boost)
+if(NOT Boost_FOUND)
 
     if (WIN32)
-        if (NOT BUILD_SHARED_LIBS)
-            set(Boost_USE_STATIC_RUNTIME ON)
-        endif()
         list(APPEND CMAKE_PREFIX_PATH $ENV{BOOST})
     endif()
 
-    find_package(Boost REQUIRED system COMPONENTS)
+    if (NOT BUILD_SHARED_LIBS)
+        set(Boost_USE_STATIC_LIBS ON)
+    endif()
+
+    set(Boost_USE_DEBUG_LIBS ON) 
+    set(Boost_USE_RELEASE_LIBS ON)
+    set(Boost_USE_MULTITHREADED ON)
+
+    find_package(Boost REQUIRED system json COMPONENTS)
+
 endif()
 
 include(cmake/cxx-common.cmake)
