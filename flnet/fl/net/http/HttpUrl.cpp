@@ -16,7 +16,7 @@ namespace fl {
     void HttpUrl::SetUrl(std::string_view url)
     {
         std::smatch match;
-        std::regex urlRegex("^(?:(https?):\\/\\/)?(?:([^\\/\\?#]+))?([^\\?#]*)(?:\\?([^#]*))?(?:#(.*))?$");
+        std::regex urlRegex(R"(^(?:([a-zA-Z][a-zA-Z0-9+\-.]*):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?$)");
 
         std::string copy(url.data());
 
@@ -41,7 +41,10 @@ namespace fl {
     }
     std::string HttpUrl::Target() const
     {
-        return target_.value_or("");
+        if (!target_.has_value())
+            return "";
+
+        return "/" + target_.value();
     }
     std::string HttpUrl::Section() const
     {
