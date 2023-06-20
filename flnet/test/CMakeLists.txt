@@ -4,7 +4,7 @@ set(TEST_SOURCE
     test_query.cpp
     test_url.cpp
     test_wfs.cpp
-    test_router.cpp
+    test_responder.cpp
     test_reqsponse.cpp
 )
 
