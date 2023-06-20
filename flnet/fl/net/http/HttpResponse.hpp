@@ -50,9 +50,11 @@ namespace fl {
         }
 
         template<typename Body, typename T>
-        static http::message_generator Message(HttpResponseWrapper<Body> res, T msg) 
+        static HttpResponseWrapper<Body> Message(HttpResponseWrapper<Body> res, T const& msg) 
         {
-            return MessageImpl(res, msg);
+            auto& ref = MessageImpl(std::move(res), msg);
+            ref.Prepare();
+            return std::move(ref);
         }
 
         operator http::message_generator() 
@@ -62,16 +64,18 @@ namespace fl {
 
     private: 
         template<typename Body>
-        static http::message_generator MessageImpl(HttpResponseWrapper<Body> res, std::string msg) 
+        static HttpResponseWrapper<Body> MessageImpl(HttpResponseWrapper<Body>&& res, std::string const& msg) 
         {
-            res.Body() = msg;
-            return res;
+            res.SetHeader(http::field::content_type, "text/plain");
+            res.Body() = std::move(msg);
+            return std::move(res);
         } 
         template<typename Body>
-        static http::message_generator MessageImpl(HttpResponseWrapper<Body> res, boost::json::value msg) 
+        static HttpResponseWrapper<Body> MessageImpl(HttpResponseWrapper<Body>&& res, boost::json::value const& msg) 
         {
-            res.Body() = boost::json::serialize(msg);
-            return res;
+            res.SetHeader(http::field::content_type, "application/json");
+            res.Body() = std::move(boost::json::serialize(msg));
+            return std::move(res);
         } 
     };
 

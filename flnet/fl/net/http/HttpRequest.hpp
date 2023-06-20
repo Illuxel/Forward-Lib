@@ -10,6 +10,9 @@ namespace fl {
         http::request<Type> request_data_;
 
     public:
+        HttpRequestWrapper(http::verb method, std::string_view target, int version)
+            : request_data_{method, target, version} {}
+
         HttpRequestWrapper(http::request<Type>&& request) 
             : request_data_(std::move(request)) {}
 
@@ -20,12 +23,33 @@ namespace fl {
         int Version() const {
             return request_data_.version();
         }
+        int Version(int version) const {
+            return request_data_.version(version);
+        }
+
         bool Alive() const {
             return request_data_.keep_alive();
         }
+        void Alive(bool keep_alive) {
+            request_data_.keep_alive(keep_alive);
+        }
+
         http::verb Method() const {
             return request_data_.method();
         }
+        void Method(http::verb method) {
+            request_data_.method(method);
+        }
+
+        // std::string Header(http::field field) const {
+        //     auto const& base =request_data_.base();
+        //     auto const& it = base.find(field);
+
+        //     if (it != base.end())
+        //         return it.;
+
+        //     return "";
+        // }
 
         HttpUrl Url() const {
             return HttpUrl(request_data_.target());
@@ -43,6 +67,8 @@ namespace fl {
         auto Body() const {
             return request_data_.body();
         }
+
+
     };
 
     using HttpRequest = HttpRequestWrapper<http::string_body>;
