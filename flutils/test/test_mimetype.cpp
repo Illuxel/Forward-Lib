@@ -29,13 +29,13 @@ TEST(MimeType, FromString)
 
     EXPECT_EQ(txt1.GetType(), MimeType::Text);
     EXPECT_EQ(txt1.GetSubType(), MimeType::SubType::Plain);
-    EXPECT_EQ(txt1.GetFormat(), "text/plain");
+    EXPECT_EQ(txt1.GetMimeName(), "text/plain");
 
     auto bad = MimeType::FromString("TESTtxt");
 
     EXPECT_FALSE(bad.IsValid());
     EXPECT_EQ(bad.GetSubType(), MimeType::SubType::Unknown);
-    EXPECT_EQ(bad.GetFormat(), "application/*");
+    EXPECT_EQ(bad.GetMimeName(), "application/*");
 
     EXPECT_FALSE(MimeType::FromString("unknown").IsValid());
     EXPECT_FALSE(MimeType::FromString(".unknown").IsValid());

@@ -10,7 +10,6 @@ namespace fl {
         { "csv",  { Type::Text, SubType::Csv,    "csv" }},
         { "css",  { Type::Text, SubType::Css,    "css" }},
         { "php",  { Type::Text, SubType::Php,    "php" }},
-        { "js",   { Type::Text, SubType::JavaScript,"javascript" }},
         { "jpg",  { Type::Img, SubType::Jpeg,    "jpeg" }},
         { "jpeg", { Type::Img, SubType::Jpeg,    "jpeg" }},
         { "jpe",  { Type::Img, SubType::Jpeg,    "jpeg" }},
@@ -22,7 +21,7 @@ namespace fl {
         { "bmp",  { Type::Img, SubType::Bmp,     "bmp" }},
         { "ico",  { Type::Img, SubType::Ico,     "x-icon" }},
         { "svg",  { Type::Img, SubType::Svg,     "svg+xml" }},
-        { "svgz",  { Type::Img, SubType::Svg,     "svg+xml" }},
+        { "svgz",  { Type::Img, SubType::Svg,    "svg+xml" }},
         { "mp3",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
         { "m4a",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
         { "m4b",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
@@ -30,7 +29,8 @@ namespace fl {
         { "mpga", { Type::Audio, SubType::Mpeg,  "mpeg" }},
         { "mp4",  { Type::Video, SubType::Mp4,   "mp4" }},
         { "m4v",  { Type::Video, SubType::Mp4,   "mp4" }},
-        { "json", { Type::App, SubType::Json, "json" }},
+        { "js",   { Type::App, SubType::JavaScript,"javascript" }},
+        { "json", { Type::App, SubType::Json,    "json" }},
         { "xml",  { Type::App, SubType::Xml,     "xml" }},
         { "pdf",  { Type::App, SubType::Pdf,     "pdf" }},
         { "zip",  { Type::App, SubType::Zip,     "zip" }},
@@ -108,7 +108,7 @@ namespace fl {
     {
         return sub_type_;
     }
-    std::string MimeType::GetFormat() const 
+    std::string MimeType::GetMimeName() const 
     {
         return CreateTypeString(type_) + sub_type_str_;
     }

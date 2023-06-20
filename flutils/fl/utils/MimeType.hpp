@@ -81,7 +81,7 @@ namespace fl {
         /**
          *  @return 
          */
-        std::string GetFormat() const;
+        std::string GetMimeName() const;
 
         /**
          * 
