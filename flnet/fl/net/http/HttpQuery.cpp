@@ -51,6 +51,13 @@ namespace fl {
         : is_valid(false)
     {
         auto decoded = UrlDecodeUtf8(query);
+
+        if (decoded.empty())
+            return;
+
+        if (decoded.front() == '?')
+            decoded.erase(0, 1);
+
         SetQuery(decoded);
     }
 
@@ -150,8 +157,9 @@ namespace fl {
             temp.append(key + '=' + val);
         }
 
-        return temp;
+        return "?" + temp;
     }
+    
     std::vector<StringArg> HttpQuery::ToArgs() const 
     {
         std::vector<StringArg> args;

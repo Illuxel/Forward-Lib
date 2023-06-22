@@ -10,7 +10,7 @@ TEST(HttpResponder, RegistrationTest) {
 
     data.Target = "/test";
     data.Method = http::verb::get;
-    data.Callback = [](HttpRequest const& req, HttpResponse&& res)
+    data.Callback = [](HttpRequest const& req, HttpResponse& res)
     {
         return std::move(res);
     };
@@ -30,7 +30,7 @@ TEST(HttpResponder, RegistrationTest) {
         return std::move(res);
     });
 
-    HttpRequest req{http::verb::get, "test", 1};
+    HttpRequest req{http::verb::get, "/test", 1};
 
     responder.HandleRequest(std::move(req));
 }

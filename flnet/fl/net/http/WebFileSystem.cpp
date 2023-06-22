@@ -39,12 +39,12 @@ namespace fl {
                     relative_target = rel_gen.substr(0, rel_gen.size() - 1);
                 }
 
-                WebFileMeta wf = { 
-                    file_name, 
-                    MimeType::FromString(file),
-                    relative_target,
-                    base
-                };
+                WebFileMeta wf;
+
+                wf.Name = file_name;
+                wf.Ext = MimeType::FromString(file);
+                wf.Relative = relative_target;
+                wf.Base = base;
 
                 files.push_back(wf);
             }
@@ -66,8 +66,11 @@ namespace fl {
             return;
         }
 
-        web_root_ = web_root;
-        files_ = IterateFiles(web_root_);
+        {    
+            std::shared_lock<std::shared_mutex> lock(mutex_);
+            web_root_ = web_root;
+            files_ = IterateFiles(web_root_);
+        }
     }
     std::string_view WebFilesSystem::GetWebRoot() const 
     {
@@ -77,7 +80,7 @@ namespace fl {
     std::optional<WebFileMeta> 
     WebFilesSystem::FindByTargetName(std::string_view target, bool extension) const
     {
-        static std::optional<WebFileMeta> cached;
+        static std::optional<WebFileMeta> cached = std::nullopt;
 
         if (cached.has_value() && cached->TargetName(extension) == target)
             return cached;
@@ -89,9 +92,13 @@ namespace fl {
             return target == target_name;
         });
 
-        if (it != files_.end())
+        if (it != files_.cend())
         {
-            cached.emplace(*it);
+            {    
+                std::shared_lock<std::shared_mutex> lock(mutex_);
+                cached.emplace(*it);
+            }
+
             return *it;
         }
 
@@ -101,21 +108,26 @@ namespace fl {
     std::optional<WebFileMeta> 
     WebFilesSystem::FindByTargetPath(std::string_view target, bool extension) const
     {
-        static std::optional<WebFileMeta> cached;
+        static std::optional<WebFileMeta> cached = std::nullopt;
 
         if (cached.has_value() && cached->TargetPath(extension) == target)
             return cached;
 
-        auto const& it = std::find_if(files_.begin(), files_.end(), 
+        auto const& it = std::find_if(files_.cbegin(), files_.cend(), 
         [&target, &extension](auto const& file_info)
         {
             auto target_path = file_info.TargetPath(extension);
             return target == target_path;
         });
 
-        if (it != files_.end()) 
+        if (it != files_.cend()) 
         {
-            cached.emplace(*it);
+
+            {    
+                std::shared_lock<std::shared_mutex> lock(mutex_);
+                cached.emplace(*it);
+            }
+
             return *it;
         }
 

@@ -4,16 +4,16 @@
 
 namespace fl {
 
-    template<typename Type>
+    template<class Body>
     class HttpRequestWrapper
     {
-        http::request<Type> request_data_;
+        http::request<Body> request_data_;
 
     public:
         HttpRequestWrapper(http::verb method, std::string_view target, int version)
             : request_data_{method, target, version} {}
 
-        HttpRequestWrapper(http::request<Type>&& request) 
+        HttpRequestWrapper(http::request<Body>&& request) 
             : request_data_(std::move(request)) {}
 
         template<typename ...Args>
@@ -41,16 +41,6 @@ namespace fl {
             request_data_.method(method);
         }
 
-        // std::string Header(http::field field) const {
-        //     auto const& base =request_data_.base();
-        //     auto const& it = base.find(field);
-
-        //     if (it != base.end())
-        //         return it.;
-
-        //     return "";
-        // }
-
         HttpUrl Url() const {
             return HttpUrl(request_data_.target());
         }
@@ -67,8 +57,6 @@ namespace fl {
         auto Body() const {
             return request_data_.body();
         }
-
-
     };
 
     using HttpRequest = HttpRequestWrapper<http::string_body>;

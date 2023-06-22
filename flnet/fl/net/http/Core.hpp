@@ -8,6 +8,8 @@
 #include <optional>
 #include <filesystem>
 
+#include <shared_mutex>
+
 #include <boost/json.hpp>
 namespace json = boost::json;
 

@@ -44,6 +44,7 @@ set(HTTP_INCLUDE
 
     fl/net/http/WebFileSystem.hpp
     fl/net/http/HttpRouter.hpp
+    fl/net/http/HttpResponder.hpp
 )
 set(HTTP_SOURCE
     ${HTTP_INCLUDE}   
@@ -53,6 +54,7 @@ set(HTTP_SOURCE
 
     fl/net/http/WebFileSystem.cpp
     fl/net/http/HttpRouter.cpp
+    fl/net/http/HttpResponder.cpp
 )
 
 add_library(net STATIC ${HTTP_SOURCE} ${NET_SOURCE})

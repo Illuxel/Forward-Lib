@@ -10,7 +10,7 @@ TEST(HttpUrlTest, ValidUrl) {
     EXPECT_EQ(url.Protocol(), "http");
     EXPECT_EQ(url.Domain(), "www.example.com");
     EXPECT_EQ(url.Target(), "/path/to/resource");
-    EXPECT_EQ(url.Query().ToString(), "p=value1");
+    EXPECT_EQ(url.Query().ToString(), "?p=value1");
     EXPECT_EQ(url.Section(), "fragment");
 }
 
@@ -32,6 +32,6 @@ TEST(HttpUrlTest, UrlWithoutDomain) {
     EXPECT_EQ(url.Protocol(), "http");
     EXPECT_EQ(url.Domain(), "localhost");
     EXPECT_EQ(url.Target(), "/path/to/resource");
-    EXPECT_EQ(url.Query().ToString(), "param1=value1&p=v");
+    EXPECT_EQ(url.Query().ToString(), "?param1=value1&p=v");
     EXPECT_EQ(url.Section(), "fragment");
 }

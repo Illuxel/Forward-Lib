@@ -18,7 +18,10 @@ namespace fl {
         }
         // returns path to a file
         std::string FullPath() const {
-            return Base.string() + TargetPath();
+            std::string temp = Base.string();
+            temp.append(TargetPath());
+
+            return  temp;
         }
 
         // returns target file name
@@ -45,6 +48,8 @@ namespace fl {
         std::string web_root_;
         // all stored files in web site 
         std::vector<WebFileMeta> files_;
+
+        mutable std::shared_mutex mutex_;
 
     public:
         /**

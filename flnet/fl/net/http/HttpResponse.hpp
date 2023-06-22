@@ -4,7 +4,7 @@
 
 namespace fl {
 
-    template<typename Body>
+    template<class Body>
     class HttpResponseWrapper
     {
         http::response<Body> response_data_;
@@ -14,9 +14,9 @@ namespace fl {
             : response_data_{status, version} {}
 
         HttpResponseWrapper(http::response<Body>&& response)
-            : response_data_{std::move(response)} {}
+            : response_data_(std::move(response)) {}
         HttpResponseWrapper(http::response<Body> const& response)
-            : response_data_{response} {}
+            : response_data_(response) {}
 
         template<typename ...BodyArgs>
         HttpResponseWrapper(std::piecewise_construct_t t, std::tuple<BodyArgs...> body_args) 
@@ -49,33 +49,34 @@ namespace fl {
             response_data_.prepare_payload();
         }
 
-        template<typename Body, typename T>
-        static HttpResponseWrapper<Body> Message(HttpResponseWrapper<Body> res, T const& msg) 
+        template<typename T>
+        static HttpResponseWrapper<http::string_body> Message(HttpResponseWrapper<http::string_body> res, T const& msg) 
         {
-            auto& ref = MessageImpl(std::move(res), msg);
-            ref.Prepare();
-            return std::move(ref);
+            return MessageImpl(res, msg);
         }
 
+        template <class Body>
+        operator http::response<Body>()
+        {
+            return response_data_;
+        }
         operator http::message_generator() 
         {
             return std::move(response_data_);
         }
 
     private: 
-        template<typename Body>
-        static HttpResponseWrapper<Body> MessageImpl(HttpResponseWrapper<Body>&& res, std::string const& msg) 
+        static HttpResponseWrapper<http::string_body> MessageImpl(HttpResponseWrapper<http::string_body> res, std::string const& msg) 
         {
             res.SetHeader(http::field::content_type, "text/plain");
             res.Body() = std::move(msg);
             return std::move(res);
         } 
-        template<typename Body>
-        static HttpResponseWrapper<Body> MessageImpl(HttpResponseWrapper<Body>&& res, boost::json::value const& msg) 
+        static HttpResponseWrapper<http::string_body> MessageImpl(HttpResponseWrapper<http::string_body> res, boost::json::value const& msg) 
         {
             res.SetHeader(http::field::content_type, "application/json");
-            res.Body() = std::move(boost::json::serialize(msg));
-            return std::move(res);
+            res.Body() = boost::json::serialize(msg);
+            return res;
         } 
     };
 
