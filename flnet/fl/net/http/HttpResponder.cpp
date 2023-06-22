@@ -6,7 +6,7 @@
 
 namespace fl {
 
-    HttpResponse&& DefaultBadRequestCallBack(HttpRequest const& req, http::status status)
+    HttpResponse DefaultBadRequestCallBack(HttpRequest const& req, http::status status)
     {
         HttpResponse res{ status, req.Version() };
         res.SetHeader(http::field::server, BOOST_BEAST_VERSION_STRING);
