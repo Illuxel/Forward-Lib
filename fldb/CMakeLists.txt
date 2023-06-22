@@ -54,7 +54,7 @@ if (WIN32)
 
     if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
 
-        message("MySQL Connector C++ Debug build")
+        message(STATUS "MySQL Connector C++ Debug build")
 
         set(MYSQL_CONNECTOR_PATH_SUFFIXES
             lib/vs14/debug
@@ -63,7 +63,7 @@ if (WIN32)
 
     elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
 
-        message("MySQL Connector C++ Release build")
+        message(STATUS "MySQL Connector C++ Release build")
 
         set(MYSQL_CONNECTOR_PATH_SUFFIXES
             lib/vs14
@@ -71,7 +71,7 @@ if (WIN32)
         )
 
     else()
-        message("Unknown build type: ${CMAKE_BUILD_TYPE}")
+        message(FATAL_ERROR "Unknown build type: ${CMAKE_BUILD_TYPE}")
     endif()
 
     find_library(MYSQL_CONNECTOR_LIB
