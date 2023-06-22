@@ -125,6 +125,8 @@ PUBLIC
 )
 target_link_libraries(client PUBLIC ${namespace}::flapi)
 
+add_subdirectory(test)
+
 #--------------< Exporting targets >--------------#
 
 if (MSVC)
