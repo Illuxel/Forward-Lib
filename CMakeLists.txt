@@ -100,7 +100,7 @@ add_library(${namespace}::db ALIAS db)
 
 #--------------< API >--------------#
 
-add_library(flapi SHARED ${FL_SOURCE})
+add_library(flapi ${FL_SOURCE})
 add_library(${namespace}::flapi ALIAS flapi)
 
 target_include_directories(flapi
@@ -115,7 +115,7 @@ PUBLIC
     ${namespace}::db
 )
 
-add_library(client SHARED ${FLCLIENT_SOURCE})
+add_library(client ${FLCLIENT_SOURCE})
 add_library(${namespace}::client ALIAS client)
 
 target_include_directories(client

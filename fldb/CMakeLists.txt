@@ -50,6 +50,29 @@ if (WIN32)
     endif()
 
     set(MYSQL_CONNECTOR_INCLUDE ${MYSQL_CONNECTOR_PATH}/include)
+    set(MYSQL_CONNECTOR_PATH_SUFFIXES)
+
+    if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+
+        message("MySQL Connector C++ Debug build")
+
+        set(MYSQL_CONNECTOR_PATH_SUFFIXES
+            lib/vs14/debug
+            lib64/vs14/debug
+        )
+
+    elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
+
+        message("MySQL Connector C++ Release build")
+
+        set(MYSQL_CONNECTOR_PATH_SUFFIXES
+            lib/vs14
+            lib64/vs14
+        )
+
+    else()
+        message("Unknown build type: ${CMAKE_BUILD_TYPE}")
+    endif()
 
     find_library(MYSQL_CONNECTOR_LIB
     NAME 
@@ -59,12 +82,7 @@ if (WIN32)
         ${MYSQL_CONNECTOR_POSSIBLE_PATH}
     ENV MYSQL_CONNECTOR
     PATH_SUFFIXES
-        lib
-        lib/vs14
-        lib/vs14/debug
-        lib64
-        lib64/vs14
-        lib64/vs14/debug
+        ${MYSQL_CONNECTOR_PATH_SUFFIXES}
     NO_DEFAULT_PATH
     )
 
