@@ -45,6 +45,9 @@ set(HTTP_INCLUDE
     fl/net/http/WebFileSystem.hpp
     fl/net/http/HttpRouter.hpp
     fl/net/http/HttpResponder.hpp
+
+    fl/net/http/HttpClient.cpp
+    fl/net/http/HttpClient.hpp
 )
 set(HTTP_SOURCE
     ${HTTP_INCLUDE}   

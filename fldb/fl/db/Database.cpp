@@ -12,7 +12,7 @@ namespace fl {
     }
     Database::~Database() 
     {
-        connection_->close();
+        
     }
 
     Ref<Database> Database::Innit(std::string_view db_name)
@@ -111,7 +111,13 @@ namespace fl {
         connection_->setSchema(scheme.data());
     }
 
-    Ref<sql::ResultSet> Database::Execute(std::string_view query) const
+    Ref<sql::ResultSet> Database::Execute(std::string_view query) const 
+    {
+        std::exception ex;
+        return Execute(query, ex);
+    }
+
+    Ref<sql::ResultSet> Database::Execute(std::string_view query, std::exception& ex) const
     {
         Ref<sql::ResultSet> result;
 
@@ -135,7 +141,7 @@ namespace fl {
         }
         catch(const std::exception& e)
         {
-            std::cerr << e.what() << '\n';
+            ex = e;
         }
         
         return result;

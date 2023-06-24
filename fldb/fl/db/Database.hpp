@@ -45,6 +45,7 @@ namespace fl {
         void SetActiveSchema(std::string_view scheme);
 
         Ref<sql::ResultSet> Execute(std::string_view query) const;
+        Ref<sql::ResultSet> Execute(std::string_view query, std::exception& ex) const;
 
         template<typename ...Args>
         Ref<sql::ResultSet> PrepareQuery(std::string_view query, Args&&... args)
