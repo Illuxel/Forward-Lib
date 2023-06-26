@@ -12,7 +12,7 @@ Description: Soon
 
 - OpenSSL
 - Boost 
-- MySQL Connector C++ 1.1.13 (Debug)
+- MySQL Connector C++ 1.1.13 (Debug/Release)
 <!-- - JWT-CPP -->
 <!-- - SqLite -->
 
