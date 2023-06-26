@@ -45,8 +45,9 @@ set(HTTP_INCLUDE
     fl/net/http/WebFileSystem.hpp
     fl/net/http/HttpRouter.hpp
     fl/net/http/HttpResponder.hpp
+    fl/net/http/HttpSession.hpp
+    fl/net/http/HttpServer.hpp
 
-    fl/net/http/HttpClient.cpp
     fl/net/http/HttpClient.hpp
 )
 set(HTTP_SOURCE
@@ -58,6 +59,10 @@ set(HTTP_SOURCE
     fl/net/http/WebFileSystem.cpp
     fl/net/http/HttpRouter.cpp
     fl/net/http/HttpResponder.cpp
+    fl/net/http/HttpSession.cpp
+    fl/net/http/HttpServer.cpp
+
+    fl/net/http/HttpClient.cpp
 )
 
 add_library(net STATIC ${HTTP_SOURCE} ${NET_SOURCE})

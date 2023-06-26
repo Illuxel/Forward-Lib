@@ -7,58 +7,61 @@ namespace fl {
     template<class Body>
     class HttpRequestWrapper
     {
-        http::request<Body> request_data_;
+        http::request<Body> request_;
 
     public:
+        HttpRequestWrapper() {}
+
+        HttpRequestWrapper(http::status status, int version)
+            : request_(status, version) {}
         HttpRequestWrapper(http::verb method, std::string_view target, int version)
-            : request_data_{method, target, version} {}
+            : request_(method, target, version) {}
 
-        HttpRequestWrapper(http::request<Body>&& request) 
-            : request_data_(std::move(request)) {}
+        HttpRequestWrapper(http::request<Body>&& request)
+            : request_(std::move(request)){}
+        HttpRequestWrapper(http::request<Body> const& request) 
+            : request_(request) {}
 
-        template<typename ...Args>
-        HttpRequestWrapper(std::piecewise_construct_t t, std::tuple<Args...> body_args) 
-            : request_data_{t, std::forward<Args>(body_args)...} {}
-
-        int Version() const {
-            return request_data_.version();
+        auto& Base() & 
+        {
+            return request_;
         }
-        int Version(int version) const {
-            return request_data_.version(version);
+        auto&& Base() &&
+        {
+            return std::move(request_);
         }
-
-        bool Alive() const {
-            return request_data_.keep_alive();
-        }
-        void Alive(bool keep_alive) {
-            request_data_.keep_alive(keep_alive);
+        auto const& Base() const &
+        {
+            return request_;
         }
 
-        http::verb Method() const {
-            return request_data_.method();
+        HttpUrl Url() const 
+        {
+            return HttpUrl(request_.target());
         }
-        void Method(http::verb method) {
-            request_data_.method(method);
-        }
-
-        HttpUrl Url() const {
-            return HttpUrl(request_data_.target());
-        }
-        HttpQuery Query() const {
+        HttpQuery Query() const 
+        {
             HttpQuery query(Url().Query());
 
             if (query.IsValid())
                 return query;
 
-            query.SetQuery(request_data_.body());
+            query.SetQuery(request_.body());
             return query;
         }
         
-        auto Body() const {
-            return request_data_.body();
+        void Clear() 
+        {
+            request_ = {};
+        }
+
+        operator http::message_generator() 
+        {
+            return std::move(request_);
         }
     };
 
     using HttpRequest = HttpRequestWrapper<http::string_body>;
+    using HttpRequestFile = HttpRequestWrapper<http::file_body>;
     using HttpRequestEmpty = HttpRequestWrapper<http::empty_body>;
 }

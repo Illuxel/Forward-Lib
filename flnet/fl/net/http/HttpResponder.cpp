@@ -8,12 +8,14 @@ namespace fl {
 
     HttpResponse DefaultBadRequestCallBack(HttpRequest const& req, http::status status)
     {
-        HttpResponse res{ status, req.Version() };
-        res.SetHeader(http::field::server, BOOST_BEAST_VERSION_STRING);
-        res.SetHeader(http::field::content_type, MimeType::FromString("html").GetMimeName());
-        res.SetAlive(req.Alive());
-        res.Body() = "Can not find page or resource";
-        res.Prepare();
+        HttpResponse res(status, req.Base().version());
+
+        res.Base().set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.Base().set(http::field::content_type, MimeType::FromString("html").GetMimeName());
+        res.Base().keep_alive(req.Base().keep_alive());
+        res.Base().body() = "Can not find page or resource";
+        res.Base().prepare_payload();
+
         return std::move(res);
     }
 
@@ -23,16 +25,13 @@ namespace fl {
         body.open(path.c_str(), beast::file_mode::scan, ec);
 
         if(ec)
-        {
-            FL_LOG("File", ec.message());
             return;
-        }
 
         auto const size = body.size();
 
-        res.SetHeader(http::field::content_type, MimeType::FromString(path).GetMimeName());
-        res.Body() = std::move(body);
-        res.SetSize(size);  
+        res.Base().set(http::field::content_type, MimeType::FromString(path).GetMimeName());
+        res.Base().body() = std::move(body);
+        res.Base().content_length(size);  
 
         body.close();
     }
@@ -69,7 +68,7 @@ namespace fl {
     http::message_generator HttpResponder::HandleRequest(HttpRequest&& req) const 
     {
         auto url = req.Url();
-        auto method = req.Method();
+        auto method = req.Base().method();
         auto target = url.Target();
         
         if (!url.IsValid())
@@ -83,9 +82,9 @@ namespace fl {
         // without router 
         if (!router_)
         {
-            HttpResponse res { http::status::ok, req.Version() };
-            res.SetAlive(req.Alive());
-            res.SetHeader(http::field::server, BOOST_BEAST_VERSION_STRING);
+            HttpResponse res(http::status::ok, req.Base().version());
+            res.Base().keep_alive(req.Base().keep_alive());
+            res.Base().set(http::field::server, BOOST_BEAST_VERSION_STRING);
 
             auto const& handler_it = std::find_if(handlers_.begin(), handlers_.end(), 
             [&target, &method](std::pair<std::string, HandlerData> const& pair)
@@ -110,7 +109,9 @@ namespace fl {
 
         // with router
 
-        bool is_target = router_->IsTarget(target);
+        std::string prep_target = router_->GetPreparedTarget(target);
+
+        bool is_target = router_->IsTarget(prep_target);
         bool is_content = router_->IsContent(target);
 
         if (!is_target && !is_content)
@@ -141,10 +142,10 @@ namespace fl {
         if (is_only_target || is_content)
         {
             beast::error_code ec;
-            HttpResponseFile resFile { http::status::ok, req.Version() };
+            HttpResponseFile resFile(http::status::ok, req.Base().version());
 
-            resFile.SetAlive(req.Alive());
-            resFile.SetHeader(http::field::server, BOOST_BEAST_VERSION_STRING);
+            resFile.Base().keep_alive(req.Base().keep_alive());
+            resFile.Base().set(http::field::server, BOOST_BEAST_VERSION_STRING);
                         
             std::string path;
 
@@ -166,8 +167,6 @@ namespace fl {
         }
 
         // section where only callback
-
-        std::string prep_target = router_->GetPreparedTarget(target);
 
         auto const& only_handler_it = std::find_if(handlers_.begin(), handlers_.end(), 
         [&prep_target, &method](std::pair<std::string, HandlerData> const& pair)
@@ -191,11 +190,11 @@ namespace fl {
 
         auto const& handler = *only_handler_it->second.Callback;
 
-        HttpResponse res { http::status::ok, req.Version() };
-        res.SetAlive(req.Alive());
-        res.SetHeader(http::field::server, BOOST_BEAST_VERSION_STRING);
+        HttpResponse res(http::status::ok, req.Base().version());
+        res.Base().keep_alive(req.Base().keep_alive());
+        res.Base().set(http::field::server, BOOST_BEAST_VERSION_STRING);
         res = handler(req, std::move(res));
-        res.Prepare();
+        res.Base().prepare_payload();
 
         return res;
     }
