@@ -6,6 +6,7 @@ namespace fl {
     
     class Endpoint
     {
+    private:
         tcp::endpoint m_Endpoint;
 
     public:

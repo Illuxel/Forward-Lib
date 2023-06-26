@@ -6,6 +6,7 @@ namespace fl {
 
     class AsyncListener : public std::enable_shared_from_this<AsyncListener>
     {
+    private:
         using AsyncAcceptFunc = std::function<void(beast::error_code, tcp::socket&&)>;
 
         net::io_context& io_context_;

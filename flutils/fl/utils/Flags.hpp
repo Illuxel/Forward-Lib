@@ -7,6 +7,7 @@ namespace fl {
     template <typename Enum>
     class EnumFlags
     {
+    private:
         static_assert(std::is_enum_v<Enum>, "EnumFlags requires an enum type.");
 
         using underlying_type = std::underlying_type_t<Enum>;

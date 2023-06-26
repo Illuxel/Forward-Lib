@@ -7,6 +7,7 @@ namespace fl {
     template<class Body>
     class HttpResponseWrapper
     {
+    private:
         http::response<Body> response_;
 
     public:

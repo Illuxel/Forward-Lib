@@ -16,12 +16,12 @@ namespace fl {
 
     class Database final
     {
+    private:
+        static std::unordered_map<std::string, Ref<Database>> databases_;
+    
         sql::mysql::MySQL_Driver* driver_;
         Scope<sql::Connection> connection_;
         bool is_scheme;
-
-    private:
-        static std::unordered_map<std::string, Ref<Database>> databases_;
 
         Database(sql::mysql::MySQL_Driver* driver);
 

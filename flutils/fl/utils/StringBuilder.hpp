@@ -6,6 +6,7 @@ namespace fl {
 
     class StringBuilder
     {
+    private:
         std::optional<std::string> result_;
 
     public:

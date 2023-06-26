@@ -8,6 +8,7 @@ namespace fl {
 
     class HttpClient : public std::enable_shared_from_this<HttpClient>
     {
+    private:
         tcp::resolver resolver_;
         beast::ssl_stream<beast::tcp_stream> stream_;
         beast::flat_buffer buffer_; // (Must persist between reads)

@@ -44,6 +44,7 @@ namespace fl {
 
     class WebFilesSystem
     {
+    private:
         // web documents directory
         std::string web_root_;
         // all stored files in web site 

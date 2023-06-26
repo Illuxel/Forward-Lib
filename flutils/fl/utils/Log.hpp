@@ -10,6 +10,7 @@ namespace fl {
 
 	class Log
 	{
+    private:
 		static std::unordered_map<std::string, Ref<Logger>> logs_;
 
 	public:

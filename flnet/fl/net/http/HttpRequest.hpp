@@ -7,6 +7,7 @@ namespace fl {
     template<class Body>
     class HttpRequestWrapper
     {
+    private:
         http::request<Body> request_;
 
     public:

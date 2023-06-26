@@ -6,6 +6,7 @@ namespace fl {
 
     class HttpSession : public std::enable_shared_from_this<HttpSession>
     {
+    private:
         using ExpireTime = std::chrono::steady_clock::duration;
 
         beast::ssl_stream<beast::tcp_stream> stream_;

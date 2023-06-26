@@ -11,6 +11,7 @@ namespace fl {
     
     class DateTime
     {
+    private:
         std::chrono::system_clock::time_point time_point_;
         mutable std::optional<std::tm> date_time_;
         

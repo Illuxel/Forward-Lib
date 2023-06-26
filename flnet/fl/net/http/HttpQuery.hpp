@@ -9,9 +9,10 @@ namespace fl {
 
     class HttpQuery
     {
-        using Parameters = std::unordered_map<std::string, std::string>;
-        std::optional<Parameters> params_;
+    private:
         bool is_valid;
+        std::optional<std::unordered_map<std::string, std::string>> params_;
+
     public:
         HttpQuery();
         HttpQuery(std::string_view query);

@@ -10,6 +10,7 @@ namespace fl {
     
     class StringArg 
     {
+    private:
         std::optional<char> specifier_;
 
         std::string name_;

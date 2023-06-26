@@ -6,6 +6,7 @@ namespace fl {
     
     class HttpUrl
     {
+    private:
         bool valid_;
         std::optional<std::string> protocol_, domain_, target_, query_, section_;
 
