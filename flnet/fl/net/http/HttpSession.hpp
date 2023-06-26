@@ -26,8 +26,10 @@ namespace fl {
 
         // Start the session
         void Run();
-        void DoWrite(http::message_generator&& msg);
-        void DoClose();
+        // Sends message to client
+        void Write(http::message_generator&& msg);
+        // Closes connection
+        void Close();
 
     protected:
         virtual void OnRead(beast::error_code ec, std::size_t bytes_transferred);
@@ -38,10 +40,7 @@ namespace fl {
 
         void DoRead();
 
-        void OnWrite(bool keep_alive,
-            beast::error_code ec,
-            std::size_t bytes_transferred);
-
+        void OnWrite(bool keep_alive, beast::error_code ec, std::size_t bytes_transferred);
         void OnClose(beast::error_code ec);
     };
 }

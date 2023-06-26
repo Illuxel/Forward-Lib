@@ -67,7 +67,7 @@ namespace fl {
 
         // This means they closed the connection
         if(ec == http::error::end_of_stream)
-            return DoClose();
+            return Close();
 
         if(ec)
             return FL_LOG("OnRead", ec.message());
@@ -76,7 +76,7 @@ namespace fl {
         // DoWrite(responder_->HandleRequest(std::move(req_)));
     }
 
-    void HttpSession::DoWrite(http::message_generator&& msg)
+    void HttpSession::Write(http::message_generator&& msg)
     {
         bool keep_alive = msg.keep_alive();
 
@@ -98,12 +98,12 @@ namespace fl {
             return FL_LOG("OnWrite", ec.message());
 
         if(!keep_alive)
-            return DoClose();
+            return Close();
 
         DoRead();
     }
 
-    void HttpSession::DoClose()
+    void HttpSession::Close()
     {
         // Set the timeout.
         beast::get_lowest_layer(stream_).expires_after(exp_close_);
