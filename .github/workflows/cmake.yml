@@ -28,7 +28,8 @@ jobs:
         sudo ./b2 install
 
     - name: Install MySQL Connector/C++
-      run: sudo apt-get install libmysqlcppconn-dev
+      run: |
+        sudo apt-get install libmysqlcppconn-dev
 
     - name: Configure CMake
       run: |
