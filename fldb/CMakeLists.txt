@@ -4,23 +4,18 @@ if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
   set(CMAKE_INSTALL_LIBDIR "lib")
 endif()
 
+set(MYSQL_CONNECTOR_LIB_NAME mysqlcppconn)
+set(MYSQL_CONNECTOR_LIB_TYPE)
+set(MYSQL_CONNECTOR_LIB_EXT)
+
+set(MYSQL_CONNECTOR_POSSIBLE_PATH)
+set(MYSQL_CONNECTOR_PATH_SUFFIXES)
+
+set(MYSQL_CONNECTOR_INCLUDE)
+
 if (WIN32)
 
-    set(MYSQL_CONNECTOR_LIB_NAME)
-    set(MYSQL_CONNECTOR_LIB_NAME_ONLY mysqlcppconn)
-    set(MYSQL_CONNECTOR_LIB_TYPE)
-    set(MYSQL_CONNECTOR_LIB_EXT)
-
-    set(MYSQL_CONNECTOR_POSSIBLE_PATH
-        "C:\\Program Files\\MySQL"
-        "C:\\Program Files\\MySQL\\Connector C++"
-        "C:\\Program Files\\MySQL\\*\\include"
-        "C:\\Program Files\\MySQL\\*\\lib"
-        "C:\\Program Files\\MySQL\\*\\lib64"
-    )
-
     if (BUILD_SHARED_LIBS)
-        set(MYSQL_CONNECTOR_LIB_TYPE "")
         set(MYSQL_CONNECTOR_LIB_EXT ".dll")
     else()
         set(MYSQL_CONNECTOR_LIB_TYPE "-static")
@@ -31,69 +26,101 @@ if (WIN32)
         ) 
     endif()
 
-    string(APPEND MYSQL_CONNECTOR_LIB_NAME ${MYSQL_CONNECTOR_LIB_NAME_ONLY})
-    string(APPEND MYSQL_CONNECTOR_LIB_NAME ${MYSQL_CONNECTOR_LIB_TYPE})
-    string(APPEND MYSQL_CONNECTOR_LIB_NAME ${MYSQL_CONNECTOR_LIB_EXT})
-
-    message(STATUS "Finding MySQL Connecotr lib: ${MYSQL_CONNECTOR_LIB_NAME}")
-
-    find_path(MYSQL_CONNECTOR_PATH
-    NAME include
-    PATHS
-        ${MYSQL_CONNECTOR_POSSIBLE_PATH}
-    ENV MYSQL_CONNECTOR
-    NO_DEFAULT_PATH
-    )   
-
-    if (NOT MYSQL_CONNECTOR_PATH)
-        message(FATAL_ERROR "Can not find MySQL Path")
-    endif()
-
-    set(MYSQL_CONNECTOR_INCLUDE ${MYSQL_CONNECTOR_PATH}/include)
-    set(MYSQL_CONNECTOR_PATH_SUFFIXES)
-
-    if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
-
-        message(STATUS "MySQL Connector C++ Debug build")
-
-        set(MYSQL_CONNECTOR_PATH_SUFFIXES
-            lib/vs14/debug
-            lib64/vs14/debug
-        )
-
-    elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
-
-        message(STATUS "MySQL Connector C++ Release build")
-
-        set(MYSQL_CONNECTOR_PATH_SUFFIXES
-            lib/vs14
-            lib64/vs14
-        )
-
-    else()
-        message(FATAL_ERROR "Unknown build type: ${CMAKE_BUILD_TYPE}")
-    endif()
-
-    find_library(MYSQL_CONNECTOR_LIB
-    NAME 
-        ${MYSQL_CONNECTOR_LIB_NAME}
-    PATHS
-        ${MYSQL_CONNECTOR_PATH}
-        ${MYSQL_CONNECTOR_POSSIBLE_PATH}
-    ENV MYSQL_CONNECTOR
-    PATH_SUFFIXES
-        ${MYSQL_CONNECTOR_PATH_SUFFIXES}
-    NO_DEFAULT_PATH
+    set(MYSQL_CONNECTOR_POSSIBLE_PATH
+        "C:\\Program Files\\MySQL"
+        "C:\\Program Files\\MySQL\\Connector C++"
+        "C:\\Program Files\\MySQL\\*\\include"
+        "C:\\Program Files\\MySQL\\*\\lib"
+        "C:\\Program Files\\MySQL\\*\\lib64"
     )
 
-    if (NOT MYSQL_CONNECTOR_LIB)
-        message(FATAL_ERROR "Can not find MySQL Connector library")
+elseif(UNIX)
+
+    if (BUILD_SHARED_LIBS)
+        set(MYSQL_CONNECTOR_LIB_EXT ".so")
+    else()
+        set(MYSQL_CONNECTOR_LIB_EXT ".a")
+        # To statically build MySQL Connector C++
+        # add_compile_definitions(
+        #     CPPCONN_PUBLIC_FUNC=
+        # ) 
     endif()
+
+    set(MYSQL_CONNECTOR_POSSIBLE_PATH
+        "/usr/lib"
+        "/usr/lib64"
+        "/usr/local/lib"
+        "/usr/local/lib64"
+    )
+
+endif()
+
+string(APPEND MYSQL_CONNECTOR_LIB_NAME ${MYSQL_CONNECTOR_LIB_TYPE})
+string(APPEND MYSQL_CONNECTOR_LIB_NAME ${MYSQL_CONNECTOR_LIB_EXT})
+
+message(STATUS "Finding MySQL Connecotr lib: ${MYSQL_CONNECTOR_LIB_NAME}")
+
+find_path(MYSQL_CONNECTOR_PATH
+NAME include
+PATHS
+    ${MYSQL_CONNECTOR_POSSIBLE_PATH}
+ENV MYSQL_CONNECTOR_ROOT
+NO_DEFAULT_PATH
+)   
+
+if (NOT MYSQL_CONNECTOR_PATH)
+    message(FATAL_ERROR "Can not find MySQL Path")
+endif()
+
+set(MYSQL_CONNECTOR_INCLUDE ${MYSQL_CONNECTOR_PATH}/include)
     
-    message(STATUS "Found MySQL Connector: ${MYSQL_CONNECTOR_LIB}")
+if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+    message(STATUS "MySQL Connector C++ Debug build")
+
+    if (WIN32)
+        set(MYSQL_CONNECTOR_PATH_SUFFIXES
+            "lib/vs14/debug"
+            "lib64/vs14/debug"
+        )
+    else()
+        set(MYSQL_CONNECTOR_PATH_SUFFIXES
+            "lib/debug"
+            "lib64/debug"
+        )
+    endif()
+
+elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
+    message(STATUS "MySQL Connector C++ Release build")
+
+    if (WIN32)
+        set(MYSQL_CONNECTOR_PATH_SUFFIXES
+            "lib/vs14"
+            "lib64/vs14"
+        )
+    else()
+        set(MYSQL_CONNECTOR_PATH_SUFFIXES
+            "lib"
+            "lib64"
+        )
+    endif()
 
 else()
+    message(FATAL_ERROR "Unknown build type: ${CMAKE_BUILD_TYPE}")
 endif()
+
+find_library(MYSQL_CONNECTOR_LIB
+    NAME ${MYSQL_CONNECTOR_LIB_NAME}
+    PATHS ${MYSQL_CONNECTOR_PATH}
+    ENV MYSQL_CONNECTOR_ROOT
+    PATH_SUFFIXES ${MYSQL_CONNECTOR_PATH_SUFFIXES}
+    NO_DEFAULT_PATH
+)
+
+if (NOT MYSQL_CONNECTOR_LIB)
+    message(FATAL_ERROR "Cannot find MySQL Connector library")
+endif()
+
+message(STATUS "Found MySQL Connector: ${MYSQL_CONNECTOR_LIB}")
 
 if (FL_ENABLE_TESING)
     add_subdirectory(test)
