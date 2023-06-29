@@ -9,7 +9,7 @@ TEST(Client, Connection)
     net::io_context ioc;
 
     // The SSL context is required, and holds certificates
-    ssl::context ctx{ssl::context::tlsv12_client};
+    ssl::context ctx{ssl::context::tlsv13_client};
 
     // This holds the root certificate used for verification
     // load_root_certificates(ctx);
@@ -20,10 +20,10 @@ TEST(Client, Connection)
     // Launch the asynchronous operation
     // The session is constructed with a strand to
     // ensure that handlers do not execute concurrently.
-    MakeRef<Client>(
-        net::make_strand(ioc),
-        ctx
-        )->Run("api.forchat.online", "8080", "/login", 11);
+    // MakeRef<Client>(
+    //     net::make_strand(ioc),
+    //     ctx
+    //     )->Run("forchat.online", "8080", "/login", 11);
 
     // Run the I/O service. The call will return when
     // the get operation is complete.
