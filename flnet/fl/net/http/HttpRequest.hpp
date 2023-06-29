@@ -56,6 +56,19 @@ namespace fl {
             request_ = {};
         }
 
+        operator http::request<Body>&() & 
+        {
+            return &request_;
+        }
+        operator http::request<Body>&&() &&
+        {
+            return std::move(request_);
+        }
+        operator http::request<Body>() const
+        {
+            return request_;
+        }
+
         operator http::message_generator() 
         {
             return std::move(request_);

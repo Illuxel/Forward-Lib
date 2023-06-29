@@ -39,6 +39,19 @@ namespace fl {
             request_ = {};
         }
 
+        operator http::response<Body>&() & 
+        {
+            return &response_;
+        }
+        operator http::response<Body>&&() &&
+        {
+            return std::move(response_);
+        }
+        operator http::response<Body>() const 
+        {
+            return response_;
+        }
+
         operator http::message_generator() 
         {
             return std::move(response_);
@@ -46,28 +59,28 @@ namespace fl {
 
         template<typename T>
         static HttpResponseWrapper<http::string_body> Message(
-            HttpResponseWrapper<http::string_body> res, 
+            http::response<http::string_body>&& res, 
             T const& msg) 
         {
-            return MessageImpl(res, msg);
+            return MessageImpl(std::move(res), msg);
         }
 
     private: 
         static HttpResponseWrapper<http::string_body> MessageImpl(
-            HttpResponseWrapper<http::string_body> res, 
+            http::response<http::string_body>&& res, 
             std::string const& msg) 
         {
-            res.SetHeader(http::field::content_type, "text/plain");
-            res.Body() = std::move(msg);
+            res.set(http::field::content_type, MimeType::FromString("txt").GetMimeName());
+            res.body() = std::move(msg);
             return std::move(res);
         } 
         static HttpResponseWrapper<http::string_body> MessageImpl(
-            HttpResponseWrapper<http::string_body> res, 
+            http::response<http::string_body>&& res, 
             boost::json::value const& msg) 
         {
-            res.SetHeader(http::field::content_type, "application/json");
-            res.Body() = boost::json::serialize(msg);
-            return res;
+            res.set(http::field::content_type, MimeType::FromString("json").GetMimeName());
+            res.body() = std::move(boost::json::serialize(msg));
+            return std::move(res);
         } 
     };
 
