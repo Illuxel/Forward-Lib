@@ -4,8 +4,12 @@
 namespace fl {
 
     HttpSession::HttpSession(tcp::socket&& socket, net::ssl::context& context)
-        : stream_(std::move(socket), context) {}
-        
+        : stream_(std::move(socket), context) 
+    {
+        SetRunExpire(std::chrono::seconds(30));
+        SetReadExpire(std::chrono::seconds(300));
+        SetCloseExpire(std::chrono::seconds(30));
+    }
     HttpSession::~HttpSession() {}
         
     void HttpSession::SetRunExpire(ExpireTime exp_time)
