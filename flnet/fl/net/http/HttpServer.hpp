@@ -11,11 +11,12 @@ namespace fl {
     {
     private:
         Ref<HttpRouter> router_;
+
+    protected:
         Ref<HttpResponder> responder_;
 
-        std::list<Ref<HttpSession>> user_sessions_;
-
     public:
+        HttpServer(net::ssl::context::method method, uint8_t io_count);
         HttpServer(std::string_view web_dir, net::ssl::context::method method, uint8_t io_count);
 
         void SetContentFolders(std::vector<std::string> const& folders);
@@ -27,9 +28,12 @@ namespace fl {
             HttpResponder::HandlerData data {std::forward<Args>(args)...};
 
             if (!data.Target.empty())
-                router_->RegisterRoute(data.Target);
+                if (router_)
+                    router_->RegisterRoute(data.Target);
 
-            if (data.Callback.has_value() || data.Method.has_value())
+            if (!data.Target.empty()
+                || data.Method.has_value()
+                && data.Callback.has_value())
                 responder_->AddRouteHandler(data);
         }
 

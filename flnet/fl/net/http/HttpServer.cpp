@@ -4,9 +4,19 @@
 namespace fl {
 
     HttpServer::HttpServer(
+        net::ssl::context::method method, 
+        uint8_t io_count
+    )
+        : SslServer(method, io_count)
+    {
+        responder_ = MakeRef<HttpResponder>();
+    }
+
+    HttpServer::HttpServer(
         std::string_view web_dir,
         net::ssl::context::method method, 
-        uint8_t io_count)
+        uint8_t io_count
+    )
         : SslServer(method, io_count)
     {
         router_ = MakeRef<HttpRouter>(web_dir);
@@ -15,10 +25,12 @@ namespace fl {
 
     void HttpServer::SetContentFolders(std::vector<std::string> const& folders)
     {
+        if (!router_)
+            return FL_LOG("HttpServer", "Router is not set");
+
         for (std::string_view folder : folders)
             router_->RegisterContent(folder);
     }
-
     void HttpServer::SetBadRequest(HttpResponder::BadRequest const& handler)
     {
         responder_->SetBadHandler(handler);
@@ -26,11 +38,6 @@ namespace fl {
 
     void HttpServer::OnSocketAccept(beast::error_code ec, tcp::socket&& socket)
     {
-        MakeRef<HttpSession>(
-            std::move(socket),
-            secure_context_
-        )->Run();
-
         SslServer::OnSocketAccept(ec, std::move(socket));
     }
 }

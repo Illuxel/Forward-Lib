@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fl/net/http/HttpRequest.hpp"
+#include "fl/net/http/Core.hpp"
 
 namespace fl {
 
@@ -10,9 +10,9 @@ namespace fl {
         using ExpireTime = std::chrono::steady_clock::duration;
 
         beast::ssl_stream<beast::tcp_stream> stream_;
-        beast::flat_buffer buffer_;
-
         ExpireTime exp_run_, exp_read_, exp_close_;
+        
+        beast::flat_buffer buffer_;
 
     protected:
         http::request<http::string_body> req_;
@@ -33,13 +33,13 @@ namespace fl {
         void Close();
 
     protected:
-        virtual void OnRead(beast::error_code ec, std::size_t bytes_transferred);
+        virtual void OnRead(beast::error_code ec, std::size_t bytes_transferred) = 0;
 
     private:
         void OnRun();
         void OnHandshake(beast::error_code ec);
 
-        void DoRead();
+        void Read();
 
         void OnWrite(bool keep_alive, beast::error_code ec, std::size_t bytes_transferred);
         void OnClose(beast::error_code ec);

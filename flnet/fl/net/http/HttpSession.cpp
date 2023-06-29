@@ -33,7 +33,6 @@ namespace fl {
     {
         beast::get_lowest_layer(stream_).expires_after(exp_run_);
 
-        // Perform the SSL handshake
         stream_.async_handshake(
             net::ssl::stream_base::server,
             beast::bind_front_handler(
@@ -45,36 +44,30 @@ namespace fl {
         if(ec)
             return FL_LOG("handshake", ec.message());
 
-        DoRead();
+        Read();
     }
 
-    void HttpSession::DoRead()
+    void HttpSession::Read()
     {
         req_ = {};
 
-        // Set the timeout.
         beast::get_lowest_layer(stream_).expires_after(exp_read_);
 
-        // Read a request using the parser-oriented interface
         http::async_read(stream_, buffer_, req_,
             beast::bind_front_handler(
                 &HttpSession::OnRead,
                 shared_from_this()));
     }
-    void HttpSession::OnRead(beast::error_code ec, size_t bytes_transferred)
-    {
-        boost::ignore_unused(bytes_transferred);
+    // void HttpSession::OnRead(beast::error_code ec, size_t bytes_transferred)
+    // {
+    //     boost::ignore_unused(bytes_transferred);
 
-        // This means they closed the connection
-        if(ec == http::error::end_of_stream)
-            return Close();
+    //     if(ec == http::error::end_of_stream)
+    //         return Close();
 
-        if(ec)
-            return FL_LOG("OnRead", ec.message());
-
-        // Send the response
-        // DoWrite(responder_->HandleRequest(std::move(req_)));
-    }
+    //     if(ec)
+    //         return FL_LOG("OnRead", ec.message());
+    // }
 
     void HttpSession::Write(http::message_generator&& msg)
     {
@@ -100,7 +93,7 @@ namespace fl {
         if(!keep_alive)
             return Close();
 
-        DoRead();
+        Read();
     }
 
     void HttpSession::Close()
