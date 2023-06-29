@@ -11,23 +11,23 @@ namespace fl {
         io_sessions_.reserve(io_count_);
     }
 
-    void SslServer::Listen(Ref<Endpoint const> const& endpoint)
+    void SslServer::Listen(Endpoint const& endpoint)
     {
         if (listener_)
         {
-            FL_LOG("Listen", "Already listening");
+            FL_LOG("Listener", "Already listening");
             return;
         }
 
         listener_ = MakeRef<AsyncListener>(
             io_context_, 
-            *endpoint, 
+            endpoint, 
             beast::bind_front_handler(
                 &SslServer::OnSocketAccept, this));
 
         if (!listener_->Listen())
         {
-            FL_LOG("Listen", "Can not start listening port" + endpoint->Address() + ':' + std::to_string(endpoint->Port()));
+            FL_LOG("Listener", "Can not start listening port" + endpoint.Address() + ':' + std::to_string(endpoint.Port()));
             return;
         }
 
@@ -35,8 +35,6 @@ namespace fl {
             io_sessions_.emplace_back([&]{
                 io_context_.run();
             });
-
-        FL_LOG("SslServer", "Started at " + endpoint->Address() + ':' + std::to_string(endpoint->Port()));
 
         io_context_.run();
     }
@@ -49,7 +47,7 @@ namespace fl {
         secure_context_.use_certificate_chain_file(filename.data(), ec);
         
         if (ec)
-            FL_LOG("Cert setup", ec.message());
+            FL_LOG("SslServer", ec.message());
     }
     void SslServer::SetupFileSslCertKey(std::string_view filename, std::string_view pass, 
                 net::ssl::context::file_format format)
@@ -66,13 +64,13 @@ namespace fl {
         secure_context_.use_private_key_file(filename.data(), format, ec);
 
         if (ec)
-            FL_LOG("Cert key setup", ec.message());
+            FL_LOG("SslServer", ec.message());
     }
 
     void SslServer::OnSocketAccept(beast::error_code ec, tcp::socket&& socket)
     {
         if (ec) {
-            FL_LOG("SslServer Accept", ec.message());
+            FL_LOG("SslServer", ec.message());
             return;
         }
 

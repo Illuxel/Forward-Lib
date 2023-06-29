@@ -27,7 +27,7 @@ namespace fl {
          */
         SslServer(ssl::context::method method, uint8_t io_count);
 
-        void Listen(Ref<Endpoint const> const& endpoint);
+        void Listen(Endpoint const& endpoint);
 
         void SetupFileSslCert(std::string_view filename, 
             net::ssl::context::file_format format = net::ssl::context::pem);
