@@ -8,6 +8,7 @@
 #include <optional>
 #include <filesystem>
 
+#include <mutex>
 #include <shared_mutex>
 
 #include <boost/json.hpp>
