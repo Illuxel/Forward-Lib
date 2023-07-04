@@ -40,7 +40,7 @@ namespace fl {
     {
         bad_request_ = DefaultBadRequestCallBack;
     }
-    HttpResponder::HttpResponder(Ref<HttpRouter> const& router)
+    HttpResponder::HttpResponder(Ref<HttpRouter const> const& router)
         : router_(router) 
     {
         bad_request_ = DefaultBadRequestCallBack;

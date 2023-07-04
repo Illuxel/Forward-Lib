@@ -23,7 +23,7 @@ namespace fl {
         };
 
     private:
-        Ref<HttpRouter> router_;
+        Ref<HttpRouter const> router_;
 
         BadRequest bad_request_;
         std::unordered_multimap<std::string, HandlerData> handlers_;
@@ -37,7 +37,7 @@ namespace fl {
          * 
          *  can be inited with router to return pages/content paths  
          */
-        HttpResponder(Ref<HttpRouter> const& router);
+        HttpResponder(Ref<HttpRouter const> const& router);
 
         /**
          *  @param data handler data
