@@ -6,34 +6,32 @@
 
 namespace fl {
 
-    HttpResponse DefaultBadRequestCallBack(HttpRequest const& req, http::status status)
+    HttpResponse DefaultBadRequestCallBack(http::request<http::string_body> const& req, http::status status)
     {
-        HttpResponse res(status, req.Base().version());
+        http::response<http::string_body> res(status, req.version());
 
-        res.Base().set(http::field::server, BOOST_BEAST_VERSION_STRING);
-        res.Base().set(http::field::content_type, MimeType::FromString("html").GetMimeName());
-        res.Base().keep_alive(req.Base().keep_alive());
-        res.Base().body() = "Can not find page or resource";
-        res.Base().prepare_payload();
+        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::content_type, MimeType::FromString("html").GetMimeName());
+        res.keep_alive(req.keep_alive());
+        res.body() = "Can not find page or resource";
+        res.prepare_payload();
 
         return std::move(res);
     }
 
-    void LoadWebPageContent(std::string const& path, HttpResponseFile& res, beast::error_code ec)
+    void LoadWebPageContent(std::string const& path, http::response<http::file_body>& res, beast::error_code ec)
     {   
         http::file_body::value_type body;
         body.open(path.c_str(), beast::file_mode::scan, ec);
 
-        if(ec)
+        if (ec)
             return;
 
         auto const size = body.size();
 
-        res.Base().set(http::field::content_type, MimeType::FromString(path).GetMimeName());
-        res.Base().body() = std::move(body);
-        res.Base().content_length(size);  
-
-        body.close();
+        res.set(http::field::content_type, MimeType::FromString(path).GetMimeName());
+        res.body() = std::move(body);
+        res.content_length(size);
     }
 
     HttpResponder::HttpResponder()
@@ -68,8 +66,9 @@ namespace fl {
     http::message_generator HttpResponder::HandleRequest(HttpRequest&& req) const 
     {
         auto url = req.Url();
-        auto method = req.Base().method();
         auto target = url.Target();
+
+        auto method = req.Base().method();
         
         if (!url.IsValid())
             return bad_request_(req, http::status::bad_request);
@@ -104,6 +103,7 @@ namespace fl {
                 return bad_request_(req, http::status::not_found);
 
             auto const& handler = *handler_it->second.Callback;
+
             return handler(req, std::move(res));
         }
 
@@ -141,19 +141,20 @@ namespace fl {
 
         if (is_only_target || is_content)
         {
-            beast::error_code ec;
-            HttpResponseFile resFile(http::status::ok, req.Base().version());
+            http::response<http::file_body> resFile(http::status::ok, req.Base().version());
 
-            resFile.Base().keep_alive(req.Base().keep_alive());
-            resFile.Base().set(http::field::server, BOOST_BEAST_VERSION_STRING);
+            resFile.keep_alive(req.Base().keep_alive());
+            resFile.set(http::field::server, BOOST_BEAST_VERSION_STRING);
                         
             std::string path;
 
-            if (is_content)
-                path = router_->GetContentPath(target);
-
             if (is_target)
-                path = router_->GetRoutePath(target);
+                path = router_->GetRouteFilePath(target);
+
+            if (is_content)
+                path = router_->GetContentFilePath(target);
+
+            beast::error_code ec;
 
             LoadWebPageContent(path, resFile, ec);
 
