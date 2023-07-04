@@ -3,9 +3,9 @@ using namespace fl;
 
 #include <gtest/gtest.h>
 
-TEST(WebFileMeta, Data) {
+TEST(WebFileInfo, Data) {
 
-    WebFileMeta wf = {
+    WebFileInfo wf = {
         "file_name",
         MimeType::FromString("txt"),
         "folder_name",
