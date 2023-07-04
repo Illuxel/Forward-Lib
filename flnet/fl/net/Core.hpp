@@ -1,7 +1,6 @@
 #pragma once
 
 #include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/signal_set.hpp>
 #include <boost/asio/dispatch.hpp>
 #include <boost/asio/strand.hpp>
 
