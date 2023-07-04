@@ -64,7 +64,7 @@ namespace fl {
         {
             return std::move(response_);
         }
-        operator http::response<Body>() const 
+        operator http::response<Body>() const &
         {
             return response_;
         }
