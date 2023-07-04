@@ -25,7 +25,7 @@ namespace fl {
         return it->second;
     }
 
-    std::string HttpRouter::GetRoutePath(std::string_view target) const
+    std::string HttpRouter::GetRouteFilePath(std::string_view target) const
     {
         auto const& prep_route = GetPreparedTarget(target);
         auto const& web_file = wfs_->FindByTargetName(prep_route, MimeType::HasExtension(prep_route));
@@ -35,7 +35,7 @@ namespace fl {
 
         return web_file->FullPath();
     }
-    std::string HttpRouter::GetContentPath(std::string_view content) const
+    std::string HttpRouter::GetContentFilePath(std::string_view content) const
     {
         auto const& web_file = wfs_->FindByTargetPath(content);
 

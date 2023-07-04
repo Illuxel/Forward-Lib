@@ -24,8 +24,8 @@ namespace fl {
 
         std::string GetPreparedTarget(std::string_view name) const;
 
-        std::string GetRoutePath(std::string_view target) const;
-        std::string GetContentPath(std::string_view content) const;
+        std::string GetRouteFilePath(std::string_view target) const;
+        std::string GetContentFilePath(std::string_view content) const;
 
         void RegisterRoute(std::string_view target);
         void RegisterContent(std::string_view folder_name);
