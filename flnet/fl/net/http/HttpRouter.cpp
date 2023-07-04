@@ -65,16 +65,6 @@ namespace fl {
             && wfs_->IsTargetPathExist(target, true);
     }
 
-    bool HttpRouter::IsTargetLegal(std::string_view target)
-    {
-        if (target.empty() ||
-            target.front() != '/' ||
-            target.find("..") != std::string_view::npos)
-            return false;
-        
-        return true;
-    }
-
     bool HttpRouter::IsTargetIndex(std::string_view target) const
     {   
         if (target.empty())
@@ -94,9 +84,6 @@ namespace fl {
 
     std::string HttpRouter::PrepareRouteName(std::string_view target) const
     {
-        if (!IsTargetLegal(target))
-            return index_;
-
         if (IsTargetIndex(target))
             return index_;
 

@@ -76,4 +76,14 @@ namespace fl {
         return valid_;
     }
 
+    bool HttpUrl::IsTargetLegal(std::string_view target)
+    {
+        if (target.empty() ||
+            target.front() != '/' ||
+            target.find("..") != std::string_view::npos)
+            return false;
+        
+        return true;
+    }
+
 } // namespace fl

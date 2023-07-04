@@ -31,13 +31,11 @@ namespace fl {
         void RegisterContent(std::string_view folder_name);
 
         bool IsTarget(std::string_view target) const;
-        bool IsContent(std::string_view content) const;
-
-        static bool IsTargetLegal(std::string_view target);
-
-    private:
         bool IsTargetIndex(std::string_view target) const;
 
+        bool IsContent(std::string_view content) const;
+
+    private:
         // checks if a target is valid 
         // returns prepared target or index 
         std::string PrepareRouteName(std::string_view target) const;

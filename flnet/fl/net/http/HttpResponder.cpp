@@ -74,7 +74,7 @@ namespace fl {
         if (!url.IsValid())
             return bad_request_(req, http::status::bad_request);
 
-        if (!HttpRouter::IsTargetLegal(target))
+        if (!HttpUrl::IsTargetLegal(target))
             return bad_request_(req, http::status::bad_request);
 
         std::lock_guard<std::mutex> lock(mutex_);

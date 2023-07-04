@@ -30,6 +30,7 @@ namespace fl {
 
         bool IsValid() const;
         
+        static bool IsTargetLegal(std::string_view target);
     };
 
 } // namespace fl
