@@ -33,6 +33,21 @@ namespace fl {
         void Close();
 
     protected:
+        /**
+         *
+         * void HttpSession::OnRead(beast::error_code ec, size_t bytes_transferred)
+         * {
+         *     boost::ignore_unused(bytes_transferred);
+         * 
+         *     if(ec == http::error::end_of_stream)
+         *         return Close();
+         * 
+         *     if(ec)
+         *         return FL_LOG("OnRead", ec.message());
+         * 
+         *     ... Your code
+         *  
+         *  }*/
         virtual void OnRead(beast::error_code ec, std::size_t bytes_transferred) = 0;
 
     private:

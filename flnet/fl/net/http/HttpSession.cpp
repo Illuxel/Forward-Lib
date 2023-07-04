@@ -62,16 +62,6 @@ namespace fl {
                 &HttpSession::OnRead,
                 shared_from_this()));
     }
-    // void HttpSession::OnRead(beast::error_code ec, size_t bytes_transferred)
-    // {
-    //     boost::ignore_unused(bytes_transferred);
-
-    //     if(ec == http::error::end_of_stream)
-    //         return Close();
-
-    //     if(ec)
-    //         return FL_LOG("OnRead", ec.message());
-    // }
 
     void HttpSession::Write(http::message_generator&& msg)
     {
