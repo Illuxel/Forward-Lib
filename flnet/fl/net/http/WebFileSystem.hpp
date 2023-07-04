@@ -4,7 +4,7 @@
 
 namespace fl {
 
-    struct WebFileMeta
+    struct WebFileInfo
     {
         std::string Name; MimeType Ext;
         std::string Relative;
@@ -36,7 +36,7 @@ namespace fl {
             return '/' + Relative + TargetName(extension);
         }
 
-        bool operator==(WebFileMeta const& right) const 
+        bool operator==(WebFileInfo const& right) const 
         {
             return this->TargetPath() == right.TargetPath();
         }
@@ -48,7 +48,7 @@ namespace fl {
         // web documents directory
         std::string web_root_;
         // all stored files in web site 
-        std::vector<WebFileMeta> files_;
+        std::vector<WebFileInfo> files_;
 
         mutable std::shared_mutex mutex_;
 
@@ -62,9 +62,9 @@ namespace fl {
         std::string_view GetWebRoot() const;
 
         // search file by name
-        std::optional<WebFileMeta> FindByTargetName(std::string_view target, bool extension) const;
+        std::optional<WebFileInfo> FindByTargetName(std::string_view target, bool extension) const;
         // search file by target path
-        std::optional<WebFileMeta> FindByTargetPath(std::string_view target, bool extension = true) const;
+        std::optional<WebFileInfo> FindByTargetPath(std::string_view target, bool extension = true) const;
 
         bool IsTargetNameExist(std::string_view target, bool extension) const;  
         bool IsTargetPathExist(std::string_view target, bool extension) const;

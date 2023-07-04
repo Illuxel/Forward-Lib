@@ -5,10 +5,10 @@
 
 namespace fl {
 
-    std::vector<WebFileMeta> 
+    std::vector<WebFileInfo> 
     IterateFiles(std::filesystem::path const& dir, std::filesystem::path base = "")
     {
-        std::vector<WebFileMeta> files;
+        std::vector<WebFileInfo> files;
 
         if (base.empty())
             base = dir;
@@ -39,7 +39,7 @@ namespace fl {
                     relative_target = rel_gen.substr(0, rel_gen.size() - 1);
                 }
 
-                WebFileMeta wf;
+                WebFileInfo wf;
 
                 wf.Name = file_name;
                 wf.Ext = MimeType::FromString(file);
@@ -77,10 +77,10 @@ namespace fl {
         return web_root_;
     }
 
-    std::optional<WebFileMeta> 
+    std::optional<WebFileInfo> 
     WebFilesSystem::FindByTargetName(std::string_view target, bool extension) const
     {
-        static std::optional<WebFileMeta> cached = std::nullopt;
+        static std::optional<WebFileInfo> cached = std::nullopt;
 
         if (cached.has_value() && cached->TargetName(extension) == target)
             return cached;
@@ -105,10 +105,10 @@ namespace fl {
         return std::nullopt;
     }
 
-    std::optional<WebFileMeta> 
+    std::optional<WebFileInfo> 
     WebFilesSystem::FindByTargetPath(std::string_view target, bool extension) const
     {
-        static std::optional<WebFileMeta> cached = std::nullopt;
+        static std::optional<WebFileInfo> cached = std::nullopt;
 
         if (cached.has_value() && cached->TargetPath(extension) == target)
             return cached;
