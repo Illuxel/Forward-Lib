@@ -8,7 +8,7 @@ namespace fl {
     class MimeType 
     {
     public:
-        enum Type 
+        enum Type : uint8_t
         {
             Text = 0,
             App,
@@ -21,7 +21,7 @@ namespace fl {
             Example
         };
 
-        enum SubType 
+        enum class SubType : uint8_t
         {
             Unknown = 9,
 
@@ -54,17 +54,17 @@ namespace fl {
         };
 
     private:
-        static const std::map<std::string_view, MimeType> mime_types_;
-
         Type type_;
         SubType sub_type_; 
 
         std::string ext_name_, sub_type_str_;
 
-        MimeType(Type type, SubType sub_type, std::string_view format, std::string_view ext = "");
+        static const std::map<std::string_view, MimeType> mime_types_;
+
     public:
         MimeType();
         MimeType(std::string_view ext);
+        MimeType(Type type, SubType sub_type, std::string_view format, std::string_view ext = "");
 
         /**
          *  @return 

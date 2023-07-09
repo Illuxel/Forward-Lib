@@ -2,50 +2,50 @@
 
 namespace fl {
 
-    const std::map<std::string_view, MimeType> MimeType::mime_types_ = 
+    const std::map<std::string_view, MimeType> MimeType::mime_types_ 
     {
-        { "txt",  { Type::Text, SubType::Plain,  "plain" }},
-        { "htm",  { Type::Text, SubType::Html,   "html" }},
-        { "html", { Type::Text, SubType::Html,   "html" }},
-        { "csv",  { Type::Text, SubType::Csv,    "csv" }},
-        { "css",  { Type::Text, SubType::Css,    "css" }},
-        { "php",  { Type::Text, SubType::Php,    "php" }},
-        { "jpg",  { Type::Img, SubType::Jpeg,    "jpeg" }},
-        { "jpeg", { Type::Img, SubType::Jpeg,    "jpeg" }},
-        { "jpe",  { Type::Img, SubType::Jpeg,    "jpeg" }},
-        { "jif",  { Type::Img, SubType::Jpeg,    "jpeg" }},
-        { "jfif", { Type::Img, SubType::Jpeg,    "jpeg" }},
-        { "jfi",  { Type::Img, SubType::Jpeg,    "jpeg" }},
-        { "png",  { Type::Img, SubType::Png,     "png" }},
-        { "gif",  { Type::Img, SubType::Gif,     "gif" }},
-        { "bmp",  { Type::Img, SubType::Bmp,     "bmp" }},
-        { "ico",  { Type::Img, SubType::Ico,     "x-icon" }},
-        { "svg",  { Type::Img, SubType::Svg,     "svg+xml" }},
-        { "svgz",  { Type::Img, SubType::Svg,    "svg+xml" }},
-        { "mp3",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
-        { "m4a",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
-        { "m4b",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
-        { "m4p",  { Type::Audio, SubType::Mpeg,  "mpeg" }},
-        { "mpga", { Type::Audio, SubType::Mpeg,  "mpeg" }},
-        { "mp4",  { Type::Video, SubType::Mp4,   "mp4" }},
-        { "m4v",  { Type::Video, SubType::Mp4,   "mp4" }},
-        { "js",   { Type::App, SubType::JavaScript,"javascript" }},
-        { "json", { Type::App, SubType::Json,    "json" }},
-        { "xml",  { Type::App, SubType::Xml,     "xml" }},
-        { "pdf",  { Type::App, SubType::Pdf,     "pdf" }},
-        { "zip",  { Type::App, SubType::Zip,     "zip" }},
-        { "7z",   { Type::App, SubType::Zip,     "x-7z-compressed" }},
-        { "exe",  { Type::App, SubType::Exe,     "x-msdownload" }},
-        { "bin",  { Type::App, SubType::Binary,  "octet-stream" }},
-        { "doc",  { Type::App, SubType::Doc,     "msword" }},
-        { "xls",  { Type::App, SubType::Xls,     "vnd.ms-excel" }},
-        { "ppt",  { Type::App, SubType::Ppt,     "vnd.ms-powerpoint" }},
-        { "docx", { Type::App, SubType::Docx,    "vnd.openxmlformats-officedocument.wordprocessingml.document" }},
-        { "xlsx", { Type::App, SubType::Xlsx,    "vnd.openxmlformats-officedocument.spreadsheetml.sheet" }},
-        { "pptx", { Type::App, SubType::Pptx,    "vnd.openxmlformats-officedocument.presentationml.presentation" }}
+        { "txt",  { MimeType::Text, MimeType::SubType::Plain,  "plain" }},
+        { "htm",  { MimeType::Text, MimeType::SubType::Html,   "html" }},
+        { "html", { MimeType::Text, MimeType::SubType::Html,   "html" }},
+        { "csv",  { MimeType::Text, MimeType::SubType::Csv,    "csv" }},
+        { "css",  { MimeType::Text, MimeType::SubType::Css,    "css" }},
+        { "php",  { MimeType::Text, MimeType::SubType::Php,    "php" }},
+        { "jpg",  { MimeType::Img, MimeType::SubType::Jpeg,    "jpeg" }},
+        { "jpeg", { MimeType::Img, MimeType::SubType::Jpeg,    "jpeg" }},
+        { "jpe",  { MimeType::Img, MimeType::SubType::Jpeg,    "jpeg" }},
+        { "jif",  { MimeType::Img, MimeType::SubType::Jpeg,    "jpeg" }},
+        { "jfif", { MimeType::Img, MimeType::SubType::Jpeg,    "jpeg" }},
+        { "jfi",  { MimeType::Img, MimeType::SubType::Jpeg,    "jpeg" }},
+        { "png",  { MimeType::Img, MimeType::SubType::Png,     "png" }},
+        { "gif",  { MimeType::Img, MimeType::SubType::Gif,     "gif" }},
+        { "bmp",  { MimeType::Img, MimeType::SubType::Bmp,     "bmp" }},
+        { "ico",  { MimeType::Img, MimeType::SubType::Ico,     "x-icon" }},
+        { "svg",  { MimeType::Img, MimeType::SubType::Svg,     "svg+xml" }},
+        { "svgz",  { MimeType::Img, MimeType::SubType::Svg,    "svg+xml" }},
+        { "mp3",  { MimeType::Audio, MimeType::SubType::Mpeg,  "mpeg" }},
+        { "m4a",  { MimeType::Audio, MimeType::SubType::Mpeg,  "mpeg" }},
+        { "m4b",  { MimeType::Audio, MimeType::SubType::Mpeg,  "mpeg" }},
+        { "m4p",  { MimeType::Audio, MimeType::SubType::Mpeg,  "mpeg" }},
+        { "mpga", { MimeType::Audio, MimeType::SubType::Mpeg,  "mpeg" }},
+        { "mp4",  { MimeType::Video, MimeType::SubType::Mp4,   "mp4" }},
+        { "m4v",  { MimeType::Video, MimeType::SubType::Mp4,   "mp4" }},
+        { "js",   { MimeType::App, MimeType::SubType::JavaScript,"javascript" }},
+        { "json", { MimeType::App, MimeType::SubType::Json,    "json" }},
+        { "xml",  { MimeType::App, MimeType::SubType::Xml,     "xml" }},
+        { "pdf",  { MimeType::App, MimeType::SubType::Pdf,     "pdf" }},
+        { "zip",  { MimeType::App, MimeType::SubType::Zip,     "zip" }},
+        { "7z",   { MimeType::App, MimeType::SubType::Zip,     "x-7z-compressed" }},
+        { "exe",  { MimeType::App, MimeType::SubType::Exe,     "x-msdownload" }},
+        { "bin",  { MimeType::App, MimeType::SubType::Binary,  "octet-stream" }},
+        { "doc",  { MimeType::App, MimeType::SubType::Doc,     "msword" }},
+        { "xls",  { MimeType::App, MimeType::SubType::Xls,     "vnd.ms-excel" }},
+        { "ppt",  { MimeType::App, MimeType::SubType::Ppt,     "vnd.ms-powerpoint" }},
+        { "docx", { MimeType::App, MimeType::SubType::Docx,    "vnd.openxmlformats-officedocument.wordprocessingml.document" }},
+        { "xlsx", { MimeType::App, MimeType::SubType::Xlsx,    "vnd.openxmlformats-officedocument.spreadsheetml.sheet" }},
+        { "pptx", { MimeType::App, MimeType::SubType::Pptx,    "vnd.openxmlformats-officedocument.presentationml.presentation" }}
     };
 
-    static inline std::string CreateTypeString(MimeType::Type type)
+    static constexpr inline const char* CreateTypeString(MimeType::Type type)
     {
         switch (type)
         {
@@ -72,7 +72,7 @@ namespace fl {
         return "";
     }
 
-    static inline std::string CreateSubTypeString(MimeType::SubType sub_type)
+    static constexpr inline const char* CreateSubTypeString(MimeType::SubType sub_type)
     {
         return "";
     }
