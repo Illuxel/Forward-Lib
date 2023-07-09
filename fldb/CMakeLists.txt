@@ -4,6 +4,8 @@ if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
   set(CMAKE_INSTALL_LIBDIR "lib")
 endif()
 
+#--------------< MySQL Connector Search >--------------#
+
 set(MYSQL_CONNECTOR_LIB_NAME mysqlcppconn)
 set(MYSQL_CONNECTOR_LIB_TYPE)
 set(MYSQL_CONNECTOR_LIB_EXT)
@@ -28,10 +30,7 @@ if (WIN32)
 
     set(MYSQL_CONNECTOR_POSSIBLE_PATH
         "C:\\Program Files\\MySQL"
-        "C:\\Program Files\\MySQL\\Connector C++"
-        "C:\\Program Files\\MySQL\\*\\include"
-        "C:\\Program Files\\MySQL\\*\\lib"
-        "C:\\Program Files\\MySQL\\*\\lib64"
+        "C:\\Program Files\\MySQL\\Connector C++ 8.0"
     )
 
 elseif(UNIX)
@@ -61,21 +60,25 @@ string(APPEND MYSQL_CONNECTOR_LIB_NAME ${MYSQL_CONNECTOR_LIB_EXT})
 message(STATUS "Finding MySQL Connecotr lib: ${MYSQL_CONNECTOR_LIB_NAME}")
 
 find_path(MYSQL_CONNECTOR_PATH
-NAME include
-PATHS
-    ${MYSQL_CONNECTOR_POSSIBLE_PATH}
-ENV MYSQL_CONNECTOR_ROOT
-NO_DEFAULT_PATH
+    NAME include
+    PATHS
+        ${MYSQL_CONNECTOR_POSSIBLE_PATH}
+    ENV 
+        MYSQL_CONNECTOR_DIR
+        MYSQL_CONNECTOR_ROOT
+    NO_DEFAULT_PATH
+    NO_CACHE
 )   
 
 if (NOT MYSQL_CONNECTOR_PATH)
     message(FATAL_ERROR "Can not find MySQL Path")
 endif()
 
+message(STATUS "In root directory: ${MYSQL_CONNECTOR_PATH}")
+
 set(MYSQL_CONNECTOR_INCLUDE ${MYSQL_CONNECTOR_PATH}/include)
-    
+
 if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
-    message(STATUS "MySQL Connector C++ Debug build")
 
     if (WIN32)
         set(MYSQL_CONNECTOR_PATH_SUFFIXES
@@ -90,11 +93,12 @@ if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
     endif()
 
 elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
-    message(STATUS "MySQL Connector C++ Release build")
 
     if (WIN32)
         set(MYSQL_CONNECTOR_PATH_SUFFIXES
+            "lib"
             "lib/vs14"
+            "lib64"
             "lib64/vs14"
         )
     else()
@@ -110,21 +114,30 @@ endif()
 
 find_library(MYSQL_CONNECTOR_LIB
     NAME ${MYSQL_CONNECTOR_LIB_NAME}
-    PATHS ${MYSQL_CONNECTOR_PATH}
-    ENV MYSQL_CONNECTOR_ROOT
-    PATH_SUFFIXES ${MYSQL_CONNECTOR_PATH_SUFFIXES}
+    PATHS 
+        ${MYSQL_CONNECTOR_PATH}
+    ENV 
+        MYSQL_CONNECTOR_DIR
+        MYSQL_CONNECTOR_ROOT
+    PATH_SUFFIXES 
+        ${MYSQL_CONNECTOR_PATH_SUFFIXES}
     NO_DEFAULT_PATH
+    NO_CACHE
 )
 
 if (NOT MYSQL_CONNECTOR_LIB)
-    message(FATAL_ERROR "Cannot find MySQL Connector library")
+    message(FATAL_ERROR "Cannot find MySQL Connector C++ ${CMAKE_BUILD_TYPE}")
 endif()
 
-message(STATUS "Found MySQL Connector: ${MYSQL_CONNECTOR_LIB}")
+message(STATUS "Found MySQL Connector C++: ${MYSQL_CONNECTOR_LIB}")
+
+#--------------< Tests >--------------#
 
 if (FL_ENABLE_TESING)
     add_subdirectory(test)
 endif()
+
+#--------------< Vars >--------------#
 
 set(FLDB_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/db)
 set(FLDB_INCLUDE 
@@ -152,8 +165,8 @@ PRIVATE
     OpenSSL::Crypto
     OpenSSL::SSL    
     Boost::system
-    ${MYSQL_CONNECTOR_LIB}
 PUBLIC
+    ${MYSQL_CONNECTOR_LIB}
     Fl::utils
 )
 
