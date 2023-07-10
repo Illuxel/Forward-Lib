@@ -46,9 +46,7 @@ elseif(UNIX)
     endif()
 
     set(MYSQL_CONNECTOR_POSSIBLE_PATH
-        "/usr/lib"
         "/usr/lib64"
-        "/usr/local/lib"
         "/usr/local/lib64"
     )
 
@@ -82,12 +80,10 @@ if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
 
     if (WIN32)
         set(MYSQL_CONNECTOR_PATH_SUFFIXES
-            "lib/vs14/debug"
             "lib64/vs14/debug"
         )
     else()
         set(MYSQL_CONNECTOR_PATH_SUFFIXES
-            "lib/debug"
             "lib64/debug"
         )
     endif()
@@ -96,14 +92,11 @@ elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
 
     if (WIN32)
         set(MYSQL_CONNECTOR_PATH_SUFFIXES
-            "lib"
-            "lib/vs14"
             "lib64"
             "lib64/vs14"
         )
     else()
         set(MYSQL_CONNECTOR_PATH_SUFFIXES
-            "lib"
             "lib64"
         )
     endif()
@@ -116,7 +109,7 @@ find_library(MYSQL_CONNECTOR_LIB
     NAME ${MYSQL_CONNECTOR_LIB_NAME}
     PATHS 
         ${MYSQL_CONNECTOR_PATH}
-    ENV 
+    ENV
         MYSQL_CONNECTOR_DIR
         MYSQL_CONNECTOR_ROOT
     PATH_SUFFIXES 
@@ -149,8 +142,6 @@ set(FLDB_SOURCE
 )
 
 add_library(db STATIC ${FLDB_SOURCE})
-
-target_link_options(db PUBLIC "/ignore:4099")
 
 target_include_directories(db
 PUBLIC 
