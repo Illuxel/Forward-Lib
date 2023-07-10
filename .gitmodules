@@ -4,3 +4,6 @@
 [submodule "vendor/benchmark"]
 	path = vendor/benchmark
 	url = https://github.com/google/benchmark.git
+[submodule "vendor/jwt-cpp"]
+	path = vendor/jwt-cpp
+	url = https://github.com/Thalhammer/jwt-cpp.git

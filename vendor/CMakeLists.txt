@@ -5,3 +5,5 @@ endif()
 if (FL_ENABLE_BENCHMARK)
     add_subdirectory(benchmark)
 endif()
+
+add_subdirectory(jwt-cpp)
