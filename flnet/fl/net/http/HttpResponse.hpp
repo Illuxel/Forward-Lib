@@ -2,7 +2,7 @@
 
 #include "fl/net/http/Core.hpp"
 
-namespace fl {
+namespace Forward {
 
     template<class Body>
     class HttpResponseWrapper

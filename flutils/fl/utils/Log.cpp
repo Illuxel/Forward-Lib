@@ -2,7 +2,7 @@
 
 #include <shared_mutex>
 
-namespace fl {
+namespace Forward {
 
 	std::unordered_map<std::string, Ref<Logger>> Log::logs_{};
 

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <unordered_map>
 
-namespace fl {
+namespace Forward {
 
 	class Log
 	{
@@ -34,7 +34,7 @@ void printInfo(std::string const& call, std::string const& msg);
 	printInfo(call, msg); \
 	throw Exception(msg)
 
-	//fl::Log::Get()->Log(fl::Logger::Level::level, __FUNCTION__, __VA_ARGS__); 
+	//Forward::Log::Get()->Log(Forward::Logger::Level::level, __FUNCTION__, __VA_ARGS__); 
 
 // #define FL_INFO(...) FL_LOG(INFO, __VA_ARGS__)
 // #define FL_DEBUG(...) FL_LOG(DEBUG, __VA_ARGS__)

@@ -1,6 +1,6 @@
 #include "fl/net/Endpoint.hpp"
 
-namespace fl {
+namespace Forward {
     
     Endpoint::Endpoint() 
     {

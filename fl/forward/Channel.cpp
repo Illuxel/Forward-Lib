@@ -1,6 +1,6 @@
 #include "fl/forward/Channel.hpp"
 
-namespace fl::types {
+namespace Forward::types {
 
     
 }

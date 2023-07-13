@@ -5,7 +5,7 @@
 #include "fl/net/http/HttpResponder.hpp"
 #include "fl/net/http/HttpSession.hpp"
 
-namespace fl {
+namespace Forward {
 
     class HttpServer : public SslServer
     {

@@ -1,6 +1,6 @@
 #include "fl/utils/StringArg.hpp"
 
-namespace fl {
+namespace Forward {
     
     StringArg::StringArg() {}
 
@@ -155,4 +155,4 @@ namespace fl {
 
         return arg_list;
     }
-} // namespace fl::util 
+} // namespace Forward::util 

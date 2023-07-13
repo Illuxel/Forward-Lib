@@ -15,7 +15,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/variant.h>
 
-namespace fl {
+namespace Forward {
 
     class Database 
     {

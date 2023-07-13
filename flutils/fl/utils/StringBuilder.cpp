@@ -5,7 +5,7 @@
 
 #include <fstream>
 
-namespace fl {
+namespace Forward {
     
     StringBuilder::StringBuilder() {}
     StringBuilder::StringBuilder(std::string_view templ, std::vector<StringArg> const& args) 

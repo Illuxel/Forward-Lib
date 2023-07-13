@@ -2,7 +2,7 @@
 
 #include "fl/net/http/HttpUrl.hpp"
 
-namespace fl {
+namespace Forward {
 
     template<class Body>
     class HttpRequestWrapper

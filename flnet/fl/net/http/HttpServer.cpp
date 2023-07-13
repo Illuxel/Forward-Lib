@@ -1,7 +1,7 @@
 #include "fl/net/http/HttpServer.hpp"
 #include "fl/utils/Log.hpp"
 
-namespace fl {
+namespace Forward {
 
     HttpServer::HttpServer(
         net::ssl::context::method method, 

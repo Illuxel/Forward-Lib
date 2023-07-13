@@ -3,7 +3,7 @@
 #include <string>
 #include <map>
 
-namespace fl {
+namespace Forward {
 
     class MimeType 
     {

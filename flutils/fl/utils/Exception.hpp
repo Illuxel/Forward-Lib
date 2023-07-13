@@ -3,7 +3,7 @@
 #include <string>
 #include <exception>
 
-namespace fl {
+namespace Forward {
     
     class Exception
     {
@@ -32,4 +32,4 @@ namespace fl {
             return ec_;
         }
     };
-} // namespace fl
+} // namespace Forward

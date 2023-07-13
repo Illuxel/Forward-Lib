@@ -1,7 +1,7 @@
 #include "fl/net/SslServer.hpp"
 #include "fl/utils/Log.hpp"
 
-namespace fl {
+namespace Forward {
 
     SslServer::SslServer(ssl::context::method method, uint8_t io_count)
         : io_count_(io_count)

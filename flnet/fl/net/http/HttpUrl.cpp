@@ -2,7 +2,7 @@
 
 #include <regex>
 
-namespace fl {
+namespace Forward {
     
     HttpUrl::HttpUrl()
         : valid_(false) {}
@@ -86,4 +86,4 @@ namespace fl {
         return true;
     }
 
-} // namespace fl
+} // namespace Forward

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <future>
 
-namespace fl {
+namespace Forward {
 
 	static std::string FromEnumToString(Logger::Level level)
 	{

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace fl::types {
+namespace Forward::types {
 
 	class Account
 	{

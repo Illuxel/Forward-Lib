@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <iterator>
 
-namespace fl {
+namespace Forward {
 
     std::string UrlEncodeUtf8(std::string_view input) {
         std::ostringstream encoded;

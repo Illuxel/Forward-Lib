@@ -2,7 +2,7 @@
 
 #include "fl/net/http/HttpQuery.hpp"
 
-namespace fl {
+namespace Forward {
     
     class HttpUrl
     {
@@ -33,4 +33,4 @@ namespace fl {
         static bool IsTargetLegal(std::string_view target);
     };
 
-} // namespace fl
+} // namespace Forward

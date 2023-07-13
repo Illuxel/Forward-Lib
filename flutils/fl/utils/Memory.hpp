@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace fl {
+namespace Forward {
     
     template<typename T>
     using Scope = std::unique_ptr<T>;
@@ -22,4 +22,4 @@ namespace fl {
         return std::make_shared<T>(std::forward<Args>(args)...);
     }
 
-} // namespace fl
+} // namespace Forward

@@ -1,6 +1,6 @@
 #include "fl/db/Database.hpp"
 
-namespace fl {
+namespace Forward {
     
     std::shared_mutex Database::s_dbs_mutex{};
     std::unordered_map<std::string, Ref<Database>> Database::s_dbs{};
@@ -196,4 +196,3 @@ namespace fl {
         statement->setDateTime(index, date.ToString("YYYY-MM-DD hh:mm:ss"));
     }
     
-} // namespace fl::db 

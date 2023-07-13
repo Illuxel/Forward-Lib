@@ -1,6 +1,6 @@
 #include "fl/net/http/HttpClient.hpp"
 
-namespace fl {
+namespace Forward {
 
     HttpClient::HttpClient(net::any_io_executor ex, ssl::context& ctx)
         : resolver_(ex)

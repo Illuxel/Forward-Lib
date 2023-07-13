@@ -2,7 +2,7 @@
 
 #include "fl/net/Core.hpp"
 
-namespace fl {
+namespace Forward {
     
     class Endpoint
     {
@@ -22,4 +22,4 @@ namespace fl {
         operator net::ip::tcp::endpoint() const;
     };
     
-} // namespace fl
+} // namespace Forward

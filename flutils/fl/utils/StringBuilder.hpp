@@ -2,7 +2,7 @@
 
 #include "fl/utils/StringArg.hpp"
 
-namespace fl {
+namespace Forward {
 
     class StringBuilder
     {

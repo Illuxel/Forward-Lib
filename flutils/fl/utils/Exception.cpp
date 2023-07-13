@@ -1,7 +1,7 @@
 #include "fl/utils/Exception.hpp"
 #include "Exception.hpp"
 
-namespace fl {
+namespace Forward {
 
     Exception::Exception()
         : is_error(false) {}
@@ -11,4 +11,4 @@ namespace fl {
 
     Exception::~Exception(){}
 
-} // namespace fl
+} // namespace Forward

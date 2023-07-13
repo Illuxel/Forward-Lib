@@ -1,6 +1,6 @@
 #include "fl/forward/Client.hpp"
 
-namespace fl {
+namespace Forward {
 
     Client::Client()
     {

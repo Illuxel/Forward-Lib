@@ -1,7 +1,7 @@
 #include "fl/net/http/HttpServer.hpp"
 #include "fl/utils/Log.hpp"
 
-namespace fl {
+namespace Forward {
 
     HttpSession::HttpSession(tcp::socket&& socket, net::ssl::context& context)
         : stream_(std::move(socket), context) 

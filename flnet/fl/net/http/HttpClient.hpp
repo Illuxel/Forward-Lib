@@ -4,7 +4,7 @@
 
 #include "fl/net/http/Core.hpp"
 
-namespace fl {
+namespace Forward {
 
     class HttpClient : public std::enable_shared_from_this<HttpClient>
     {

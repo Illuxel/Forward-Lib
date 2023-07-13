@@ -1,6 +1,6 @@
 #include "MimeType.hpp"
 
-namespace fl {
+namespace Forward {
 
     const std::map<std::string_view, MimeType> MimeType::mime_types_ 
     {

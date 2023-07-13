@@ -2,7 +2,7 @@
 
 #include "fl/net/http/Core.hpp"
 
-namespace fl {
+namespace Forward {
 
     class HttpSession : public std::enable_shared_from_this<HttpSession>
     {

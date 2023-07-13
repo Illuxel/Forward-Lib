@@ -2,7 +2,7 @@
 
 #include "fl/net/http/HttpClient.hpp"
 
-namespace fl {
+namespace Forward {
 
     class Chat;
 

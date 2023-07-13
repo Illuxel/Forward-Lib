@@ -2,7 +2,7 @@
 
 #include "fl/net/http/Core.hpp"
 
-namespace fl {
+namespace Forward {
 
     std::string UrlEncodeUtf8(std::string_view input);
     std::string UrlDecodeUtf8(std::string_view input);
@@ -35,4 +35,4 @@ namespace fl {
 
         bool HasKey(std::string_view key) const;
     };
-} // namespace fl
+} // namespace Forward
