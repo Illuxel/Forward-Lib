@@ -32,7 +32,7 @@ void printInfo(std::string const& call, std::string const& msg);
 
 #define FL_ERR(call, msg) \
 	printInfo(call, msg); \
-	throw std::exception(msg)
+	throw Exception(msg)
 
 	//fl::Log::Get()->Log(fl::Logger::Level::level, __FUNCTION__, __VA_ARGS__); 
 

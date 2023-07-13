@@ -1,6 +1,6 @@
 #include "fl/utils/Log.hpp"
 
-#include <mutex>
+#include <shared_mutex>
 
 namespace fl {
 
@@ -38,10 +38,10 @@ namespace fl {
 	}
 }
 
-std::mutex printMutex;
+static std::shared_mutex mutex;
 
 void printInfo(std::string const& call, std::string const& msg)
 {
-	std::lock_guard<std::mutex> lock(printMutex);
+	std::unique_lock lock(mutex);
 	std::cout << call << ": " << msg << std::endl;
 }
