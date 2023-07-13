@@ -11,7 +11,8 @@ namespace fl {
         http::response<Body> response_;
 
     public:
-        HttpResponseWrapper() {}
+        HttpResponseWrapper() 
+            : response_{} {}
 
         HttpResponseWrapper(http::status status, int version)
             : response_(status, version) {}
@@ -64,7 +65,7 @@ namespace fl {
         {
             return std::move(response_);
         }
-        operator http::response<Body>() const &
+        operator http::response<Body> const&() const &
         {
             return response_;
         }
@@ -77,5 +78,6 @@ namespace fl {
 
     using HttpResponse = HttpResponseWrapper<http::string_body>;
     using HttpResponseFile = HttpResponseWrapper<http::file_body>;
+    // using HttpResponsePart = HttpResponseWrapper<http::chunk_body>;
     using HttpResponseEmpty = HttpResponseWrapper<http::empty_body>;
 }

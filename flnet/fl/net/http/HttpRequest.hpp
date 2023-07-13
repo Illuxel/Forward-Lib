@@ -11,7 +11,8 @@ namespace fl {
         http::request<Body> request_;
 
     public:
-        HttpRequestWrapper() {}
+        HttpRequestWrapper()
+            : request_{} {}
 
         HttpRequestWrapper(http::status status, int version)
             : request_(status, version) {}
@@ -64,7 +65,7 @@ namespace fl {
         {
             return std::move(request_);
         }
-        operator http::request<Body>() const
+        operator http::request<Body> const&() const &
         {
             return request_;
         }
