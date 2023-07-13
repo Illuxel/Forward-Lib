@@ -6,7 +6,7 @@ endif()
 
 #--------------< MySQL Connector Search >--------------#
 
-set(MYSQL_CONNECTOR_LIB_NAME mysqlcppconn)
+set(MYSQL_CONNECTOR_LIB_NAME mysqlcppconn)  
 set(MYSQL_CONNECTOR_LIB_TYPE)
 set(MYSQL_CONNECTOR_LIB_EXT)
 
@@ -15,6 +15,13 @@ set(MYSQL_CONNECTOR_PATH_SUFFIXES)
 
 set(MYSQL_CONNECTOR_INCLUDE)
 
+if (NOT BUILD_SHARED_LIBS)
+    # To statically build MySQL Connector C++
+    add_compile_definitions(
+        CPPCONN_PUBLIC_FUNC=
+    ) 
+endif()
+
 if (WIN32)
 
     if (BUILD_SHARED_LIBS)
@@ -22,10 +29,6 @@ if (WIN32)
     else()
         set(MYSQL_CONNECTOR_LIB_TYPE "-static")
         set(MYSQL_CONNECTOR_LIB_EXT ".lib")
-        # To statically build MySQL Connector C++
-        add_compile_definitions(
-            CPPCONN_PUBLIC_FUNC=
-        ) 
     endif()
 
     set(MYSQL_CONNECTOR_POSSIBLE_PATH
@@ -39,10 +42,6 @@ elseif(UNIX)
         set(MYSQL_CONNECTOR_LIB_EXT ".so")
     else()
         set(MYSQL_CONNECTOR_LIB_EXT ".a")
-        # To statically build MySQL Connector C++
-        # add_compile_definitions(
-        #     CPPCONN_PUBLIC_FUNC=
-        # ) 
     endif()
 
     set(MYSQL_CONNECTOR_POSSIBLE_PATH
