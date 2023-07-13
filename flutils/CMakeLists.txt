@@ -15,6 +15,7 @@ endif()
 set(FLUTILS_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/utils)
 
 set(FLUTILS_INCLUDE
+    fl/utils/Exception.hpp
     fl/utils/Memory.hpp
     fl/utils/DateTime.hpp
     fl/utils/Enum.hpp
@@ -27,6 +28,7 @@ set(FLUTILS_INCLUDE
 )
 set(FLUTILS_SOURCE
     ${FLUTILS_INCLUDE}
+    fl/utils/Exception.cpp
     fl/utils/DateTime.cpp
     fl/utils/Enum.cpp
     fl/utils/Flags.cpp
