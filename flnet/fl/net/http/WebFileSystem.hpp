@@ -50,9 +50,12 @@ namespace fl {
         // all stored files in web site 
         std::vector<WebFileInfo> files_;
 
-        mutable std::shared_mutex mutex_;
+        bool is_valid;
+
+        mutable std::shared_mutex wfs_mutex_;
 
     public:
+        WebFilesSystem();
         /**
          *  @param web_root is a directory where web documents stored
          */
@@ -62,12 +65,17 @@ namespace fl {
         std::string_view GetWebRoot() const;
 
         // search file by name
-        std::optional<WebFileInfo> FindByTargetName(std::string_view target, bool extension) const;
+        std::optional<WebFileInfo> 
+        FindByTargetName(std::string_view target, bool extension) const;
         // search file by target path
-        std::optional<WebFileInfo> FindByTargetPath(std::string_view target, bool extension = true) const;
+        std::optional<WebFileInfo> 
+        FindByTargetPath(std::string_view target, bool extension = true) const;
 
+        bool IsValid() const;
+        
         bool IsTargetNameExist(std::string_view target, bool extension) const;  
         bool IsTargetPathExist(std::string_view target, bool extension) const;
+
     };
 
 }

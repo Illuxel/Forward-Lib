@@ -53,27 +53,29 @@ namespace fl {
         return files;
     }
 
+    WebFilesSystem::WebFilesSystem() 
+        : is_valid(false) {}
+
     WebFilesSystem::WebFilesSystem(std::string_view web_root) 
+        : is_valid(false)
     {
+        if (!std::filesystem::is_directory(web_root)) 
+            return;
+
+        is_valid = true;
+
         SetWebRoot(web_root);
     }
 
     void WebFilesSystem::SetWebRoot(std::string_view web_root) 
     {
-        if (!std::filesystem::is_directory(web_root)) 
-        {
-            FL_LOG("WebFilesSystem", "Unknown directory");
-            return;
-        }
-
-        {    
-            std::shared_lock<std::shared_mutex> lock(mutex_);
-            web_root_ = web_root;
-            files_ = IterateFiles(web_root_);
-        }
+        std::unique_lock lock(wfs_mutex_);
+        web_root_ = web_root;
+        files_ = IterateFiles(web_root_);
     }
     std::string_view WebFilesSystem::GetWebRoot() const 
     {
+        std::shared_lock lock(wfs_mutex_);
         return web_root_;
     }
 
@@ -95,7 +97,7 @@ namespace fl {
         if (it != files_.cend())
         {
             {    
-                std::shared_lock<std::shared_mutex> lock(mutex_);
+                std::shared_lock lock(wfs_mutex_);
                 cached.emplace(*it);
             }
 
@@ -122,9 +124,8 @@ namespace fl {
 
         if (it != files_.cend()) 
         {
-
             {    
-                std::shared_lock<std::shared_mutex> lock(mutex_);
+                std::shared_lock lock(wfs_mutex_);
                 cached.emplace(*it);
             }
 
@@ -134,12 +135,20 @@ namespace fl {
         return std::nullopt;
     }
 
+    bool WebFilesSystem::IsValid() const
+    {
+        std::shared_lock lock(wfs_mutex_);
+        return is_valid;
+    }
+
     bool WebFilesSystem::IsTargetNameExist(std::string_view target, bool extension) const
     {
+        std::shared_lock lock(wfs_mutex_);
         return FindByTargetName(target, extension).has_value();
     }
     bool WebFilesSystem::IsTargetPathExist(std::string_view target, bool extension) const
     {
+        std::shared_lock lock(wfs_mutex_);
         return FindByTargetPath(target, extension).has_value();
     }
 }
