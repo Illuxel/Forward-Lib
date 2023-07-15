@@ -1,35 +1,47 @@
 #pragma once
 
 #include <string>
+#include <optional>
+
 #include <exception>
 
 namespace Forward {
     
-    class Exception
+    class Exception : public std::exception
     {
     private:
         bool is_error;
-        std::exception ec_;
+        std::optional<std::string> msg_;
 
     public:
         Exception();
-        Exception(std::exception const& ec);
-        ~Exception();
+        
+        explicit Exception(std::string_view msg);
+        explicit Exception(std::exception const& ec);
 
-        operator bool() const {
+        virtual ~Exception() override;
+
+        virtual char const* what() const noexcept override
+        {
+            if (msg_.has_value())
+                return msg_.value().c_str();
+            return "Unknown exception";
+        }
+
+        operator bool() const 
+        {
             return is_error;
         }
-        operator const char*() const {
-            return ec_.what();
+        operator const char*() const 
+        {
+            return what();
         }
-        operator std::string_view() const {
-            return ec_.what();
+        operator std::string() const 
+        {
+            return msg_.value_or("Unknown exception");
         }
-        operator std::string const&() const {
-            return ec_.what();
-        }
-        operator std::exception const&() const & {
-            return ec_;
-        }
+
+        Exception& operator=(std::string_view msg);
+        Exception& operator=(std::exception const& ec);
     };
 } // namespace Forward

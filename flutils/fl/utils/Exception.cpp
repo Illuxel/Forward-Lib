@@ -4,11 +4,34 @@
 namespace Forward {
 
     Exception::Exception()
-        : is_error(false) {}
-    Exception::Exception(std::exception const &ec)
-        : ec_(ec) 
-        , is_error(true) {}
+        : std::exception{}
+        , is_error(false) {}
+    Exception::Exception(std::string_view msg)
+        : std::exception{}
+        , is_error(true)
+    {
+        msg_.emplace(msg);
+    }
+    Exception::Exception(std::exception const& ec)
+        : std::exception{}
+        , is_error(true) 
+    {
+        msg_.emplace(ec.what());
+    }
 
-    Exception::~Exception(){}
+    Exception::~Exception() {}
+
+    Exception& Exception::operator=(std::string_view msg)
+    {
+        is_error = true; 
+        msg_.emplace(msg);
+        return *this;
+    }
+    Exception& Exception::operator=(std::exception const &ec)
+    {
+        is_error = true;
+        msg_.emplace(ec.what());
+        return *this;
+    }
 
 } // namespace Forward
