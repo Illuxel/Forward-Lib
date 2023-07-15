@@ -10,9 +10,9 @@ TEST(HttpResponder, RegistrationTest) {
 
     data.Target = "/test";
     data.Method = http::verb::get;
-    data.Callback = [](HttpRequest const& req, HttpResponse& res)
+    data.Callback = [](HttpRequest const& req, HttpResponse&& res)
     {
-        return std::move(res);
+        return res;
     };
 
     responder.AddRouteHandler(data);
@@ -27,7 +27,7 @@ TEST(HttpResponder, RegistrationTest) {
         res.Base().body() = "Can not find page or resource";
         res.Base().prepare_payload();
 
-        return std::move(res);
+        return res;
     });
 
     HttpRequest req(http::verb::get, "/test", 11);
