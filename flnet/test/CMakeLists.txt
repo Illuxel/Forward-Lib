@@ -6,6 +6,7 @@ set(TEST_SOURCE
     test_wfs.cpp
     test_responder.cpp
     test_reqsponse.cpp
+    test_main.cpp
 )
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings

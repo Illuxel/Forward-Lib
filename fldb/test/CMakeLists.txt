@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 
 set(TEST_SOURCE 
-test_mysql.cpp
+    test_mysql.cpp
+    test_main.cpp
 )
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings

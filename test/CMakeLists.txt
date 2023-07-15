@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 
 set(TEST_SOURCE
     test_client.cpp
+    test_main.cpp
 )
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
