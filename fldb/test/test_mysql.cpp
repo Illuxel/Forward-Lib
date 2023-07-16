@@ -42,6 +42,7 @@ TEST(MySql, Connection) {
 
  TEST(MySql, ConcurrentDBAccess) {
     
+     std::vector<std::thread> connections;
 
      for (uint8_t i = 0; i < 32; ++i)
          connections.emplace_back(&ConcurrentAccessFoo);
