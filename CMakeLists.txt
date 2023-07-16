@@ -22,15 +22,13 @@ endif()
 
 if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-    add_compile_definitions(
-        _WIN32_WINNT=0x0A00
-        _WIN32_WINDOWS=0x0A00
-    )
 elseif(APPLE)
 
 elseif(UNIX)
 
 endif()
+
+#--------------< Packages >--------------#
 
 if(NOT TARGET OPENSSL)
     find_package(OpenSSL 1.1.1 REQUIRED)
@@ -50,7 +48,7 @@ if(NOT Boost_FOUND)
     set(Boost_USE_RELEASE_LIBS ON)
     set(Boost_USE_MULTITHREADED ON)
 
-    find_package(Boost REQUIRED system json COMPONENTS)
+    find_package(Boost 1.81 REQUIRED system json COMPONENTS)
 
 endif()
 
