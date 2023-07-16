@@ -1,6 +1,7 @@
 #include "fl/net/AsyncListener.hpp"
 #include "fl/utils/Log.hpp"
 
+// TODO: Check multiple acces to one object
 
 namespace Forward {
 
@@ -10,20 +11,16 @@ namespace Forward {
         : io_context_(ioc)
         , acceptor_ (io_context_)
         , call_back_(call_back) 
-        , endpoint_(endpoint) {}
+        , endpoint_(endpoint) 
+    {
+    }
 
     bool AsyncListener::Listen()
     {
         beast::error_code ec;
-
-        if (Listen(ec))
-            return true;
-
-        FL_LOG("Listener", ec.message());
-
-        return false;
+        return Listen(ec);
     }
-    bool AsyncListener::Listen(beast::error_code ec)
+    bool AsyncListener::Listen(beast::error_code& ec)
     {
         // Open the acceptor
         acceptor_.open(endpoint_.Protocol(), ec);
