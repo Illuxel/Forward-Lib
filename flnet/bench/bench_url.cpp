@@ -5,11 +5,9 @@ using namespace Forward;
 
 static void BM_UrlParse(benchmark::State& state) 
 {
-    std::string urlStr = "http://www.example.com/path/to/resource?param1=value1#fragment";
-
     for (auto _ : state) 
     {
-        HttpUrl url(urlStr);
+        HttpUrl url("http://www.example.com/path/to/resource?param1=value1#fragment");
     }
 }
 BENCHMARK(BM_UrlParse);

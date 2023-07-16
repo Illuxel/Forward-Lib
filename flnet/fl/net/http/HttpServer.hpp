@@ -19,8 +19,8 @@ namespace Forward {
         HttpServer(net::ssl::context::method method, uint8_t io_count);
         HttpServer(std::string_view web_dir, net::ssl::context::method method, uint8_t io_count);
 
-        void SetContentFolders(std::vector<std::string> const& folders);
         void SetBadRequest(HttpResponder::BadRequest const& handler);
+        void SetContentFolders(std::vector<std::string> const& folders);
 
         template<typename ...Args>
         void Route(Args&& ...args) 

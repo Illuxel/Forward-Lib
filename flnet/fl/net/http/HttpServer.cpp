@@ -23,6 +23,10 @@ namespace Forward {
         responder_ = MakeRef<HttpResponder>(router_);
     }
 
+    void HttpServer::SetBadRequest(HttpResponder::BadRequest const& handler)
+    {
+        responder_->SetBadHandler(handler);
+    }
     void HttpServer::SetContentFolders(std::vector<std::string> const& folders)
     {
         if (!router_)
@@ -30,10 +34,6 @@ namespace Forward {
 
         for (std::string_view folder : folders)
             router_->RegisterContent(folder);
-    }
-    void HttpServer::SetBadRequest(HttpResponder::BadRequest const& handler)
-    {
-        responder_->SetBadHandler(handler);
     }
 
     void HttpServer::OnSocketAccept(beast::error_code ec, tcp::socket&& socket)

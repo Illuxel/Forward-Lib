@@ -7,10 +7,13 @@ namespace Forward {
         , std::string_view index
         , std::string_view ext)
     {
-        index_.push_back('/');
-        index_.append(index);
         def_ext_ = MimeType::FromString(ext);
-        index_.append(def_ext_.GetExtName(false));
+
+        def_route_.append(index);
+        def_route_.append(def_ext_.GetExtName(false));
+        
+        if (def_route_.front() != '/')
+            def_route_.insert(def_route_.begin(), '/');
 
         wfs_ = MakeScope<WebFilesSystem>(web_root);
     }

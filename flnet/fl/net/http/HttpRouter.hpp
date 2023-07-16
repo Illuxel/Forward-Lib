@@ -7,8 +7,8 @@ namespace Forward {
     class HttpRouter
     {
     private:
-        // 
-        std::string index_;
+        // default index name 
+        std::string def_route_;
         // default extension for registered routes
         MimeType def_ext_;
 
@@ -28,7 +28,7 @@ namespace Forward {
         std::string GetContentFilePath(std::string_view content) const;
 
         void RegisterRoute(std::string_view target);
-        void RegisterContent(std::string_view folder_name);
+        void RegisterContent(std::string_view target);
 
         bool IsTarget(std::string_view target) const;
         bool IsTargetIndex(std::string_view target) const;

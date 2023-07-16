@@ -78,6 +78,5 @@ namespace Forward {
 
     using HttpResponse = HttpResponseWrapper<http::string_body>;
     using HttpResponseFile = HttpResponseWrapper<http::file_body>;
-    // using HttpResponsePart = HttpResponseWrapper<http::chunk_body>;
     using HttpResponseEmpty = HttpResponseWrapper<http::empty_body>;
 }

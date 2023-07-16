@@ -16,9 +16,9 @@ namespace Forward {
     void HttpUrl::SetUrl(std::string_view url)
     {
         std::smatch match;
-        std::regex urlRegex("^(?:(https?):\\/\\/)?(?:([^\\/\\?#]+))?([^\\?#]*)(?:\\?([^#]*))?(?:#(.*))?$");
 
         std::string copy(url.data());
+        std::regex urlRegex("^(?:(https?):\\/\\/)?(?:([^\\/\\?#]+))?([^\\?#]*)(?:\\?([^#]*))?(?:#(.*))?$");
 
         valid_ = std::regex_match(copy, match, urlRegex);
 
