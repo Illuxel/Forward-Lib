@@ -5,9 +5,7 @@
 namespace Forward {
 
     /**
-     *   Databases class. 
-     *   
-     * 
+     *   Databases class for managing async connections.
      */
     class Database
     {
