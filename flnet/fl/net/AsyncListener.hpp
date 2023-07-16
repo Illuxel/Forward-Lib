@@ -21,7 +21,7 @@ namespace Forward {
             AsyncAcceptFunc const& call_back);
 
         bool Listen();
-        bool Listen(beast::error_code ec);
+        bool Listen(beast::error_code& ec);
         
         void Accept();
     };
