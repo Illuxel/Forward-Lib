@@ -6,13 +6,7 @@
 #include "fl/utils/Exception.hpp"
 #include "fl/utils/DateTime.hpp"
 
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-
-#include <cppconn/resultset.h>
-
-#include <mysql_driver.h>
-#include <mysql_connection.h>
+#include <mysql/jdbc.h>
 
 namespace Forward {
 
@@ -27,7 +21,6 @@ namespace Forward {
         mutable std::shared_mutex data_mtx_;    // for everything else
 
         bool is_scheme;
-
 
     public:
         /**
@@ -109,6 +102,7 @@ namespace Forward {
          *  @return true if connection success
          */
         bool Connect(std::string_view host, std::string_view user, std::string_view password, Exception& ec);
+
         /**
          *  Executes query. Handles exceptions in method scope 
          * 
@@ -193,6 +187,7 @@ namespace Forward {
 
             return nullptr;
         }
+
         /**
          *  Closes database connection
          */
