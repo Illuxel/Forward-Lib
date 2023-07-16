@@ -65,7 +65,7 @@ namespace Forward {
         {
             return std::move(response_);
         }
-        operator http::response<Body> const&() const &
+        operator http::response<Body>() const &
         {
             return response_;
         }
