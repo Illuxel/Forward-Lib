@@ -1,33 +1,107 @@
 #include "fl/db/Database.hpp"
 
+#include <algorithm>
+
 namespace Forward {
-    
-    std::shared_mutex Database::s_dbs_mutex{};
-    std::unordered_map<std::string, Ref<Database>> Database::s_dbs{};
 
-    Ref<Database> Database::Init(std::string_view db_name)
+    Database::DBInfo::DBInfo()
+        : Name("")
     {
-        if (HasDatabase(db_name))
-            return Database::Get(db_name);
-
-        {
-            std::unique_lock lock(s_dbs_mutex);
-
-            Ref<Database> db(new Database(sql::mysql::get_driver_instance()));
-
-            s_dbs.insert(std::make_pair(db_name, db));
-        }
-
-        return Database::Get(db_name);
+        ThreadID = std::this_thread::get_id();
+    }
+    Database::DBInfo::DBInfo(std::string_view db_name)
+        : Name(db_name)
+    {
+        ThreadID = std::this_thread::get_id();
     }
 
-    Ref<Database> Database::Get(std::string_view db_name) 
+    bool Database::DBInfo::operator==(DBInfo const& right) const
+    {
+        return ThreadID == right.ThreadID && Name == right.Name;
+    }
+
+    std::size_t Database::DBInfo::Hash::operator()(DBInfo const& right) const noexcept
+    {
+        std::hash<std::thread::id> id_hash;
+        std::hash<std::string> name_hash;
+
+        std::size_t h1 = id_hash(right.ThreadID);
+        std::size_t h2 = name_hash(right.Name);
+
+        return h1 ^ (h2 << 1);
+    }
+
+    /**
+     *  Connection instances handler 
+     */
+
+    sql::Driver* Database::driver_ = nullptr;
+
+    std::shared_mutex Database::conn_pool_mtx_{};
+    std::unordered_map<Database::DBInfo, Ref<DBConnection>, Database::DBInfo::Hash> Database::conn_pool_{};
+
+    Ref<DBConnection> Database::Init(std::string_view db_name)
+    {
+        InitDriver();
+
+        DBInfo info(db_name);
+
+        if (HasDatabase(db_name))
+            return conn_pool_[info];
+
+        std::unique_lock lock(conn_pool_mtx_);
+
+        try
+        {
+            Ref<DBConnection> db = MakeRef<DBConnection>(driver_);
+            conn_pool_.insert(std::make_pair(info, db));
+        }
+        catch (std::exception const& e) 
+        {
+            FL_LOG("Database", e.what());
+        }
+
+        return conn_pool_[info];
+    }
+
+    std::vector<Ref<DBConnection>> Database::GetConnections()
+    {
+        std::vector<Ref<DBConnection>> connections;
+        std::shared_lock lock(conn_pool_mtx_);
+
+        std::transform(conn_pool_.cbegin(), conn_pool_.cend(), 
+        std::inserter(connections, connections.end()),
+           [](auto const& pair) {
+                return pair.second;
+           });
+
+        return connections;
+    }
+
+    uint32_t Database::GetActiveConnectionSize()
+    {
+        uint32_t count = 0;
+
+        for (auto& conn : GetConnections())
+        {
+            if (conn->IsConnected())
+            {
+                ++count;
+            }
+        }
+
+        return count;
+    }
+
+    Ref<DBConnection> Database::Get(std::string_view db_name)
     {
         if (!HasDatabase(db_name))
             return nullptr;
 
-        std::shared_lock lock(s_dbs_mutex);
-        return s_dbs[db_name.data()];
+        DBInfo info(db_name);
+        std::shared_lock lock(conn_pool_mtx_);
+
+        return conn_pool_[info];
     }
 
     void Database::Remove(std::string_view db_name)
@@ -35,164 +109,50 @@ namespace Forward {
         if (!HasDatabase(db_name))
             return;
 
-        auto db = Database::Get(db_name);
+        DBInfo info(db_name);
+        std::unique_lock lock(conn_pool_mtx_);
 
-        std::unique_lock lock(s_dbs_mutex);
-        s_dbs.erase(db_name.data());
+        auto& db = conn_pool_[info];
+
+        db->Close();
+        conn_pool_.erase(info);
     }
 
     bool Database::HasDatabase(std::string_view db_name) 
     {
-        std::shared_lock lock(s_dbs_mutex);
-        return s_dbs.find(db_name.data()) != s_dbs.cend();
+        DBInfo info(db_name);
+        std::shared_lock lock(conn_pool_mtx_);
+
+        return conn_pool_.find(info) != conn_pool_.cend();
     }
 
-    /**
-     *   Single connection interface
-     */
+    void Database::CloseAll(std::string_view db_name)
+    {
+        DBInfo info(db_name);
+        std::unique_lock lock(conn_pool_mtx_);
 
-    Database::Database(sql::mysql::MySQL_Driver* driver)
-        : driver_(driver) 
-        , is_scheme(false) {}
-    Database::~Database() 
-    {
-        Close();
-    }
-
-    bool Database::Connect(std::string_view host, std::string_view user, std::string_view password)
-    {
-        Exception ec;
-        return Connect(host, user, password, ec);
-    }
-    bool Database::Connect(std::string_view host, std::string_view user, std::string_view password, Exception& ec)
-    {
-        if (IsConnected())
+        for (auto& conn : GetConnections())
         {
-            FL_LOG("Database", "Connection already exist");
-            return true;
-        }
-
-        {
-            std::unique_lock lock(db_mutex_);
-
-            try
+            if (conn->IsConnected())
             {
-                connection_.reset(driver_->connect(host.data(), user.data(), password.data()));
-            }
-            catch(Exception const& e)
-            {
-                ec = e;
-                connection_ = nullptr;
+
             }
         }
-        
-        return IsConnected();
     }
 
-    Scope<sql::ResultSet> Database::Execute(std::string_view query) const 
+    void Database::InitDriver()
     {
-        Exception ex;
-        return std::move(Execute(query, ex));
-    }
-    Scope<sql::ResultSet> Database::Execute(std::string_view query, Exception& ex) const
-    {
-        if (!IsConnected())
-        {
-            FL_LOG("Database", "is not connected");
-            return nullptr;
-        }
-        if (!IsActiveSchema())
-        {
-            FL_LOG("Database", "scheme was not set");
-            return nullptr;
-        }
+        std::unique_lock lock(conn_pool_mtx_);
 
-        std::unique_lock lock(db_mutex_);
-        
         try
         {
-            Scope<sql::Statement> statement(connection_->createStatement());
-            Scope<sql::ResultSet> result(statement->executeQuery(query.data()));
-
-            return std::move(result);
+            if (!driver_)
+                driver_ = sql::mysql::get_driver_instance();
         }
-        catch(Exception const& e)
+        catch (std::exception const& e)
         {
-            ex = e;
+            FL_LOG("Database", e.what());
         }
-        
-        return nullptr;
     }
 
-    void Database::SetActiveSchema(std::string_view scheme)
-    {
-        if (!IsConnected())
-            return;
-
-        std::unique_lock lock(db_mutex_);
-
-        is_scheme = true;
-        connection_->setSchema(scheme.data());
-    }
-
-    bool Database::IsConnected() const 
-    {
-        std::unique_lock lock(db_mutex_);
-
-        if (!connection_) 
-            return false;
-
-        return connection_->isValid(); 
-    }
-    bool Database::IsActiveSchema() const 
-    {
-        std::shared_lock lock(db_mutex_);
-        return is_scheme;
-    }
-
-    void Database::Close() 
-    {
-        if (!IsConnected())
-            return;
-
-        std::unique_lock lock(db_mutex_);
-        connection_->close();
-    }
-
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, bool value) 
-    {
-        statement->setBoolean(index, value);
-    }
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, int32_t value) 
-    {
-        statement->setInt(index, value);
-    }
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, uint32_t value) 
-    {
-        statement->setUInt(index, value);
-    }
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, int64_t value)
-    {
-        statement->setInt64(index, value);
-    }
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, uint64_t value) 
-    {
-        statement->setUInt64(index, value);
-    }
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, double value) 
-    {
-        statement->setDouble(index, value);
-    }
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, const char* value) 
-    {
-        statement->setString(index, value);
-    }
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, std::string_view value) 
-    {
-        statement->setString(index, value.data());
-    }
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, DateTime const& date) 
-    {
-        statement->setDateTime(index, date.ToString("YYYY-MM-DD hh:mm:ss"));
-    }
-    
+} // namespace Forward

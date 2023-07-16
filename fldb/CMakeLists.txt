@@ -133,10 +133,12 @@ endif()
 
 set(FLDB_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/db)
 set(FLDB_INCLUDE 
+    fl/db/DBConnection.hpp
     fl/db/Database.hpp
 )
 set(FLDB_SOURCE
     ${FLDB_INCLUDE}
+    fl/db/DBConnection.cpp
     fl/db/Database.cpp
 )
 

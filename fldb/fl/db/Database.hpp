@@ -1,152 +1,98 @@
 #pragma once
 
-#include "fl/utils/Log.hpp"
-
-#include "fl/utils/Memory.hpp"
-#include "fl/utils/Exception.hpp"
-#include "fl/utils/DateTime.hpp"
-
-#include <shared_mutex>
-
-#include <mysql_driver.h>
-#include <mysql_connection.h>
-
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/variant.h>
+#include "fl/db/DBConnection.hpp"
 
 namespace Forward {
 
-    class Database 
+    /**
+     *   Databases class. 
+     *   
+     * 
+     */
+    class Database
     {
-    private:
-        mutable std::shared_mutex db_mutex_;
-
-        sql::mysql::MySQL_Driver* driver_;
-        Scope<sql::Connection> connection_;
-
-        bool is_scheme;
-
     public:
-        virtual ~Database();
-
-        bool Connect(std::string_view host, std::string_view user, std::string_view password);
-        bool Connect(std::string_view host, std::string_view user, std::string_view password, Exception& ec);
-
-        Scope<sql::ResultSet> Execute(std::string_view query) const;
-        Scope<sql::ResultSet> Execute(std::string_view query, Exception& ec) const;
-
-        template<typename ...Args>
-        Scope<sql::ResultSet> Execute(std::string_view query, Args&&... args)
+        struct DBInfo
         {
-            Exception ec;
-            return std::move(Execute(query, ec, std::forward<Args>(args)...));
-        }
-        template<typename ...Args>
-        Scope<sql::ResultSet> Execute(std::string_view query, Exception& ec, Args&&... args)
-        {
-            if (!IsConnected())
+            std::string Name;
+            std::thread::id ThreadID;
+
+            DBInfo();
+            DBInfo(std::string_view db_name);
+
+            bool operator==(DBInfo const& right) const;
+
+            struct Hash
             {
-                FL_LOG("Database", "is not connected");
-                return nullptr;
-            }
-            if (!IsActiveSchema())
-            {
-                FL_LOG("Database", "scheme was not set");
-                return nullptr;
-            }
-
-            std::unique_lock lock(db_mutex_);
-
-            try
-            {
-                int index = 1;
-                Scope<sql::PreparedStatement> statement(connection_->prepareStatement(query.data()));
-
-                (BindValue(std::move(statement), index++, ec, std::forward<Args>(args)), ...);
-
-                Scope<sql::ResultSet> result(statement->executeQuery());
-
-                return std::move(result);
-            }
-            catch(Exception const& e)
-            {
-                ec = e;
-            }
-
-            return nullptr;
-        }
-        
-        /**
-         *  Closes current database connection
-         */
-        void Close();
-
-        void SetActiveSchema(std::string_view scheme);
-
-        bool IsConnected() const; 
-        bool IsActiveSchema() const;
+                std::size_t operator()(DBInfo const& right) const noexcept;
+            };
+        };
 
     private:
-        static std::shared_mutex s_dbs_mutex;
-        static std::unordered_map<std::string, Ref<Database>> s_dbs;
+        static sql::Driver* driver_;
+
+        static std::shared_mutex conn_pool_mtx_;
+        static std::unordered_map<DBInfo, Ref<DBConnection>, DBInfo::Hash> conn_pool_;
+
+        explicit Database() = default;
 
     public:
         /**
-         *  Initializes database instance 
-         * 
-         *  @param db_name database tag
-         *  @return reference to a database instance. If 
+         * Initializes a database connection and returns a reference to the database instance
+         *
+         * @param db_name The tag or identifier for the database
+         * @return Reference to the database instance
          */
-        static Ref<Database> Init(std::string_view db_name);
-        /**
-         *  Gets database instance by tag. If no instance, will return nullptr
-         * 
-         *  @param db_name database tag
-         *  @return reference to a database instance
-         */
-        static Ref<Database> Get(std::string_view db_name);
-        /**
-         *  Closes all connections and removes database instance by tag
-         *  
-         *  @param db_name database tag
-         */
-        static void Remove(std::string_view db_name);
-        /**
-         *  Checks for existing instance
-         *  
-         *  @param db_name database tag
-         *  @return true if connection exist
-         */
-        static bool HasDatabase(std::string_view db_name);
+        static Ref<DBConnection> Init(std::string_view db_name = "");
 
+        /**
+         * Retrieves a database instance by its tag. If no instance is found, returns nullptr.
+         *
+         * @param db_name The tag or identifier for the database
+         * @return Reference to the database instance, or nullptr if not found
+         */
+        static Ref<DBConnection> Get(std::string_view db_name = "");
+        /**
+         * Retrieves a vector of available database connections
+         *
+         * @return A vector of references to available database connections
+         */
+        static std::vector<Ref<DBConnection>> GetConnections();
+        /**
+         * Retrieves the count of currently active connections
+         *
+         * @return The count of active connections
+         */
+        static uint32_t GetActiveConnectionSize();
+
+        /**
+         * Closes all connections and removes a database instance by its tag
+         *
+         * @param db_name The tag or identifier for the database
+         */
+        static void Remove(std::string_view db_name = "");
+
+        /**
+         * Checks if a database exists with the given tag
+         *
+         * @param db_name The tag or identifier for the database
+         * @return True if the database exists, false otherwise
+         */
+        static bool HasDatabase(std::string_view db_name = "");
+
+        /**
+         * Closes all named database connections
+         */
+        static void CloseAll(std::string_view db_name = "");
+
+        Database(Database&&) = delete;
         Database(Database const&) = delete;
+
+        Database& operator=(Database&&) = delete;
         Database& operator=(Database const&) = delete;
 
     private:
-        explicit Database(sql::mysql::MySQL_Driver* driver);
+        static void InitDriver();
 
-        template<typename T>
-        void BindValue(Scope<sql::PreparedStatement> const& statement, const uint8_t index, Exception& ec, const T value) 
-        {
-            try
-            {
-                BindValueImpl(std::move(statement), index, value);
-            }
-            catch(Exception const& e)
-            {
-                ec = e;
-            }
-        }
     };
-
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, bool value);
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, int32_t value);
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, uint32_t value);
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, int64_t value);
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, uint64_t value);
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, double value);
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, const char* value);
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, std::string_view value);
-    void BindValueImpl(Scope<sql::PreparedStatement> const& statement, const uint8_t index, DateTime const& date);
 }
