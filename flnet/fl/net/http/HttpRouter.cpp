@@ -3,6 +3,11 @@
 
 namespace Forward {
 
+    HttpRouter::HttpRouter()
+    {
+        
+    }
+
     HttpRouter::HttpRouter(std::string_view web_root
         , std::string_view index
         , std::string_view ext)

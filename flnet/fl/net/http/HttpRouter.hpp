@@ -20,6 +20,7 @@ namespace Forward {
         std::map<std::string, std::string> routes_;
 
     public:
+        HttpRouter();
         HttpRouter(std::string_view web_root, std::string_view index = "index", std::string_view ext = "html");
 
         std::string GetPreparedTarget(std::string_view name) const;
