@@ -39,7 +39,8 @@ endif()
 
 #--------------< MySQL C API Search >--------------#
 
-set(MYSQL_INCLUDE)
+set(MYSQL_LIB_NAME mysql)
+
 set(MYSQL_LIB)
 
 set(MYSQL_ENV
@@ -53,10 +54,30 @@ set(MYSQL_POSSIBLE_PATH
     "/usr/local/lib64"
 )
 
+if (WIN32)
+
+    if (BUILD_SHARED_LIBS)
+        string(PREPEND MYSQL_LIB_NAME "lib")
+        string(APPEND MYSQL_LIB_NAME ".dll")
+    else()
+        string(APPEND MYSQL_LIB_NAME "client")
+        string(APPEND MYSQL_LIB_NAME ".lib")
+    endif()
+
+elseif(UNIX)
+
+    if (BUILD_SHARED_LIBS)
+        set(MYSQL_LIB_EXT ".so")
+    else()
+        set(MYSQL_LIB_EXT ".a")
+    endif()
+
+endif()
+
 message(STATUS "Finding MySQL C API")
 
 find_library(MYSQL_LIB
-    NAME libmysql.lib
+    NAME ${MYSQL_LIB_NAME}
     PATHS 
         ${MYSQL_POSSIBLE_PATH}
     ENV
@@ -76,8 +97,6 @@ message(STATUS "Found MySQL C API: ${MYSQL_LIB}")
 #--------------< MySQL Connector C++ Search >--------------#
 
 set(MYSQL_CPPCONN_LIB_NAME mysqlcppconn)  
-set(MYSQL_CPPCONN_LIB_TYPE)
-set(MYSQL_CPPCONN_LIB_EXT)
 
 set(MYSQL_CPPCONN_POSSIBLE_PATH
     "C:/Program Files/MySQL/Connector C++"
@@ -105,24 +124,21 @@ endif()
 if (WIN32)
 
     if (BUILD_SHARED_LIBS)
-        set(MYSQL_CPPCONN_LIB_EXT ".dll")
+        string(APPEND MYSQL_CPPCONN_LIB_NAME ".dll")
     else()
-        set(MYSQL_CPPCONN_LIB_TYPE "-static")
-        set(MYSQL_CPPCONN_LIB_EXT ".lib")
+        string(APPEND MYSQL_CPPCONN_LIB_NAME "-static")
+        string(APPEND MYSQL_CPPCONN_LIB_NAME ".lib")
     endif()
 
 elseif(UNIX)
 
     if (BUILD_SHARED_LIBS)
-        set(MYSQL_CPPCONN_LIB_EXT ".so")
+        string(APPEND MYSQL_CPPCONN_LIB_NAME ".so")
     else()
-        set(MYSQL_CPPCONN_LIB_EXT ".a")
+        string(APPEND MYSQL_CPPCONN_LIB_NAME ".a")
     endif()
 
 endif()
-
-string(APPEND MYSQL_CPPCONN_LIB_NAME ${MYSQL_CPPCONN_LIB_TYPE})
-string(APPEND MYSQL_CPPCONN_LIB_NAME ${MYSQL_CPPCONN_LIB_EXT})
 
 message(STATUS "Finding MySQL Connector C++: ${MYSQL_CPPCONN_LIB_NAME}")
 
