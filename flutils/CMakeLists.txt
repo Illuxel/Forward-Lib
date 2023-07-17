@@ -8,7 +8,7 @@ if (FL_ENABLE_BENCHMARK)
     add_subdirectory(bench)
 endif()
 
-if (FL_ENABLE_TESING)
+if (FL_ENABLE_TESTING)
     add_subdirectory(test)
 endif()
 

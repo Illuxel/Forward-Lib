@@ -1,6 +1,6 @@
 add_subdirectory(jwt-cpp)
 
-if (FL_ENABLE_TESING)
+if (FL_ENABLE_TESTING)
     add_subdirectory(googletest)
 endif()
 

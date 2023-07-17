@@ -8,8 +8,12 @@ include(../cmake/FindMySQL.cmake)
 
 #--------------< Tests >--------------#
 
-if (FL_ENABLE_TESING)
+if (FL_ENABLE_TESTING)
     add_subdirectory(test)
+endif()
+
+if (FL_ENABLE_BENCHMARKS)
+    add_subdirectory(bench)
 endif()
 
 #--------------< Vars >--------------#
