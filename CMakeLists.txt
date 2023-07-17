@@ -6,7 +6,8 @@ project(ForwardLib
     DESCRIPTION ""
 )
 
-option(FL_ENABLE_TESING "Enabling testing, will add google test feautures in C++" ON)
+option(FL_ENABLE_TESTING "Enabling testing, will add google test feautures in C++" ON)
+option(FL_ENABLE_EXAMPLES "Enabling benchmarking, will add google benchmark feautures in C++" ON)
 option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" ON)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
@@ -123,7 +124,13 @@ PUBLIC
 )
 target_link_libraries(client PUBLIC ${namespace}::flapi)
 
-add_subdirectory(test)
+if (FL_ENABLE_EXAMPLES)
+    add_subdirectory(examples)
+endif()
+
+if (FL_ENABLE_TESTING)
+    add_subdirectory(test)
+endif()
 
 #--------------< Exporting targets >--------------#
 
