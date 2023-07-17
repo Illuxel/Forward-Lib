@@ -62,10 +62,14 @@ namespace Forward {
         if (!IsConnected())
             return;
 
+        driver_->threadInit();
+
         {
             std::lock_guard lock(conn_mtx_);
             connection_->setSchema(scheme.data());
         }
+
+        driver_->threadEnd();
 
         std::unique_lock lock(data_mtx_);
         is_scheme = true;
@@ -86,25 +90,24 @@ namespace Forward {
             return true;
         }
 
+        driver_->threadInit();
+
         {
             std::lock_guard lock(conn_mtx_);
 
             try
             {
-                sql::ConnectOptionsMap conn_options_copy = conn_options;
+                auto conn_options_copy = conn_options;
                 connection_.reset(driver_->connect(conn_options_copy));
             }
-            catch (sql::SQLException const& e)
+            catch (std::exception& e)
             {
-                ec = e;
-                FL_LOG("DBConnection", ec);
-            }
-            catch (std::runtime_error const& e)
-            {
-                ec = e;
-                FL_LOG("DBConnection", ec);
+                ec.SetError(e);
+                connection_ = nullptr;
             }
         }
+
+        driver_->threadEnd();
 
         return IsConnected();
     }
@@ -124,6 +127,8 @@ namespace Forward {
             return true;
         }
 
+        driver_->threadInit();
+
         {
             std::lock_guard lock(conn_mtx_);
 
@@ -131,29 +136,49 @@ namespace Forward {
             {
                 connection_.reset(driver_->connect(host.data(), user.data(), password.data()));
             }
-            catch (sql::SQLException const& e)
+            catch (std::exception& e)
             {
-                ec = e;
-                FL_LOG("DBConnection", ec);
-            }
-            catch (std::runtime_error const& e)
-            {
-                ec = e;
-                FL_LOG("DBConnection", ec);
-            }
+                ec.SetError(e);
+                connection_ = nullptr;
+            }    
         }
+
+        driver_->threadEnd();
 
         return IsConnected();
     }
 
-    Scope<sql::ResultSet> DBConnection::Execute(std::string_view query) 
+    std::future<bool> DBConnection::AsyncConnect(sql::ConnectOptionsMap const& conn_options)
+    {
+        std::future<bool> result = std::async(
+            std::launch::async,
+            [&]()
+            {
+                return this->Connect(conn_options);
+            });
+
+        return std::move(result);
+    }
+    std::future<bool> DBConnection::AsyncConnect(std::string_view host, std::string_view user, std::string_view password)
+    {
+        std::future<bool> result = std::async(
+            std::launch::async, 
+            [&]() 
+            {
+                return Connect(host, user, password);
+            });
+
+        return std::move(result);
+    }
+
+    Query::Result DBConnection::Execute(std::string_view query)
     {
         Exception ex;
         auto result = Execute(query, ex);
 
         return std::move(result);
     }
-    Scope<sql::ResultSet> DBConnection::Execute(std::string_view query, Exception& ec) 
+    Query::Result DBConnection::Execute(std::string_view query, Exception& ec)
     {
         if (!IsConnected())
         {
@@ -165,38 +190,66 @@ namespace Forward {
             FL_LOG("DBConnection", "scheme was not set");
             return nullptr;
         }
+        
+        Query::Result result;
 
-        std::lock_guard lock(conn_mtx_);
- 
-        try
-        {
-            Scope<sql::Statement> statement(connection_->createStatement());
-            Scope<sql::ResultSet> result(statement->executeQuery(query.data()));
+        driver_->threadInit();
 
-            return std::move(result);
-        }
-        catch (sql::SQLException const& e)
         {
-            ec = e;
-            FL_LOG("DBConnection", ec);
-        }
-        catch (std::runtime_error const& e)
-        {
-            ec = e;
-            FL_LOG("DBConnection", ec);
+            std::lock_guard lock(conn_mtx_);
+
+            try
+            {
+                Query::Executable statement(connection_->createStatement());
+                result.reset(statement->executeQuery(query.data()));
+            }
+            catch (std::exception const& e)
+            {
+                ec.SetError(e);
+                result = nullptr;
+            }
         }
 
-        return nullptr;
+        driver_->threadEnd();
+
+        return std::move(result);
     }
 
-    void DBConnection::Close() 
+    std::future<Query::Result> DBConnection::AsyncExecute(std::string_view query)
+    {
+        std::future<Query::Result> future = std::async(
+            std::launch::async,
+            [&]() 
+            {
+                Query::Result result = Execute(query);
+
+                return std::move(result);
+            });
+
+        return std::move(future);
+    }
+
+    void DBConnection::Close()
     {
         if (!IsConnected())
             return;
 
-        std::lock_guard lock(conn_mtx_);
+        driver_->threadInit();
 
-        connection_->close();
+        {
+            std::lock_guard lock(conn_mtx_);
+
+            try
+            {
+                connection_->close();
+            }
+            catch (std::exception const& e)
+            {
+                FL_LOG("FAIL", "CLOSE");
+            }
+        }
+
+        driver_->threadEnd();
     }
 
     bool DBConnection::IsValid() const
@@ -209,9 +262,18 @@ namespace Forward {
         if (!IsValid())
             return false;
 
-        std::lock_guard lock(conn_mtx_);
+        bool is_valid;
 
-        return connection_->isValid();
+        driver_->threadInit();
+
+        {
+            std::lock_guard lock(conn_mtx_);
+            is_valid = connection_->isValid();
+        }
+
+        driver_->threadEnd();
+
+        return is_valid;
     }
     bool DBConnection::IsActiveSchema() const 
     {

@@ -7,41 +7,50 @@ namespace Forward {
     /**
      *   Databases class for managing async connections.
      */
-    class Database
+    class Database final
     {
     public:
-        struct DBInfo
+        struct SessionInfo
         {
             std::string Name;
             std::thread::id ThreadID;
 
-            DBInfo();
-            DBInfo(std::string_view db_name);
+            bool IsSeparate;
 
-            bool operator==(DBInfo const& right) const;
+            SessionInfo();
+            SessionInfo(std::string_view db_name, bool is_separate = false);
+
+            bool operator==(SessionInfo const& right) const;
+
+            operator bool() const&
+            {
+                return IsSeparate;
+            }
+            operator std::string() const &
+            {
+                return Name;
+            }
+            operator std::thread::id() const &
+            {
+                return ThreadID;
+            }
 
             struct Hash
             {
-                std::size_t operator()(DBInfo const& right) const noexcept;
+                std::size_t operator()(SessionInfo const& right) const noexcept;
             };
         };
 
     private:
-        static sql::Driver* driver_;
+        sql::Driver* driver_;
 
-        static std::shared_mutex conn_pool_mtx_;
-        static std::unordered_map<DBInfo, Ref<DBConnection>, DBInfo::Hash> conn_pool_;
+        std::shared_mutex pool_mtx_;
+        std::unordered_map<SessionInfo, Ref<DBConnection>, SessionInfo::Hash> conn_pool_;
 
-        explicit Database() = default;
+        explicit Database();
 
     public:
-        /**
-         * Initializes a database connection and returns a reference to the database instance
-         *
-         * @param db_name The tag or identifier for the database
-         * @return Reference to the database instance
-         */
-        static Ref<DBConnection> Init(std::string_view db_name = "");
+        ~Database();
 
         /**
          * Retrieves a database instance by its tag. If no instance is found, returns nullptr.
@@ -49,7 +58,14 @@ namespace Forward {
          * @param db_name The tag or identifier for the database
          * @return Reference to the database instance, or nullptr if not found
          */
-        static Ref<DBConnection> Get(std::string_view db_name = "");
+        static sql::Driver* GetDriver();
+        /**
+         * Retrieves a database instance by its tag. If no instance is found, returns nullptr.
+         *
+         * @param db_name The tag or identifier for the database
+         * @return Reference to the database instance, or nullptr if not found
+         */
+        static Ref<DBConnection> const& Get(std::string_view db_name = "");
         /**
          * Retrieves a vector of available database connections
          *
@@ -62,6 +78,29 @@ namespace Forward {
          * @return The count of active connections
          */
         static uint32_t GetActiveConnectionSize();
+
+        /**
+         * Initializes scoped database connection. Destroys after exits scope
+         *
+         * @return Scoped ptr to the database instance
+         */
+        static Scope<DBConnection> InitScoped();
+
+        /**
+         * Initializes a database connection and returns a reference to the database instance
+         *
+         * @param db_name The tag or identifier for the database
+         * @return Reference to the database instance
+         */
+        static Ref<DBConnection> const& Init(std::string_view db_name = "");
+        /**
+         * Initializes a database connection for separate thread. 
+         * This ensures that DBConnection could be accessed safely from a thread.
+         *
+         * @param db_name The tag or identifier for the database
+         * @return Reference to the database instance
+         */
+        static Ref<DBConnection> const& InitSeparate(std::string_view db_name = "");
 
         /**
          * Closes all connections and removes a database instance by its tag
@@ -90,7 +129,12 @@ namespace Forward {
         Database& operator=(Database const&) = delete;
 
     private:
-        static void InitDriver();
+        /**
+         * Returns an intance of database singleton class
+         *
+         * @return Reference to the singleton database instance
+         */
+        static Database& Instance();
 
     };
 }
