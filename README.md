@@ -4,17 +4,18 @@ Description: Soon
 
 ## List of task
 
-- [x] Lib ported to CMake.
-- [x] Add basic net system.
-- [ ] Add auth sytem (SSL, encryption, 2 factor auth).
+- [x] Lib ported to CMake
+- [x] Add basic net system
+- [x] Async MySQL Connector C++ Layer (Using std::async or access from multiple threads)
+- [ ] Http Routing (~90%)
+- [ ] Add auth sytem (SSL, encryption, 2 factor auth)
 
 ## Dependencies
 
-- OpenSSL
-- Boost 
-- MySQL Connector C++ 1.1.13 (Debug/Release)
-<!-- - JWT-CPP -->
+- OpenSSL 1.1.1 ()
+- Boost 1.81 ()
+- MySQL Connector C++ 8.0.33 (Debug/Release) ()
+- JWT-CPP ()
 <!-- - SqLite -->
 
 ## How to install
-
