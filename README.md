@@ -6,7 +6,7 @@ Description: Soon
 
 - [x] Lib ported to CMake
 - [x] Add basic net system
-- [x] Async MySQL Connector C++
+- [x] Async MySQL Connector C++ Layer (Using std::async or acces from multiple threads)
 - [ ] Http Routing (~90%)
 - [ ] Add auth sytem (SSL, encryption, 2 factor auth)
 
