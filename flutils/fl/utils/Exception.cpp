@@ -38,6 +38,7 @@ namespace Forward {
     char const* Exception::what() const noexcept
     {
         std::shared_lock lock(mtx_);
+
         if (msg_.empty())
             return msg_.c_str();
         return "Unknown exception";
@@ -55,11 +56,13 @@ namespace Forward {
 
         is_error = true;        
         msg_ = msg;
+
         return *this;
     }
     Exception& Exception::operator=(std::exception const& ec) noexcept 
     {
         SetError(ec);
+
         return *this;
     }
 
