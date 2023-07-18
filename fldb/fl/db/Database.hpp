@@ -94,8 +94,7 @@ namespace Forward {
          */
         static Ref<DBConnection> const& Init(std::string_view db_name = "");
         /**
-         * Initializes a database connection for separate thread. 
-         * This ensures that DBConnection could be accessed safely from a thread.
+         * Initializes a database connection that can be called ONLY from thread that used method InitSeparate().
          *
          * @param db_name The tag or identifier for the database
          * @return Reference to the database instance
