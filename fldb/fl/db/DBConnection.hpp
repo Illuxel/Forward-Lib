@@ -153,8 +153,8 @@ namespace Forward {
 		 */
 		Query::Result Execute(std::string_view query, Exception& ec);
 		/**
-		*
-		*/
+		 *
+		 */
 		std::future<Query::Result> AsyncExecute(std::string_view query);
 
 		/**
@@ -225,7 +225,9 @@ namespace Forward {
 			return std::move(result);
 		}
 		/**
-		 *
+		 * Executes query with arguments in separate thread
+		 * 
+		 * @return future object of query result
 		 */
 		template<typename ...Args>
 		std::future<Query::Result> AsyncExecute(std::string_view query, Args&&... args)
@@ -239,7 +241,7 @@ namespace Forward {
 					return std::move(result);
 				});
 
-			return std::move(future);
+			return future;
 		}
 
 		/**

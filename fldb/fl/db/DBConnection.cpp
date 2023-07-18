@@ -157,7 +157,7 @@ namespace Forward {
                 return this->Connect(conn_options);
             });
 
-        return std::move(result);
+        return result;
     }
     std::future<bool> DBConnection::AsyncConnect(std::string_view host, std::string_view user, std::string_view password)
     {
@@ -168,7 +168,7 @@ namespace Forward {
                 return Connect(host, user, password);
             });
 
-        return std::move(result);
+        return result;
     }
 
     Query::Result DBConnection::Execute(std::string_view query)
@@ -226,7 +226,7 @@ namespace Forward {
                 return std::move(result);
             });
 
-        return std::move(future);
+        return future;
     }
 
     void DBConnection::Close()
