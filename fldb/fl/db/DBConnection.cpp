@@ -110,7 +110,7 @@ namespace Forward {
             }
             catch (std::exception& e)
             {
-                ec.SetError(e);
+                ec = e;
                 connection_ = nullptr;
             }
         }
@@ -144,9 +144,9 @@ namespace Forward {
             {
                 connection_.reset(driver_->connect(host.data(), user.data(), password.data()));
             }
-            catch (std::exception& e)
+            catch (std::exception const& e)
             {
-                ec.SetError(e);
+                ec = e;
                 connection_ = nullptr;
             }    
         }
@@ -181,8 +181,8 @@ namespace Forward {
 
     Query::Result DBConnection::Execute(std::string_view query)
     {
-        Exception ex;
-        auto result = Execute(query, ex);
+        Exception ec;
+        auto result = Execute(query, ec);
 
         return std::move(result);
     }
@@ -213,7 +213,7 @@ namespace Forward {
             }
             catch (std::exception const& e)
             {
-                ec.SetError(e);
+                ec = e;
                 result = nullptr;
             }
         }
