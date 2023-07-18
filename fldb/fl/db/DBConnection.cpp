@@ -66,7 +66,15 @@ namespace Forward {
 
         {
             std::lock_guard lock(conn_mtx_);
-            connection_->setSchema(scheme.data());
+
+            try
+            {
+                connection_->setSchema(scheme.data());
+            }
+            catch (std::exception const& e)
+            {
+
+            }
         }
 
         driver_->threadEnd();
