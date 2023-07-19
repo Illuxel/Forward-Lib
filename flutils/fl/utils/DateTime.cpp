@@ -49,22 +49,22 @@ namespace Forward {
 
     std::string DateTime::ToString() const
     {
-        return ToString(default_format);
+        return ToString(DateTime::DefaultFormat);
     }
     std::string DateTime::ToString(std::string_view format) const
     {
         std::string c_format;
 
-        if (format.empty() || format.size() > max_format_size)
-            c_format = ConvertToCFormat(default_format);
+        if (format.empty() || format.size() > DateTime::MaxFormatSize)
+            c_format = ConvertToCFormat(DateTime::DefaultFormat);
         else 
             c_format = ConvertToCFormat(format);
 
         CacheTm();
 
-        char buffer[max_format_size];
+        char buffer[DateTime::MaxFormatSize];
 
-        if (std::strftime(buffer, max_format_size, c_format.data(), &date_time_.value()) == 0)
+        if (std::strftime(buffer, DateTime::MaxFormatSize, c_format.data(), &date_time_.value()) == 0)
             return "";
 
         return buffer;
@@ -86,8 +86,7 @@ namespace Forward {
             {"YYYY", "%Y"}      // year (e.g., 2021)
         });
 
-        StringBuilder build(format, c_style_format);
-        return build;
+        return StringBuilder(format, c_style_format);
     }
 
     void DateTime::CacheTm() const 
@@ -110,5 +109,4 @@ namespace Forward {
     {
         return time_point_ == right.time_point_;
     }
-
 } // namespace Forward
