@@ -1,5 +1,10 @@
 #pragma once
 
+
+#ifdef _WIN32
+	#include <SDKDDKVer.h>
+#endif
+
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/dispatch.hpp>
 #include <boost/asio/strand.hpp>
