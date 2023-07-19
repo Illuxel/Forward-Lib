@@ -44,7 +44,8 @@ namespace Forward {
     private:
         sql::Driver* driver_;
 
-        std::shared_mutex pool_mtx_;
+        mutable std::shared_mutex pool_mtx_;
+
         std::unordered_map<SessionInfo, Ref<DBConnection>, SessionInfo::Hash> conn_pool_;
 
         explicit Database();
@@ -53,53 +54,67 @@ namespace Forward {
         ~Database();
 
         /**
-         * Retrieves a database instance by its tag. If no instance is found, returns nullptr.
+         * Call MySQL driver 
          *
-         * @param db_name The tag or identifier for the database
-         * @return Reference to the database instance, or nullptr if not found
+         * @return 
          */
         static sql::Driver* GetDriver();
-        /**
-         * Retrieves a database instance by its tag. If no instance is found, returns nullptr.
-         *
-         * @param db_name The tag or identifier for the database
-         * @return Reference to the database instance, or nullptr if not found
-         */
-        static Ref<DBConnection> const& Get(std::string_view db_name = "");
         /**
          * Retrieves a vector of available database connections
          *
          * @return A vector of references to available database connections
          */
         static std::vector<Ref<DBConnection>> GetConnections();
+  
+        /**
+         * Retrieves the count of connections
+         *
+         * @return The count of active connections
+         */
+        static uint32_t GetConnectionCount();
         /**
          * Retrieves the count of currently active connections
          *
          * @return The count of active connections
          */
-        static uint32_t GetActiveConnectionSize();
+        static uint32_t GetActiveConnectionCount();
 
         /**
-         * Initializes scoped database connection. Destroys after exits scope
+         * Initializes scoped database connection
          *
          * @return Scoped ptr to the database instance
          */
         static Scope<DBConnection> InitScoped();
 
         /**
-         * Initializes a database connection and returns a reference to the database instance
+         * Initializes a database connection that can be accessed from multiple threads
          *
          * @param db_name The tag or identifier for the database
          * @return Reference to the database instance
          */
-        static Ref<DBConnection> const& Init(std::string_view db_name = "");
+        static Ref<DBConnection> Init(std::string_view db_name = "");
         /**
-         * Initializes a database connection that can be called ONLY from thread that used method InitSeparate().
+         * Initializes a separate database connection that can be accessed ONLY from called thread
          *
          * @param db_name The tag or identifier for the database
          * @return Reference to the database instance
          */
-        static Ref<DBConnection> const& InitSeparate(std::string_view db_name = "");
+        static Ref<DBConnection> InitSeparate(std::string_view db_name = "");
+
+        /**
+         * Retrieves a database instance by its tag. If no instance is found, returns nullptr.
+         *
+         * @param db_name The tag or identifier for the database
+         * @return Reference to the database instance, or nullptr if not found
+         */
+        static Ref<DBConnection> Get(std::string_view db_name = "");
+        /**
+         * 
+         *
+         * @param db_name The tag or identifier for the database
+         * @return Reference to the database instance, or nullptr if not found
+         */
+        static Ref<DBConnection> GetSeparate(std::string_view db_name = "");
 
         /**
          * Closes all connections and removes a database instance by its tag
@@ -107,6 +122,7 @@ namespace Forward {
          * @param db_name The tag or identifier for the database
          */
         static void Remove(std::string_view db_name = "");
+        static void RemoveSeparate(std::string_view db_name = "");
 
         /**
          * Checks if a database exists with the given tag
@@ -114,7 +130,8 @@ namespace Forward {
          * @param db_name The tag or identifier for the database
          * @return True if the database exists, false otherwise
          */
-        static bool HasDatabase(std::string_view db_name = "");
+        static bool Has(std::string_view db_name = "");
+        static bool HasSeparate(std::string_view db_name = "");
 
         /**
          * Closes all named database connections
@@ -135,5 +152,17 @@ namespace Forward {
          */
         static Database& Instance();
 
+        /**
+         * @param db_name The tag or identifier for the database
+         * @param separate Boolean that defines wether init connection should be callable ONLY from one thread
+         * 
+         * @return Reference to the database instance
+         */
+        static Ref<DBConnection> InitImpl(SessionInfo const& info);
+        static Ref<DBConnection> GetImpl(SessionInfo const& info);
+
+        static bool HasImpl(SessionInfo const& info);
+
+        static void RemoveImpl(SessionInfo const& info);
     };
 }

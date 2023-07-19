@@ -19,25 +19,23 @@ namespace Forward {
 
     bool Database::SessionInfo::operator==(SessionInfo const& right) const
     {
-        return 
-            ThreadID == right.ThreadID 
-            && Name == right.Name 
-            && IsSeparate == right.IsSeparate;
+        return ThreadID == right.ThreadID
+            && Name == right.Name;
     }
 
     std::size_t Database::SessionInfo::Hash::operator()(SessionInfo const& right) const noexcept
     {
-        std::hash<std::string> hash_name;
         std::hash<std::thread::id> hash_id;
+        std::hash<std::string> hash_name;
 
-        std::size_t seed_name = hash_name(right.Name);
         std::size_t seed_id = hash_id(right.ThreadID);
+        std::size_t seed_name = hash_name(right.Name);
 
         return seed_name ^ (seed_id << 1);
     }
 
     /**
-     *  Connection instances handler 
+     *  Connection instances handler
      */
 
     Database::Database()
@@ -55,7 +53,7 @@ namespace Forward {
     }
     Database::~Database()
     {
-
+        CloseAll();
     }
 
     Database& Database::Instance()
@@ -64,111 +62,115 @@ namespace Forward {
         return instance;
     }
 
+    sql::Driver* Database::GetDriver()
+    {
+        Database& db = Database::Instance();
+        std::shared_lock lock(db.pool_mtx_);
+
+        return db.driver_;
+    }
+    std::vector<Ref<DBConnection>> Database::GetConnections()
+    {
+        Database& db = Database::Instance();
+        std::shared_lock lock(db.pool_mtx_);
+        std::vector<Ref<DBConnection>> conns;
+
+        std::transform(db.conn_pool_.cbegin(), db.conn_pool_.cend(),
+            std::inserter(conns, conns.end()),
+            [](auto const& pair) {
+                return pair.second;
+            });
+
+        return conns;
+    }
 
     Scope<DBConnection> Database::InitScoped()
     {
-        Database& db = Database::Instance();
+        auto driver = Database::GetDriver();
+        auto conn = MakeScope<DBConnection>(driver);
 
-        auto driver = db.GetDriver();
-
-        return std::move(MakeScope<DBConnection>(driver));
+        return std::move(conn);
     }
 
-    Ref<DBConnection> const& Database::Init(std::string_view db_name)
+    Ref<DBConnection> Database::Init(std::string_view db_name)
+    {
+        SessionInfo info(db_name, false);
+        return Database::InitImpl(info);
+    }
+    Ref<DBConnection> Database::InitSeparate(std::string_view db_name)
+    {
+        SessionInfo info(db_name, true);
+        return Database::InitImpl(info);
+    }
+    Ref<DBConnection> Database::InitImpl(SessionInfo const& info)
     {
         Database& db = Database::Instance();
 
-        if (HasDatabase(db_name))
-        {
-            return db.Get(db_name);
-        }
+        if (Database::HasImpl(info))
+            return db.conn_pool_[info];
 
-        auto driver = db.GetDriver();
-        auto conn = MakeRef<DBConnection>(driver);
-
-        return nullptr;
-    }
-    Ref<DBConnection> const& Database::InitSeparate(std::string_view db_name)
-    {
-        Database& db = Database::Instance();
-
-        if (HasDatabase(db_name))
-        {
-            return db.Get(db_name);
-        }
-
-        auto driver = db.GetDriver();
-        auto conn = MakeRef<DBConnection>(driver);
-
+        auto driver = Database::GetDriver();
         std::unique_lock lock(db.pool_mtx_);
-
-        SessionInfo info(db_name);
+        auto conn = MakeRef<DBConnection>(driver);
 
         db.conn_pool_.insert(std::make_pair(info, conn));
 
         return conn;
     }
 
-
     void Database::Remove(std::string_view db_name)
     {
-        if (!HasDatabase(db_name))
-        {
+        SessionInfo info(db_name, false);
+        Database::RemoveImpl(info);
+    }
+    void Database::RemoveSeparate(std::string_view db_name)
+    {
+        SessionInfo info(db_name, true);
+        Database::RemoveImpl(info);
+    }
+    void Database::RemoveImpl(SessionInfo const& info)
+    {
+        if (!Database::HasImpl(info))
             return;
-        }
 
         Database& db = Database::Instance();
-
         std::unique_lock lock(db.pool_mtx_);
 
-        SessionInfo info(db_name);
-        Ref<DBConnection> conn = db.conn_pool_[info];
-
+        db.conn_pool_[info]->Close();
         db.conn_pool_.erase(info);
-        conn->Close();
     }
 
-    sql::Driver* Database::GetDriver()
+    Ref<DBConnection> Database::Get(std::string_view db_name)
     {
-        Database& db = Database::Instance();
+        SessionInfo info(db_name, false);
 
-        std::shared_lock lock(db.pool_mtx_);
-
-        return db.driver_;
+        return Database::GetImpl(info);
     }
-
-    Ref<DBConnection> const& Database::Get(std::string_view db_name)
+    Ref<DBConnection> Database::GetSeparate(std::string_view db_name)
     {
-        if (!HasDatabase(db_name))
+        SessionInfo info(db_name, true);
+
+        return Database::GetImpl(info);
+    }
+    Ref<DBConnection> Database::GetImpl(SessionInfo const& info)
+    {
+        if (!Database::HasImpl(info))
             return nullptr;
 
         Database& db = Database::Instance();
-
         std::shared_lock lock(db.pool_mtx_);
-
-        SessionInfo info(db_name);
 
         return db.conn_pool_[info];
     }
 
-    std::vector<Ref<DBConnection>> Database::GetConnections()
+    uint32_t Database::GetConnectionCount()
     {
         Database& db = Database::Instance();
-
         std::shared_lock lock(db.pool_mtx_);
 
-        std::vector<Ref<DBConnection>> conns;
-
-        std::transform(db.conn_pool_.cbegin(), db.conn_pool_.cend(),
-        std::inserter(conns, conns.end()),
-           [](auto const& pair) {
-                return pair.second;
-           });
-
-        return conns;
+        return db.conn_pool_.size();
     }
-
-    uint32_t Database::GetActiveConnectionSize()
+    uint32_t Database::GetActiveConnectionCount()
     {
         uint32_t count = 0;
 
@@ -183,13 +185,22 @@ namespace Forward {
         return count;
     }
 
-    bool Database::HasDatabase(std::string_view db_name) 
+    bool Database::Has(std::string_view db_name) 
+    {
+        SessionInfo info(db_name, false);
+
+        return Database::HasImpl(info);
+    }
+    bool Database::HasSeparate(std::string_view db_name)
+    {
+        SessionInfo info(db_name, true);
+
+        return Database::HasImpl(info);
+    }
+    bool Database::HasImpl(SessionInfo const& info)
     {
         Database& db = Database::Instance();
-
         std::shared_lock lock(db.pool_mtx_);
-
-        SessionInfo info(db_name);
 
         return db.conn_pool_.find(info) != db.conn_pool_.cend();
     }
@@ -198,13 +209,11 @@ namespace Forward {
     {
         Database& db = Database::Instance();
 
-        std::unique_lock lock(db.pool_mtx_);
-
         for (auto& conn : GetConnections())
         {
             if (conn->IsConnected())
             {
-
+                conn->Close();
             }
         }
     }

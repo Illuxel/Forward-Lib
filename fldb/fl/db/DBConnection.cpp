@@ -62,22 +62,22 @@ namespace Forward {
         if (!IsConnected())
             return;
 
-        driver_->threadInit();
-
         {
-            std::lock_guard lock(conn_mtx_);
+            MySQL::DriverLock d_lock(driver_);
 
-            try
             {
-                connection_->setSchema(scheme.data());
-            }
-            catch (std::exception const& e)
-            {
+                std::lock_guard lock(conn_mtx_);
 
+                try
+                {
+                    connection_->setSchema(scheme.data());
+                }
+                catch (std::exception const& e)
+                {
+
+                }
             }
         }
-
-        driver_->threadEnd();
 
         std::unique_lock lock(data_mtx_);
         is_scheme = true;
@@ -98,24 +98,24 @@ namespace Forward {
             return true;
         }
 
-        driver_->threadInit();
-
         {
-            std::lock_guard lock(conn_mtx_);
+            MySQL::DriverLock d_lock(driver_);
 
-            try
             {
-                auto conn_options_copy = conn_options;
-                connection_.reset(driver_->connect(conn_options_copy));
-            }
-            catch (std::exception& e)
-            {
-                ec = e;
-                connection_ = nullptr;
+                std::lock_guard lock(conn_mtx_);
+
+                try
+                {
+                    auto conn_options_copy = conn_options;
+                    connection_.reset(driver_->connect(conn_options_copy));
+                }
+                catch (std::exception& e)
+                {
+                    ec = e;
+                    connection_ = nullptr;
+                }
             }
         }
-
-        driver_->threadEnd();
 
         return IsConnected();
     }
@@ -135,23 +135,23 @@ namespace Forward {
             return true;
         }
 
-        driver_->threadInit();
-
         {
-            std::lock_guard lock(conn_mtx_);
+            MySQL::DriverLock d_lock(driver_);
 
-            try
             {
-                connection_.reset(driver_->connect(host.data(), user.data(), password.data()));
+                std::lock_guard lock(conn_mtx_);
+
+                try
+                {
+                    connection_.reset(driver_->connect(host.data(), user.data(), password.data()));
+                }
+                catch (std::exception const& e)
+                {
+                    ec = e;
+                    connection_ = nullptr;
+                }
             }
-            catch (std::exception const& e)
-            {
-                ec = e;
-                connection_ = nullptr;
-            }    
         }
-
-        driver_->threadEnd();
 
         return IsConnected();
     }
@@ -179,14 +179,14 @@ namespace Forward {
         return result;
     }
 
-    Query::Result DBConnection::Execute(std::string_view query)
+    DBTypes::Result DBConnection::Execute(std::string_view query)
     {
         Exception ec;
         auto result = Execute(query, ec);
 
         return std::move(result);
     }
-    Query::Result DBConnection::Execute(std::string_view query, Exception& ec)
+    DBTypes::Result DBConnection::Execute(std::string_view sql, Exception& ec)
     {
         if (!IsConnected())
         {
@@ -199,37 +199,36 @@ namespace Forward {
             return nullptr;
         }
         
-        Query::Result result;
-
-        driver_->threadInit();
+        DBTypes::Result result;
 
         {
-            std::lock_guard lock(conn_mtx_);
+            MySQL::DriverLock d_lock(driver_);
 
-            try
             {
-                Query::Executable statement(connection_->createStatement());
-                result.reset(statement->executeQuery(query.data()));
-            }
-            catch (std::exception const& e)
-            {
-                ec = e;
-                result = nullptr;
+                std::lock_guard lock(conn_mtx_);
+
+                try
+                {
+                    DBTypes::Query query(connection_->createStatement());
+                    result = std::move(query.Execute(sql.data()));
+                }
+                catch (std::exception const& e)
+                {
+                    ec = e;
+                }
             }
         }
-
-        driver_->threadEnd();
 
         return std::move(result);
     }
 
-    std::future<Query::Result> DBConnection::AsyncExecute(std::string_view query)
+    std::future<DBTypes::Result> DBConnection::AsyncExecute(std::string_view query)
     {
-        std::future<Query::Result> future = std::async(
+        std::future<DBTypes::Result> future = std::async(
             std::launch::async,
             [&]() 
             {
-                Query::Result result = Execute(query);
+                DBTypes::Result result = Execute(query);
 
                 return std::move(result);
             });
@@ -287,42 +286,5 @@ namespace Forward {
     {
         std::shared_lock lock(data_mtx_);
         return is_scheme;
-    }
-
-    void DBConnection::BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, bool value) 
-    {
-        statement->setBoolean(index, value);
-    }
-    void DBConnection::BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, int32_t value) 
-    {
-        statement->setInt(index, value);
-    }
-    void DBConnection::BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, uint32_t value) 
-    {
-        statement->setUInt(index, value);
-    }
-    void DBConnection::BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, int64_t value)
-    {
-        statement->setInt64(index, value);
-    }
-    void DBConnection::BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, uint64_t value) 
-    {
-        statement->setUInt64(index, value);
-    }
-    void DBConnection::BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, double value) 
-    {
-        statement->setDouble(index, value);
-    }
-    void DBConnection::BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, const char* value) 
-    {
-        statement->setString(index, value);
-    }
-    void DBConnection::BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, std::string_view value) 
-    {
-        statement->setString(index, value.data());
-    }
-    void DBConnection::BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, DateTime const& date) 
-    {
-        statement->setDateTime(index, date.ToString("YYYY-MM-DD hh:mm:ss"));
     }
 }

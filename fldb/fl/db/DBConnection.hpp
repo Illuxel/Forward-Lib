@@ -1,36 +1,31 @@
 #pragma once
 
-#include "fl/utils/Memory.hpp"
-#include "fl/utils/Exception.hpp"
-#include "fl/utils/DateTime.hpp"
+#include "fl/db/private/mysql/DriverLock.hpp"
+
+#include "fl/db/Query.hpp"
+#include "fl/db/PreparedQuery.hpp"
+
+#include "fl/db/Result.hpp"
 
 #include "fl/utils/Log.hpp"
 
 #include <future>
 
-#include <mysql/jdbc.h>
-
 namespace Forward {
 
-	namespace Query
-	{
-		using Result = Scope<sql::ResultSet>;
-		using ResultRaw = sql::ResultSet*;
-
-		using Executable = Scope<sql::Statement>;
-		using PrepareExecutable = Scope<sql::PreparedStatement>;
-	}
-
+	/**
+	 * Represents database connection
+	 */
 	class DBConnection
 	{
 	private:
-		mutable std::mutex conn_mtx_;           // for connection ptr ONLY
-		mutable std::shared_mutex data_mtx_;    // for everything else
-
 		sql::Driver* driver_;
 		Scope<sql::Connection> connection_;
 
 		bool is_scheme;
+
+		mutable std::mutex conn_mtx_;           // for connection ptr ONLY
+		mutable std::shared_mutex data_mtx_;    // for everything else
 
 	public:
 		/**
@@ -123,7 +118,7 @@ namespace Forward {
 		 */
 		std::future<bool> AsyncConnect(sql::ConnectOptionsMap const& conn_options);
 		/**
-		 * Connects to existing database async.
+		 * Connects to existing database async
 		 *
 		 * @param host
 		 * @param user
@@ -142,20 +137,24 @@ namespace Forward {
 		 *
 		 * @return query result or nullptr
 		 */
-		Query::Result Execute(std::string_view query);
+		virtual DBTypes::Result Execute(std::string_view query);
 		/**
-		 * Executes query.
+		 * Executes query
 		 *
 		 * @param query SQL query
 		 * @param ec callback error
 		 *
 		 * @return query result or nullptr
 		 */
-		Query::Result Execute(std::string_view query, Exception& ec);
+		virtual DBTypes::Result Execute(std::string_view query, Exception& ec);
 		/**
+		 * Executes query async
 		 *
+		 * @param query SQL query
+		 *
+		 * @return future object of result
 		 */
-		std::future<Query::Result> AsyncExecute(std::string_view query);
+		virtual std::future<DBTypes::Result> AsyncExecute(std::string_view query);
 
 		/**
 		 * Executes query with arguments. Handles exceptions in method scope
@@ -167,12 +166,12 @@ namespace Forward {
 		 * @return query result or nullptr
 		 */
 		template<typename ...Args>
-		Query::Result Execute(std::string_view query, Args&&... args)
+		DBTypes::Result Execute(std::string_view query, Args&&... args)
 		{
 			Exception ec;
-			Query::Result result = Execute(query, ec, std::forward<Args>(args)...);
+			DBTypes::Result result = Execute(query, ec, std::forward<Args>(args)...);
 
-			return std::move(result);
+			return result;
 		}
 		/**
 		 * Executes query with arguments.
@@ -185,7 +184,7 @@ namespace Forward {
 		 * @return query result or nullptr
 		 */
 		template<typename ...Args>
-		Query::Result Execute(std::string_view query, Exception& ec, Args&&... args)
+		DBTypes::Result Execute(std::string_view query, Exception& ec, Args&&... args)
 		{
 			if (!IsConnected())
 			{
@@ -198,31 +197,27 @@ namespace Forward {
 				return nullptr;
 			}
 
-			Query::Result result;
-
-			driver_->threadInit();
+			DBTypes::Result result;
+			MySQL::DriverLock d_lock(driver_);
 
 			{
 				std::lock_guard lock(conn_mtx_);
 
 				try
 				{
-					Query::PrepareExecutable query(connection_->prepareStatement(query.data()));
+					DBTypes::PreparedQuery query(connection_->prepareStatement(query.data()));
 
-					BindValue(query.get(), std::forward<Args>(args)...);
+					//BindValue(query.get(), std::forward<Args>(args)...);
 
-					result.reset(query->executeQuery());
+					result = std::move(query.Execute());
 				}
-				catch (sql::SQLException const& e)
+				catch (std::exception const& e)
 				{
 					ec = e;
-					result = nullptr;
 				}
 			}
 
-			driver_->threadEnd();
-
-			return std::move(result);
+			return result;
 		}
 		/**
 		 * Executes query with arguments in separate thread
@@ -230,15 +225,15 @@ namespace Forward {
 		 * @return future object of query result
 		 */
 		template<typename ...Args>
-		std::future<Query::Result> AsyncExecute(std::string_view query, Args&&... args)
+		std::future<DBTypes::Result> AsyncExecute(std::string_view query, Args&&... args)
 		{
-			std::future<Query::Result> future = std::async(
+			std::future<DBTypes::Result> future = std::async(
 				std::launch::async,
 				[&]()
 				{
-					Query::Result result = Execute(query, std::forward<Args>(args)...);
+					DBTypes::Result result = Execute(query, std::forward<Args>(args)...);
 
-					return std::move(result);
+					return result;
 				});
 
 			return future;
@@ -267,31 +262,5 @@ namespace Forward {
 		 *  @return true if scheme is set, otherwise false
 		 */
 		bool IsActiveSchema() const;
-
-	private:
-
-		template<typename ...Args>
-		void BindValue(sql::PreparedStatement* statement, Args&&... args)
-		{
-			try
-			{
-				uint32_t index = 1;
-				(BindValueImpl(statement, index++, std::forward<Args>(args)), ...);
-			}
-			catch (std::exception const& e)
-			{
-				FL_LOG("BindValue", e.what());
-			}
-		}
-
-		void BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, bool value);
-		void BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, int32_t value);
-		void BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, uint32_t value);
-		void BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, int64_t value);
-		void BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, uint64_t value);
-		void BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, double value);
-		void BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, const char* value);
-		void BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, std::string_view value);
-		void BindValueImpl(sql::PreparedStatement* statement, uint32_t const index, DateTime const& date);
 	};
 } // namespace Forward
