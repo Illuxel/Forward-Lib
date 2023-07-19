@@ -7,7 +7,6 @@ set(BENCH_SOURCE
 add_executable(BenchClient ${BENCH_SOURCE})
 
 target_link_libraries(BenchClient
-PUBLIC
     benchmark::benchmark
     Fl::client
 )
