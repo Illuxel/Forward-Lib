@@ -9,9 +9,10 @@ namespace Forward {
     private:
         using AsyncAcceptFunc = std::function<void(beast::error_code, tcp::socket&&)>;
 
+        Endpoint endpoint_;
+
         net::io_context& io_context_;
         tcp::acceptor acceptor_;
-        Endpoint endpoint_;
 
         AsyncAcceptFunc call_back_;
 

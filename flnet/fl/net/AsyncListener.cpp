@@ -1,7 +1,7 @@
 #include "fl/net/AsyncListener.hpp"
 #include "fl/utils/Log.hpp"
 
-// TODO: Check multiple acces to one object
+// TODO: Check multiple access to one object
 
 namespace Forward {
 
