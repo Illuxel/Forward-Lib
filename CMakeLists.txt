@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
 project(ForwardLib 
-    VERSION 0.0.1
+    VERSION 0.5.0
     LANGUAGES CXX C
     DESCRIPTION "Set of tools to develope Forward Applications"
 )
@@ -14,11 +14,12 @@ option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
-    set(CMAKE_INSTALL_LIBDIR "lib")
-endif()
 if (NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
     set(CMAKE_INSTALL_INCLUDEDIR "include")
+endif()
+
+if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
+    set(CMAKE_INSTALL_LIBDIR "lib")
 endif()
 
 if (WIN32)
@@ -84,6 +85,7 @@ set(FLCLIENT_INCLUDE
 )
 set(FLCLIENT_SOURCE
     ${FLCLIENT_INCLUDE}
+
     fl/forward/Client.cpp
 )
 
@@ -169,11 +171,11 @@ write_basic_package_version_file(
 )
 
 install(
-FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/fl-config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/fl-config-version.cmake
-DESTINATION 
-    ${CMAKE_INSTALL_LIBDIR}/cmake/fl
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/fl-config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/fl-config-version.cmake
+    DESTINATION 
+        ${CMAKE_INSTALL_LIBDIR}/cmake/fl
 )
 
 export(EXPORT fl-targets

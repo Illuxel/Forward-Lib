@@ -22,7 +22,7 @@ namespace Forward {
 
             bool operator==(SessionInfo const& right) const;
 
-            operator bool() const&
+            operator bool() const &
             {
                 return IsSeparate;
             }

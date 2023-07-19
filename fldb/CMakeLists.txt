@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 
 if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
-  set(CMAKE_INSTALL_LIBDIR "lib")
+    set(CMAKE_INSTALL_LIBDIR "lib")
 endif()
 
 include(../cmake/FindMySQL.cmake)
@@ -50,7 +50,8 @@ PUBLIC
     Fl::utils
 )
 
-install(TARGETS db EXPORT fl-targets
+install(TARGETS db 
+    EXPORT fl-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
