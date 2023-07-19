@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 project(ForwardLib 
     VERSION 0.0.1
     LANGUAGES CXX C
-    DESCRIPTION ""
+    DESCRIPTION "Set of tools to develope Forward Applications"
 )
 
 option(FL_ENABLE_TESTING "Enabling testing, will add google test feautures in C++" ON)
