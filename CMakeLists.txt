@@ -158,7 +158,7 @@ include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fl-config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/fl-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/fl-config.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fl
 )
 
