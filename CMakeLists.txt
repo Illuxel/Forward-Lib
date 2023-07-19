@@ -134,16 +134,6 @@ endif()
 
 #--------------< Exporting targets >--------------#
 
-if (MSVC)
-    source_group("cmake-common" 
-    FILES 
-        "cmake/cxx-common.cmake"
-        "cmake/project-common.cmake"
-        "cmake/fl-install.cmake"
-        "cmake/fl-config.cmake"
-    )
-endif()
-
 install(TARGETS flapi client
     EXPORT fl-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
