@@ -4,36 +4,6 @@
 
 namespace Forward {
 
-    Database::SessionInfo::SessionInfo()
-        : Name("")
-        , IsSeparate(false)
-    {
-        ThreadID = std::this_thread::get_id();
-    }
-    Database::SessionInfo::SessionInfo(std::string_view db_name, bool thread_info)
-        : Name(db_name)
-        , IsSeparate(false)
-    {
-        ThreadID = std::this_thread::get_id();
-    }
-
-    bool Database::SessionInfo::operator==(SessionInfo const& right) const
-    {
-        return ThreadID == right.ThreadID
-            && Name == right.Name;
-    }
-
-    std::size_t Database::SessionInfo::Hash::operator()(SessionInfo const& right) const noexcept
-    {
-        std::hash<std::thread::id> hash_id;
-        std::hash<std::string> hash_name;
-
-        std::size_t seed_id = hash_id(right.ThreadID);
-        std::size_t seed_name = hash_name(right.Name);
-
-        return seed_name ^ (seed_id << 1);
-    }
-
     /**
      *  Connection instances handler
      */

@@ -2,6 +2,25 @@
 
 namespace Forward {
 
+    DBConnection::Info::Info()
+        : Name("")
+        , IsSeparate(false)
+    {
+        ThreadID = std::this_thread::get_id();
+    }
+    DBConnection::Info::Info(std::string_view db_name, bool is_separate)
+        : Name(db_name)
+        , IsSeparate(is_separate)
+    {
+        ThreadID = std::this_thread::get_id();
+    }
+
+    bool DBConnection::Info::operator==(DBConnection::Info const& right) const
+    {
+        return ThreadID == right.ThreadID
+            && Name == right.Name;
+    }
+
     /**
      *   Connection interface
      */

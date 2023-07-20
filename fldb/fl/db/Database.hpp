@@ -9,38 +9,6 @@ namespace Forward {
      */
     class Database final
     {
-    public:
-        struct SessionInfo
-        {
-            std::string Name;
-            std::thread::id ThreadID;
-
-            bool IsSeparate;
-
-            SessionInfo();
-            SessionInfo(std::string_view db_name, bool is_separate = false);
-
-            bool operator==(SessionInfo const& right) const;
-
-            operator bool() const &
-            {
-                return IsSeparate;
-            }
-            operator std::string() const &
-            {
-                return Name;
-            }
-            operator std::thread::id() const &
-            {
-                return ThreadID;
-            }
-
-            struct Hash
-            {
-                std::size_t operator()(SessionInfo const& right) const noexcept;
-            };
-        };
-
     private:
         sql::Driver* driver_;
 
