@@ -15,18 +15,46 @@ namespace Forward {
 
         void SetTemplate(std::string_view templ);
 
+        /**
+         * Replaces all occurences with specified argument
+         */
         StringBuilder& Arg(StringArg const& arg);
+        /**
+         * Replacec all occurences with specified list of argument
+         */
         StringBuilder& Arg(std::vector<StringArg> const& args);
 
+        /**
+         * Makes result as an StringArg
+         * 
+         * @param name represents arg name
+         * @return string argument which contains name and result of string build
+         */
         StringArg AsArg(std::string_view name) const;
+        /**
+         * Makes result as an StringArg
+         *
+         * @param name represents arg name
+         * @param specifier places before argument name
+         * @return string argument which contains name and result of string build
+         */
         StringArg AsArg(std::string_view name, char specifier) const;
 
         std::string Data() const;
 
+        /**
+         * Clears building string
+         */
         void Clear();
 
         // static StringBuilder MakeString(std::string_view templ);
 
+        /**
+         * Reads and wraps file data to StringBuilder
+         * 
+         * @param file_name which will be loaded
+         * @return StringBuilder instance with loaded data from file
+         */
         static StringBuilder FromFile(std::string_view file_name);
         static StringBuilder FromFile(std::string_view file_name, std::vector<StringArg> const& args);
 
