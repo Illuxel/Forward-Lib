@@ -23,6 +23,7 @@ set(FLUTILS_INCLUDE
     fl/utils/MimeType.hpp
     fl/utils/StringArg.hpp
     fl/utils/StringBuilder.hpp
+    fl/utils/Timer.hpp
     fl/utils/Logger.hpp
     fl/utils/Log.hpp
 )
