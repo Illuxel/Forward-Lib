@@ -81,17 +81,22 @@ namespace Forward {
 
         return db.driver_;
     }
-    std::vector<Ref<DBConnection>> Database::GetConnections()
+
+    std::vector<Ref<DBConnection>> Database::GetConnections(std::string_view db_name)
     {
         Database& db = Database::Instance();
         std::shared_lock lock(db.pool_mtx_);
         std::vector<Ref<DBConnection>> conns;
 
-        std::transform(db.conn_pool_.cbegin(), db.conn_pool_.cend(),
-            std::inserter(conns, conns.end()),
-            [](auto const& pair) {
-                return pair.second;
-            });
+        conns.reserve(db.conn_pool_.size());
+
+        for (auto const& [info, conn] : db.conn_pool_)
+        {
+            if (info == db_name)
+            {
+                conns.emplace_back(conn);
+            }
+        }
 
         return conns;
     }
@@ -99,9 +104,8 @@ namespace Forward {
     Scope<DBConnection> Database::InitScoped()
     {
         auto driver = Database::GetDriver();
-        auto conn = MakeScope<DBConnection>(driver);
 
-        return std::move(conn);
+        return MakeScope<DBConnection>(driver);
     }
 
     Ref<DBConnection> Database::Init(std::string_view db_name)
@@ -124,9 +128,10 @@ namespace Forward {
             return db.conn_pool_[info];
 
         auto driver = Database::GetDriver();
-        std::unique_lock lock(db.pool_mtx_);
-        auto conn = MakeRef<DBConnection>(driver);
 
+        std::unique_lock lock(db.pool_mtx_);
+
+        auto conn = MakeRef<DBConnection>(driver);
         db.conn_pool_.insert(std::make_pair(info, conn));
 
         return conn;
@@ -144,13 +149,15 @@ namespace Forward {
     }
     void Database::RemoveImpl(Database::Info const& info)
     {
-        if (!Database::HasImpl(info))
-            return;
-
         Database& db = Database::Instance();
+
+        auto conn = Database::GetImpl(info);
+
+        if (conn)
+            conn->Close();
+
         std::unique_lock lock(db.pool_mtx_);
 
-        db.conn_pool_[info]->Close();
         db.conn_pool_.erase(info);
     }
 
@@ -168,13 +175,14 @@ namespace Forward {
     }
     Ref<DBConnection> Database::GetImpl(Database::Info const& info)
     {
+        Database& db = Database::Instance();
+
         if (!Database::HasImpl(info))
             return nullptr;
 
-        Database& db = Database::Instance();
         std::shared_lock lock(db.pool_mtx_);
 
-        return db.conn_pool_[info];
+        return db.conn_pool_.at(info);
     }
 
     uint32_t Database::GetConnectionCount()
@@ -186,11 +194,13 @@ namespace Forward {
     }
     uint32_t Database::GetActiveConnectionCount()
     {
+        Database& db = Database::Instance();
+        std::shared_lock lock(db.pool_mtx_);
         uint32_t count = 0;
 
-        for (auto& conn : GetConnections())
+        for (auto const& [info, conn] : db.conn_pool_)
         {
-            if (conn->IsConnected())
+            if (conn->IsValid() && conn->IsConnected())
             {
                 ++count;
             }
@@ -216,14 +226,16 @@ namespace Forward {
         Database& db = Database::Instance();
         std::shared_lock lock(db.pool_mtx_);
 
-        return db.conn_pool_.find(info) != db.conn_pool_.cend();
+        auto const& it = db.conn_pool_.find(info);
+
+        return it != db.conn_pool_.cend();
     }
 
     void Database::CloseAll(std::string_view db_name)
     {
         Database& db = Database::Instance();
 
-        for (auto& conn : GetConnections())
+        for (auto& conn : GetConnections(db_name))
         {
             if (conn->IsConnected())
             {

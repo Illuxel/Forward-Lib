@@ -55,20 +55,21 @@ namespace Forward {
         /**
          * Call MySQL driver 
          *
-         * @return 
+         * @return intsance of MySQL driver that managed by API
          */
         static sql::Driver* GetDriver();
+
         /**
-         * Retrieves a vector of available database connections
-         *
+         * Retrieves a vector of available connections using tag
+         * @param db_name The tag or identifier for the database
          * @return A vector of references to available database connections
          */
-        static std::vector<Ref<DBConnection>> GetConnections();
+        static std::vector<Ref<DBConnection>> GetConnections(std::string_view db_name);
   
         /**
          * Retrieves the count of connections
          *
-         * @return The count of active connections
+         * @return The count of connections
          */
         static uint32_t GetConnectionCount();
         /**
@@ -84,7 +85,6 @@ namespace Forward {
          * @return Scoped ptr to the database instance
          */
         static Scope<DBConnection> InitScoped();
-
         /**
          * Initializes a database connection that can be accessed from multiple threads
          *
@@ -93,7 +93,7 @@ namespace Forward {
          */
         static Ref<DBConnection> Init(std::string_view db_name = "");
         /**
-         * Initializes a separate database connection that can be accessed ONLY from called thread
+         * Initializes a separate database connection that can be accessed ONLY from called thread that created it
          *
          * @param db_name The tag or identifier for the database
          * @return Reference to the database instance
@@ -108,7 +108,8 @@ namespace Forward {
          */
         static Ref<DBConnection> Get(std::string_view db_name = "");
         /**
-         * 
+         * Retrieves a database instance by its tag ONLY from thread that created that instance. 
+         * If no instance is found, returns nullptr.
          *
          * @param db_name The tag or identifier for the database
          * @return Reference to the database instance, or nullptr if not found
@@ -121,6 +122,11 @@ namespace Forward {
          * @param db_name The tag or identifier for the database
          */
         static void Remove(std::string_view db_name = "");
+        /**
+         * Closes connection and removes a database instance by its tag ONLY from thread that created that instance
+         *
+         * @param db_name The tag or identifier for the database
+         */
         static void RemoveSeparate(std::string_view db_name = "");
 
         /**
