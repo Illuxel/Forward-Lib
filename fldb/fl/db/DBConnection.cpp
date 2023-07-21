@@ -239,22 +239,17 @@ namespace Forward {
         if (!IsConnected())
             return;
 
-        driver_->threadInit();
+        MySQL::DriverLock d_lock(driver_);
+        std::lock_guard lock(conn_mtx_);
 
+        try
         {
-            std::lock_guard lock(conn_mtx_);
-
-            try
-            {
-                connection_->close();
-            }
-            catch (std::exception const& e)
-            {
-                FL_LOG("FAIL", "CLOSE");
-            }
+            connection_->close();
         }
-
-        driver_->threadEnd();
+        catch (std::exception const& e)
+        {
+            FL_LOG("FAIL", "CLOSE");
+        }
     }
 
     bool DBConnection::IsValid() const
@@ -267,18 +262,10 @@ namespace Forward {
         if (!IsValid())
             return false;
 
-        bool is_valid;
+        MySQL::DriverLock d_lock(driver_);
+        std::lock_guard lock(conn_mtx_);
 
-        driver_->threadInit();
-
-        {
-            std::lock_guard lock(conn_mtx_);
-            is_valid = connection_->isValid();
-        }
-
-        driver_->threadEnd();
-
-        return is_valid;
+        return connection_->isValid();
     }
     bool DBConnection::IsActiveSchema() const 
     {
