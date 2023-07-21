@@ -45,7 +45,7 @@ namespace Forward {
         sql::Driver* driver_;
         std::unordered_map<Database::Info, Ref<DBConnection>, Database::Info::Hash> conn_pool_;
 
-        mutable std::shared_mutex pool_mtx_;
+        mutable std::shared_mutex conn_pool_mtx_;
 
         explicit Database();
 

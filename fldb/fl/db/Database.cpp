@@ -76,7 +76,7 @@ namespace Forward {
     sql::Driver* Database::GetDriver()
     {
         Database& db = Database::Instance();
-        std::shared_lock lock(db.pool_mtx_);
+        std::shared_lock lock(db.conn_pool_mtx_);
 
         return db.driver_;
     }
@@ -84,7 +84,7 @@ namespace Forward {
     std::vector<Ref<DBConnection>> Database::GetConnections(std::string_view db_name)
     {
         Database& db = Database::Instance();
-        std::shared_lock lock(db.pool_mtx_);
+        std::shared_lock lock(db.conn_pool_mtx_);
         std::vector<Ref<DBConnection>> conns;
 
         conns.reserve(db.conn_pool_.size());
@@ -103,14 +103,14 @@ namespace Forward {
     uint32_t Database::GetConnectionCount()
     {
         Database& db = Database::Instance();
-        std::shared_lock lock(db.pool_mtx_);
+        std::shared_lock lock(db.conn_pool_mtx_);
 
         return db.conn_pool_.size();
     }
     uint32_t Database::GetActiveConnectionCount()
     {
         Database& db = Database::Instance();
-        std::shared_lock lock(db.pool_mtx_);
+        std::shared_lock lock(db.conn_pool_mtx_);
 
         return std::count_if(db.conn_pool_.cbegin(), db.conn_pool_.cend(),
             [](auto const& connection)
@@ -149,7 +149,7 @@ namespace Forward {
 
         auto driver = Database::GetDriver();
 
-        std::unique_lock lock(db.pool_mtx_);
+        std::unique_lock lock(db.conn_pool_mtx_);
 
         auto conn = MakeRef<DBConnection>(driver);
         db.conn_pool_.insert(std::make_pair(info, conn));
@@ -174,7 +174,7 @@ namespace Forward {
         if (!Database::HasImpl(info))
             return;
 
-        std::unique_lock lock(db.pool_mtx_);
+        std::unique_lock lock(db.conn_pool_mtx_);
 
         db.conn_pool_[info]->Close();
         db.conn_pool_.erase(info);
@@ -199,7 +199,7 @@ namespace Forward {
         if (!Database::HasImpl(info))
             return nullptr;
 
-        std::shared_lock lock(db.pool_mtx_);
+        std::shared_lock lock(db.conn_pool_mtx_);
 
         return db.conn_pool_.at(info);
     }
@@ -219,7 +219,7 @@ namespace Forward {
     bool Database::HasImpl(Database::Info const& info)
     {
         Database& db = Database::Instance();
-        std::shared_lock lock(db.pool_mtx_);
+        std::shared_lock lock(db.conn_pool_mtx_);
 
         auto const& it = db.conn_pool_.find(info);
 
@@ -238,7 +238,6 @@ namespace Forward {
             }
         }
     }
-
     void Database::CloseAll(std::string_view db_name)
     {
         Database& db = Database::Instance();
