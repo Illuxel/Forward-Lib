@@ -53,14 +53,14 @@ namespace Forward {
         ~Database();
 
         /**
-         * Call MySQL driver 
+         * Call MySQL API driver. This is safe function
          *
          * @return intsance of MySQL driver that managed by API
          */
         static sql::Driver* GetDriver();
 
         /**
-         * Retrieves a vector of available connections using tag
+         * Retrieves a vector of available connections using a tag
          * @param db_name The tag or identifier for the database
          * @return A vector of references to available database connections
          */
@@ -80,20 +80,20 @@ namespace Forward {
         static uint32_t GetActiveConnectionCount();
 
         /**
-         * Initializes scoped database connection
+         * Initializes a scoped database connection
          *
-         * @return Scoped ptr to the database instance
+         * @return Scoped pointer to the database instance
          */
         static Scope<DBConnection> InitScoped();
         /**
-         * Initializes a database connection that can be accessed from multiple threads
+         * Initializes a database connection that can be accessed from multiple threads using tag
          *
          * @param db_name The tag or identifier for the database
          * @return Reference to the database instance
          */
         static Ref<DBConnection> Init(std::string_view db_name = "");
         /**
-         * Initializes a separate database connection that can be accessed ONLY from called thread that created it
+         * Initializes a separate database connection that can be accessed ONLY from the thread that created it
          *
          * @param db_name The tag or identifier for the database
          * @return Reference to the database instance
@@ -108,7 +108,7 @@ namespace Forward {
          */
         static Ref<DBConnection> Get(std::string_view db_name = "");
         /**
-         * Retrieves a database instance by its tag ONLY from thread that created that instance. 
+         * Retrieves a database instance by its tag ONLY from the thread that created that instance.
          * If no instance is found, returns nullptr.
          *
          * @param db_name The tag or identifier for the database
@@ -123,7 +123,7 @@ namespace Forward {
          */
         static void Remove(std::string_view db_name = "");
         /**
-         * Closes connection and removes a database instance by its tag ONLY from thread that created that instance
+         * Closes the connection and removes a database instance by its tag ONLY from the thread that created that instance
          *
          * @param db_name The tag or identifier for the database
          */
@@ -136,12 +136,24 @@ namespace Forward {
          * @return True if the database exists, false otherwise
          */
         static bool Has(std::string_view db_name = "");
+        /**
+         * Checks if a database exists with the given tag, but ONLY from the thread that created that instance
+         *
+         * @param db_name The tag or identifier for the database
+         * @return True if the database exists, false otherwise
+         */
         static bool HasSeparate(std::string_view db_name = "");
 
         /**
-         * Closes all named database connections
+         * Closes all database connections
          */
-        static void CloseAll(std::string_view db_name = "");
+        static void CloseAll();
+        /**
+         * Closes all database connections with tag
+         * 
+         * @param db_name dataabse connection tag
+         */
+        static void CloseAll(std::string_view db_name);
 
         Database(Database&&) = delete;
         Database(Database const&) = delete;
@@ -151,23 +163,38 @@ namespace Forward {
 
     private:
         /**
-         * Returns an intance of database singleton class
+         * Returns an instance of the database singleton class
          *
          * @return Reference to the singleton database instance
          */
         static Database& Instance();
 
         /**
-         * @param db_name The tag or identifier for the database
-         * @param separate Boolean that defines wether init connection should be callable ONLY from one thread
-         * 
+         * Initializes a database connection with the given info
+         *
+         * @param info Information about the database connection to be initialized
          * @return Reference to the database instance
          */
         static Ref<DBConnection> InitImpl(Database::Info const& info);
+        /**
+         * Retrieves a database instance with the given info
+         *
+         * @param info Information about the database connection to be retrieved
+         * @return Reference to the database instance
+         */
         static Ref<DBConnection> GetImpl(Database::Info const& info);
-
+        /**
+         * Checks if a database exists with the given info
+         *
+         * @param info Information about the database connection to be checked
+         * @return True if the database exists, false otherwise
+         */
         static bool HasImpl(Database::Info const& info);
-
+        /**
+         * Closes the connection and removes a database instance with the given info
+         *
+         * @param info Information about the database connection to be removed
+         */
         static void RemoveImpl(Database::Info const& info);
     };
 }
