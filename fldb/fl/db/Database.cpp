@@ -19,6 +19,11 @@ namespace Forward {
 
     bool Database::Info::operator==(Database::Info const& right) const
     {
+        if (!IsSeparate)
+        {
+            return Name == right.Name;
+        }
+
         return ThreadID == right.ThreadID
             && Name == right.Name
             && IsSeparate == right.IsSeparate;
@@ -51,8 +56,7 @@ namespace Forward {
     {
         try
         {
-            if (!driver_)
-                driver_ = sql::mysql::get_driver_instance();
+            driver_ = sql::mysql::get_driver_instance();
         }
         catch (std::exception const& e)
         {
