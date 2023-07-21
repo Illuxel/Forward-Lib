@@ -184,7 +184,7 @@ namespace Forward {
         Exception ec;
         auto result = Execute(query, ec);
 
-        return std::move(result);
+        return result;
     }
     DBTypes::Result DBConnection::Execute(std::string_view sql, Exception& ec)
     {
@@ -219,7 +219,7 @@ namespace Forward {
             }
         }
 
-        return std::move(result);
+        return result;
     }
 
     std::future<DBTypes::Result> DBConnection::AsyncExecute(std::string_view query)
@@ -228,9 +228,7 @@ namespace Forward {
             std::launch::async,
             [&]() 
             {
-                DBTypes::Result result = Execute(query);
-
-                return std::move(result);
+                return Execute(query);
             });
 
         return future;
