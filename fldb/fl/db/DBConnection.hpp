@@ -18,33 +18,6 @@ namespace Forward {
 	 */
 	class DBConnection
 	{
-	public:
-		struct Info
-		{
-			std::string Name;
-			std::thread::id ThreadID;
-
-			bool IsSeparate;
-
-			Info();
-			Info(std::string_view db_name, bool is_separate = false);
-
-			bool operator==(DBConnection::Info const& right) const;
-
-			operator bool() const&
-			{
-				return IsSeparate;
-			}
-			operator std::string() const&
-			{
-				return Name;
-			}
-			operator std::thread::id() const&
-			{
-				return ThreadID;
-			}
-		};
-
 	private:
 		sql::Driver* driver_;
 		Scope<sql::Connection> connection_;

@@ -4,6 +4,40 @@
 
 namespace Forward {
 
+    Database::Info::Info()
+        : Name("")
+        , IsSeparate(false)
+    {
+        ThreadID = std::this_thread::get_id();
+    }
+    Database::Info::Info(std::string_view db_name, bool is_separate)
+        : Name(db_name)
+        , IsSeparate(is_separate)
+    {
+        ThreadID = std::this_thread::get_id();
+    }
+
+    bool Database::Info::operator==(Database::Info const& right) const
+    {
+        return ThreadID == right.ThreadID
+            && Name == right.Name
+            && IsSeparate == right.IsSeparate;
+    }
+
+    size_t Database::Info::Hash::operator()(Info const& right) const
+    {
+        std::hash<std::thread::id> hash_id;
+        std::hash<std::string> hash_name;
+
+        std::hash<bool> hash_separate;
+
+        std::size_t seed_id = hash_id(right.ThreadID);
+        std::size_t seed_name = hash_name(right.Name);
+        std::size_t seed_separate = hash_separate(right.IsSeparate);
+
+        return seed_name ^ (seed_id << 1) ^ (seed_separate << 2);
+    }
+
     /**
      *  Connection instances handler
      */
@@ -64,15 +98,17 @@ namespace Forward {
 
     Ref<DBConnection> Database::Init(std::string_view db_name)
     {
-        SessionInfo info(db_name, false);
+        Database::Info info(db_name);
+
         return Database::InitImpl(info);
     }
     Ref<DBConnection> Database::InitSeparate(std::string_view db_name)
     {
-        SessionInfo info(db_name, true);
+        Database::Info info(db_name, true);
+
         return Database::InitImpl(info);
     }
-    Ref<DBConnection> Database::InitImpl(SessionInfo const& info)
+    Ref<DBConnection> Database::InitImpl(Database::Info const& info)
     {
         Database& db = Database::Instance();
 
@@ -90,15 +126,15 @@ namespace Forward {
 
     void Database::Remove(std::string_view db_name)
     {
-        SessionInfo info(db_name, false);
+        Database::Info info(db_name);
         Database::RemoveImpl(info);
     }
     void Database::RemoveSeparate(std::string_view db_name)
     {
-        SessionInfo info(db_name, true);
+        Database::Info info(db_name, true);
         Database::RemoveImpl(info);
     }
-    void Database::RemoveImpl(SessionInfo const& info)
+    void Database::RemoveImpl(Database::Info const& info)
     {
         if (!Database::HasImpl(info))
             return;
@@ -112,17 +148,17 @@ namespace Forward {
 
     Ref<DBConnection> Database::Get(std::string_view db_name)
     {
-        SessionInfo info(db_name, false);
+        Database::Info info(db_name);
 
         return Database::GetImpl(info);
     }
     Ref<DBConnection> Database::GetSeparate(std::string_view db_name)
     {
-        SessionInfo info(db_name, true);
+        Database::Info info(db_name, true);
 
         return Database::GetImpl(info);
     }
-    Ref<DBConnection> Database::GetImpl(SessionInfo const& info)
+    Ref<DBConnection> Database::GetImpl(Database::Info const& info)
     {
         if (!Database::HasImpl(info))
             return nullptr;
@@ -157,17 +193,17 @@ namespace Forward {
 
     bool Database::Has(std::string_view db_name) 
     {
-        SessionInfo info(db_name, false);
+        Database::Info info(db_name);
 
         return Database::HasImpl(info);
     }
     bool Database::HasSeparate(std::string_view db_name)
     {
-        SessionInfo info(db_name, true);
+        Database::Info info(db_name, true);
 
         return Database::HasImpl(info);
     }
-    bool Database::HasImpl(SessionInfo const& info)
+    bool Database::HasImpl(Database::Info const& info)
     {
         Database& db = Database::Instance();
         std::shared_lock lock(db.pool_mtx_);

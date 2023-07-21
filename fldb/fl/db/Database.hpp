@@ -9,12 +9,43 @@ namespace Forward {
      */
     class Database final
     {
+    public:
+        struct Info
+        {
+            std::string Name;
+            std::thread::id ThreadID;
+
+            bool IsSeparate;
+
+            Info();
+            Info(std::string_view db_name, bool is_separate = false);
+
+            bool operator==(Database::Info const& right) const;
+
+            operator bool() const&
+            {
+                return IsSeparate;
+            }
+            operator std::string() const&
+            {
+                return Name;
+            }
+            operator std::thread::id() const&
+            {
+                return ThreadID;
+            }
+
+            struct Hash
+            {
+                size_t operator()(Info const& right) const;
+            };
+        };
+
     private:
         sql::Driver* driver_;
+        std::unordered_map<Database::Info, Ref<DBConnection>, Database::Info::Hash> conn_pool_;
 
         mutable std::shared_mutex pool_mtx_;
-
-        std::unordered_map<SessionInfo, Ref<DBConnection>, SessionInfo::Hash> conn_pool_;
 
         explicit Database();
 
@@ -126,11 +157,11 @@ namespace Forward {
          * 
          * @return Reference to the database instance
          */
-        static Ref<DBConnection> InitImpl(SessionInfo const& info);
-        static Ref<DBConnection> GetImpl(SessionInfo const& info);
+        static Ref<DBConnection> InitImpl(Database::Info const& info);
+        static Ref<DBConnection> GetImpl(Database::Info const& info);
 
-        static bool HasImpl(SessionInfo const& info);
+        static bool HasImpl(Database::Info const& info);
 
-        static void RemoveImpl(SessionInfo const& info);
+        static void RemoveImpl(Database::Info const& info);
     };
 }
