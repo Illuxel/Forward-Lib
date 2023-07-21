@@ -33,7 +33,6 @@ namespace Forward {
     {
         std::hash<std::thread::id> hash_id;
         std::hash<std::string> hash_name;
-
         std::hash<bool> hash_separate;
 
         std::size_t seed = hash_name(right.Name);
@@ -101,6 +100,27 @@ namespace Forward {
         return conns;
     }
 
+    uint32_t Database::GetConnectionCount()
+    {
+        Database& db = Database::Instance();
+        std::shared_lock lock(db.pool_mtx_);
+
+        return db.conn_pool_.size();
+    }
+    uint32_t Database::GetActiveConnectionCount()
+    {
+        Database& db = Database::Instance();
+        std::shared_lock lock(db.pool_mtx_);
+
+        return std::count_if(db.conn_pool_.cbegin(), db.conn_pool_.cend(),
+            [](auto const& connection)
+            {
+                auto& [info, conn] = connection;
+
+                return conn->IsValid() && conn->IsConnected();
+            });
+    }
+
     Scope<DBConnection> Database::InitScoped()
     {
         auto driver = Database::GetDriver();
@@ -150,14 +170,13 @@ namespace Forward {
     void Database::RemoveImpl(Database::Info const& info)
     {
         Database& db = Database::Instance();
-
-        auto conn = Database::GetImpl(info);
-
-        if (conn)
-            conn->Close();
+        
+        if (!Database::HasImpl(info))
+            return;
 
         std::unique_lock lock(db.pool_mtx_);
 
+        db.conn_pool_[info]->Close();
         db.conn_pool_.erase(info);
     }
 
@@ -185,30 +204,6 @@ namespace Forward {
         return db.conn_pool_.at(info);
     }
 
-    uint32_t Database::GetConnectionCount()
-    {
-        Database& db = Database::Instance();
-        std::shared_lock lock(db.pool_mtx_);
-
-        return db.conn_pool_.size();
-    }
-    uint32_t Database::GetActiveConnectionCount()
-    {
-        Database& db = Database::Instance();
-        std::shared_lock lock(db.pool_mtx_);
-        uint32_t count = 0;
-
-        for (auto const& [info, conn] : db.conn_pool_)
-        {
-            if (conn->IsValid() && conn->IsConnected())
-            {
-                ++count;
-            }
-        }
-
-        return count;
-    }
-
     bool Database::Has(std::string_view db_name) 
     {
         Database::Info info(db_name);
@@ -229,6 +224,19 @@ namespace Forward {
         auto const& it = db.conn_pool_.find(info);
 
         return it != db.conn_pool_.cend();
+    }
+
+    void Database::CloseAll(std::string_view db_name)
+    {
+        Database& db = Database::Instance();
+
+        for (auto& conn : GetConnections(db_name))
+        {
+            if (conn->IsConnected())
+            {
+                conn->Close();
+            }
+        }
     }
 
     void Database::CloseAll(std::string_view db_name)
