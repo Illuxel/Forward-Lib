@@ -149,6 +149,8 @@ TEST(MySql, SingleObjMultiExecution) {
     {
         EXPECT_TRUE(result);
     }
+
+    Database::Remove();
 } 
 
 TEST(MySql, AsyncConnection) {
