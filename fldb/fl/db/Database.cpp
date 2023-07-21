@@ -226,11 +226,13 @@ namespace Forward {
         return it != db.conn_pool_.cend();
     }
 
-    void Database::CloseAll(std::string_view db_name)
+    void Database::CloseAll()
     {
         Database& db = Database::Instance();
-
-        for (auto& conn : GetConnections(db_name))
+        
+        std::unique_lock lock(db.conn_pool_mtx_);
+     
+        for (auto& [info, conn] : db.conn_pool_)
         {
             if (conn->IsConnected())
             {
