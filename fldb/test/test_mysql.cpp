@@ -52,7 +52,7 @@ static inline void DBPoolMultiAccessFoo(DBTypes::Result& result, Exception& ec)
 
     result = std::move(db->Execute("SELECT * FROM user_info WHERE user_id = ?", ec, 2));
 
-    Database::Remove();
+    Database::RemoveSeparate();
 }
 
 TEST(MySql, DBPoolMultiAccess) {
