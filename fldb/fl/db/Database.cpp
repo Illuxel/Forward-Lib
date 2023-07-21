@@ -31,11 +31,15 @@ namespace Forward {
 
         std::hash<bool> hash_separate;
 
-        std::size_t seed_id = hash_id(right.ThreadID);
-        std::size_t seed_name = hash_name(right.Name);
-        std::size_t seed_separate = hash_separate(right.IsSeparate);
+        std::size_t seed = hash_name(right.Name);
 
-        return seed_name ^ (seed_id << 1) ^ (seed_separate << 2);
+        if (right.IsSeparate)
+        {
+            seed ^= hash_id(right.ThreadID) << 1;
+            seed ^= hash_separate(right.IsSeparate) << 2;
+        }
+
+        return seed;
     }
 
     /**
