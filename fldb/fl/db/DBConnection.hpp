@@ -133,50 +133,50 @@ namespace Forward {
 		/**
 		 * Executes query. Handles exceptions in method scope
 		 *
-		 * @param query SQL query
+		 * @param sql SQL query
 		 *
 		 * @return query result or nullptr
 		 */
-		virtual DBTypes::Result Execute(std::string_view query);
+		virtual DBTypes::Result Execute(std::string_view sql);
 		/**
 		 * Executes query
 		 *
-		 * @param query SQL query
+		 * @param sql SQL query
 		 * @param ec callback error
 		 *
 		 * @return query result or nullptr
 		 */
-		virtual DBTypes::Result Execute(std::string_view query, Exception& ec);
+		virtual DBTypes::Result Execute(std::string_view sql, Exception& ec);
 		/**
 		 * Executes query async
 		 *
-		 * @param query SQL query
+		 * @param sql SQL query
 		 *
 		 * @return future object of result
 		 */
-		virtual std::future<DBTypes::Result> AsyncExecute(std::string_view query);
+		virtual std::future<DBTypes::Result> AsyncExecute(std::string_view sql);
 
 		/**
 		 * Executes query with arguments. Handles exceptions in method scope
 		 *
-		 * @param query    SQL query
+		 * @param sql    SQL query
 		 * @param args     argument list for query parameters.
 		 *                  Each argument represents '?' in SQL query
 		 *
 		 * @return query result or nullptr
 		 */
 		template<typename ...Args>
-		DBTypes::Result Execute(std::string_view query, Args&&... args)
+		DBTypes::Result Execute(std::string_view sql, Args&&... args)
 		{
 			Exception ec;
-			DBTypes::Result result = Execute(query, ec, std::forward<Args>(args)...);
+			DBTypes::Result result = Execute(sql, ec, std::forward<Args>(args)...);
 
 			return result;
 		}
 		/**
 		 * Executes query with arguments.
 		 *
-		 * @param query    SQL query
+		 * @param sql    SQL query
 		 * @param args     argument list for query parameters.
 		 *                  Each argument represents '?' in SQL query
 		 * @param ec callback error
@@ -184,7 +184,7 @@ namespace Forward {
 		 * @return query result or nullptr
 		 */
 		template<typename ...Args>
-		DBTypes::Result Execute(std::string_view query, Exception& ec, Args&&... args)
+		DBTypes::Result Execute(std::string_view sql, Exception& ec, Args&&... args)
 		{
 			if (!IsConnected())
 			{
@@ -205,7 +205,7 @@ namespace Forward {
 
 				try
 				{
-					DBTypes::PreparedQuery query(connection_->prepareStatement(query.data()));
+					DBTypes::PreparedQuery query(connection_->prepareStatement(sql.data()));
 
 					//BindValue(query.get(), std::forward<Args>(args)...);
 
@@ -225,13 +225,13 @@ namespace Forward {
 		 * @return future object of query result
 		 */
 		template<typename ...Args>
-		std::future<DBTypes::Result> AsyncExecute(std::string_view query, Args&&... args)
+		std::future<DBTypes::Result> AsyncExecute(std::string_view sql, Args&&... args)
 		{
 			std::future<DBTypes::Result> future = std::async(
 				std::launch::async,
 				[&]()
 				{
-					DBTypes::Result result = Execute(query, std::forward<Args>(args)...);
+					DBTypes::Result result = Execute(sql, std::forward<Args>(args)...);
 
 					return result;
 				});
