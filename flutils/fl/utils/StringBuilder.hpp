@@ -63,19 +63,16 @@ namespace Forward {
         static StringBuilder FromFile(std::string_view file_name, StringArgList const& args);
         StringBuilder& operator=(std::string_view str);
 
-        operator char const*() const 
+        operator char const*() const &
         {   
             if (result_.has_value())
-               return result_.value().c_str();
+                return result_.value().c_str();
 
             return "";
         }
-        operator std::string() const 
+        operator std::string() const &
         {
-            if (result_.has_value())
-               return result_.value().c_str();
-
-            return "";
+            return result_.value_or("");
         }
 
     private:
