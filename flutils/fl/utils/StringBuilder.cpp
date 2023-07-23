@@ -87,11 +87,10 @@ namespace Forward {
 
     void StringBuilder::BuildString(StringArg const& arg)
     {
-        std::string& result = result_.value();
-
-        if (result.empty())
+        if (!IsValid())
             return;
 
+        std::string& result = result_.value();
         size_t ArgPos;
 
         while (true) 
