@@ -32,7 +32,7 @@ namespace Forward {
 		SetOutputMode(OutputFlag::Console | OutputFlag::File);
 
 		SetFileName(default_file_name);
-		SetDateTimeFormat(default_time_format);
+		SetDateTimeFormat(DateTime::DefaultFormat);
 		SetMessageFormat(default_msg_format);
 	}
 	Logger::Logger(std::string_view file_name, Logger::OutputFlags flags)
@@ -40,7 +40,7 @@ namespace Forward {
 	{
 		SetFileName(file_name);
 
-		SetDateTimeFormat(default_time_format);
+		SetDateTimeFormat(DateTime::DefaultFormat);
 		SetMessageFormat(default_msg_format);
 	}
 	Logger::Logger(std::string_view file_name, std::string_view msg_format, std::string_view time_format, Logger::OutputFlags flags)

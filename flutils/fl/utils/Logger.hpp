@@ -16,7 +16,7 @@ namespace Forward {
 	class Logger : std::enable_shared_from_this<Logger>
 	{
 	public:
-		enum class Level : unsigned int
+		enum class Level : uint8_t
 		{
 			INFO = 		0,	
 			DEBUG = 	1 << 0,
@@ -26,14 +26,13 @@ namespace Forward {
 			TRACE = 	1 << 4,
 		};
 
-		enum class OutputFlag : unsigned int
+		enum class OutputFlag : uint8_t
 		{
 			None,
 			File = 1 << 0,		// flag enables writing to file
 			Console = 1 << 1	// flag enables printing to console
 		};
-
-		ENABLE_ENUM_FLAGS(OutputFlag, OutputFlags);
+		ENUM_FLAGS(OutputFlag, OutputFlags);
 
 		struct Message
 		{
@@ -53,9 +52,8 @@ namespace Forward {
 		mutable std::mutex mutex_;
 
 	public:
-		static constexpr inline const char* default_file_name = "log-dd-MM-hh-mm.txt";
-		static constexpr inline const char* default_time_format = "dd-MM-hh-mm";
 		static constexpr inline const char* default_msg_format = "[%t] %l: %m";
+		static constexpr inline const char* default_file_name = "log-dd-MM-hh-mm.txt";
 
 	public:
 		Logger();
