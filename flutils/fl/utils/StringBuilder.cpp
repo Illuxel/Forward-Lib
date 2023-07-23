@@ -49,10 +49,6 @@ namespace Forward {
         result_.reset();
     }
 
-    // StringBuilder StringBuilder::MakeString(std::string_view templ)
-    // {
-
-    // }
 
     StringBuilder StringBuilder::FromFile(std::string_view file_name)
     {
@@ -75,11 +71,6 @@ namespace Forward {
         return StringBuilder::FromFile(file_name).Arg(args);
     }
 
-    StringBuilder& StringBuilder::operator=(char const* arr)
-    {
-        SetTemplate(arr);
-        return *this;
-    }
     StringBuilder& StringBuilder::operator=(std::string_view templ)
     {
         SetTemplate(templ);

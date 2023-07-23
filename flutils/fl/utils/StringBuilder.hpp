@@ -49,7 +49,6 @@ namespace Forward {
          */
         void Clear();
 
-        // static StringBuilder MakeString(std::string_view templ);
 
         /**
          * Reads and wraps file data to StringBuilder
@@ -58,9 +57,8 @@ namespace Forward {
          * @return StringBuilder instance with loaded data from file
          */
         static StringBuilder FromFile(std::string_view file_name);
-
-        StringBuilder& operator=(char const* str_arr);
         static StringBuilder FromFile(std::string_view file_name, StringArgList const& args);
+;
         StringBuilder& operator=(std::string_view str);
 
         operator char const*() const &
