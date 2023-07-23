@@ -39,7 +39,11 @@ namespace Forward {
         return StringArg(name, result_.value_or(""), specifier);
     }
 
-    std::string StringBuilder::Data() const
+    std::string StringBuilder::Data() &&
+    {
+        return std::move(result_.value_or(""));
+    }
+    std::string StringBuilder::Data() const &
     {
         return result_.value_or("");
     }

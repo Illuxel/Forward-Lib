@@ -42,7 +42,8 @@ namespace Forward {
          */
         StringArg AsArg(std::string_view name, char specifier) const;
 
-        std::string Data() const;
+        std::string Data() &&;
+        std::string Data() const &;
 
         /**
          * Clears building string
