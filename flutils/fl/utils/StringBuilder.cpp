@@ -8,7 +8,7 @@
 namespace Forward {
     
     StringBuilder::StringBuilder() {}
-    StringBuilder::StringBuilder(std::string_view templ, std::vector<StringArg> const& args) 
+    StringBuilder::StringBuilder(std::string_view templ, StringArgList const& args)
     {
         result_.emplace(templ);
         BuildString(args);
@@ -24,7 +24,7 @@ namespace Forward {
         this->BuildString(arg);
         return *this;
     }
-    StringBuilder& StringBuilder::Arg(std::vector<StringArg> const& args)
+    StringBuilder& StringBuilder::Arg(StringArgList const& args)
     {
         this->BuildString(args);
         return *this;
@@ -70,7 +70,7 @@ namespace Forward {
 
         return build;
     }
-    StringBuilder StringBuilder::FromFile(std::string_view file_name, std::vector<StringArg> const& args)
+    StringBuilder StringBuilder::FromFile(std::string_view file_name, StringArgList const& args)
     {
         return StringBuilder::FromFile(file_name).Arg(args);
     }
@@ -108,7 +108,7 @@ namespace Forward {
             result.replace(begin, end, arg.Data());
         }
     }
-    void StringBuilder::BuildString(std::vector<StringArg> const& args) 
+    void StringBuilder::BuildString(StringArgList const& args)
     {
         for (auto& arg : args)
             BuildString(arg);

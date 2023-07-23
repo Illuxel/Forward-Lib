@@ -4,6 +4,8 @@
 
 namespace Forward {
 
+    using StringArgList = std::vector<StringArg>;
+
     class StringBuilder
     {
     private:
@@ -11,7 +13,7 @@ namespace Forward {
 
     public:
         StringBuilder();
-        StringBuilder(std::string_view templ, std::vector<StringArg> const& args = {});
+        StringBuilder(std::string_view templ, StringArgList const& args = {});
 
         void SetTemplate(std::string_view templ);
 
@@ -22,7 +24,7 @@ namespace Forward {
         /**
          * Replacec all occurences with specified list of argument
          */
-        StringBuilder& Arg(std::vector<StringArg> const& args);
+        StringBuilder& Arg(StringArgList const& args);
 
         /**
          * Makes result as an StringArg
@@ -56,9 +58,9 @@ namespace Forward {
          * @return StringBuilder instance with loaded data from file
          */
         static StringBuilder FromFile(std::string_view file_name);
-        static StringBuilder FromFile(std::string_view file_name, std::vector<StringArg> const& args);
 
         StringBuilder& operator=(char const* str_arr);
+        static StringBuilder FromFile(std::string_view file_name, StringArgList const& args);
         StringBuilder& operator=(std::string_view str);
 
         operator char const*() const 
@@ -78,6 +80,6 @@ namespace Forward {
 
     private:
         void BuildString(StringArg const& arg);
-        void BuildString(std::vector<StringArg> const& args);
+        void BuildString(StringArgList const& args);
     };
 }
