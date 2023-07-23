@@ -49,6 +49,10 @@ namespace Forward {
         result_.reset();
     }
 
+    bool StringBuilder::IsValid() const 
+    {
+        return result_.has_value();
+    }
 
     StringBuilder StringBuilder::FromFile(std::string_view file_name)
     {

@@ -49,6 +49,7 @@ namespace Forward {
          */
         void Clear();
 
+        bool IsValid() const;
 
         /**
          * Reads and wraps file data to StringBuilder
