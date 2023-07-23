@@ -22,9 +22,11 @@ namespace Forward {
 
     public:
         Exception();
-        explicit Exception(Exception const& ec);
-        explicit Exception(std::string_view msg);
-        explicit Exception(std::exception const& ec);
+        Exception(std::string_view msg);
+        Exception(std::exception const& ec);
+
+        Exception(Exception&& ec) noexcept;
+        Exception(Exception const& ec) noexcept;
 
         virtual ~Exception() override;
 

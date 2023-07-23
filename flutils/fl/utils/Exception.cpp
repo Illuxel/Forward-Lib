@@ -7,6 +7,7 @@ namespace Forward {
         , is_error(false) 
     {
     }
+
     Exception::Exception(std::string_view msg)
         : std::exception{}
         , is_error(true)
@@ -18,11 +19,18 @@ namespace Forward {
     {
         SetError(ec);
     }
-    Exception::Exception(Exception const& ec)
-        : std::exception(ec)
-        , is_error(ec.is_error)
+
+    Exception::Exception(Exception&& right) noexcept
+        : std::exception(std::move(right))
     {
-        msg_ = ec.msg_;
+        is_error = std::move(right.is_error);
+        msg_ = std::move(right.msg_);
+    }
+    Exception::Exception(Exception const& right) noexcept
+        : std::exception(right)
+    {
+        is_error = right.is_error;
+        msg_ = right.msg_;
     }
 
     Exception::~Exception() {}
