@@ -17,25 +17,35 @@ set(FLUTILS_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/utils)
 set(FLUTILS_INCLUDE
     fl/utils/Exception.hpp
     fl/utils/Memory.hpp
-    fl/utils/DateTime.hpp
     fl/utils/Enum.hpp
     fl/utils/Flags.hpp
-    fl/utils/MimeType.hpp
+
+    fl/utils/TypelessArg.hpp
     fl/utils/StringArg.hpp
     fl/utils/StringBuilder.hpp
+
+    fl/utils/DateTime.hpp
+    fl/utils/MimeType.hpp
+
     fl/utils/Timer.hpp
     fl/utils/Logger.hpp
     fl/utils/Log.hpp
 )
 set(FLUTILS_SOURCE
     ${FLUTILS_INCLUDE}
+
     fl/utils/Exception.cpp
-    fl/utils/DateTime.cpp
+
     fl/utils/Enum.cpp
     fl/utils/Flags.cpp
-    fl/utils/MimeType.cpp
+
+    
     fl/utils/StringArg.cpp
     fl/utils/StringBuilder.cpp
+
+    fl/utils/DateTime.cpp
+    fl/utils/MimeType.cpp
+
     fl/utils/Logger.cpp
     fl/utils/Log.cpp
 )
