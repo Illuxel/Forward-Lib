@@ -21,12 +21,12 @@ namespace Forward {
 
     StringBuilder& StringBuilder::Arg(StringArg const& arg) 
     {
-        this->BuildString(arg);
+        BuildString(arg);
         return *this;
     }
     StringBuilder& StringBuilder::Arg(StringArgList const& args)
     {
-        this->BuildString(args);
+        BuildString(args);
         return *this;
     }
 
