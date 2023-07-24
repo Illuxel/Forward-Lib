@@ -23,7 +23,7 @@ namespace Forward {
         void SetContentFolders(std::vector<std::string> const& folders);
 
         template<typename ...Args>
-        void Route(Args&& ...args) 
+        constexpr void Route(Args&& ...args) 
         {
             HttpResponder::HandlerData data {std::forward<Args>(args)...};
 
