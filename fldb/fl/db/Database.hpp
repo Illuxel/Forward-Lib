@@ -80,7 +80,7 @@ namespace Forward {
         static uint32_t GetActiveConnectionCount();
 
         /**
-         * Initializes a scoped database connection
+         * Initializes RAII Style scoped database connection
          *
          * @return Scoped pointer to the database instance
          */
