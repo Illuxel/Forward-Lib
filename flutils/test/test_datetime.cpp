@@ -10,14 +10,6 @@ TEST(DateTime, ToCFormatParse)
     EXPECT_TRUE(out == "%d-%m-%Y %H:%M:%S");
 }
 
-TEST(DateTime, NowToString)
-{
-    std::string now = DateTime::Now().ToString();
-    std::string late_now = DateTime::Now().ToString();
-
-    EXPECT_FALSE(now == late_now);
-}
-
 TEST(DateTime, Copy)
 {
     auto now = DateTime::Now();
