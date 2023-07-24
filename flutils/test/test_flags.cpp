@@ -10,7 +10,7 @@ enum class MyEnum
     Second = 1 << 1,
     Third = 1 << 2,
 };
-ENABLE_ENUM_FLAGS(MyEnum, MyEnumFlags);
+ENUM_FLAGS(MyEnum, MyEnumFlags);
 DECLARE_ENUM_OPERATORS(MyEnum);
 
 TEST(Flags, Equal) 
