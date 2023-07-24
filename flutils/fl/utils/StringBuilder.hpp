@@ -13,9 +13,9 @@ namespace Forward {
 
     public:
         StringBuilder();
-        StringBuilder(std::string_view templ, StringArgList const& args = {});
+        StringBuilder(std::string_view str, StringArgList const& args = {});
 
-        void SetTemplate(std::string_view templ);
+        void SetTemplate(std::string_view str);
 
         /**
          * Replaces all occurences with specified argument

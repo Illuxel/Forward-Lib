@@ -8,13 +8,19 @@
 namespace Forward {
     
     StringBuilder::StringBuilder() {}
-    StringBuilder::StringBuilder(std::string_view templ, StringArgList const& args)
     {
         result_.emplace(templ);
+    StringBuilder::StringBuilder(std::string_view str, StringArgList const& args)
         BuildString(args);
     }
 
-    void StringBuilder::SetTemplate(std::string_view templ)
+    void StringBuilder::SetTemplate(std::string_view str)
+    {
+        if (str.empty())
+            return;
+
+        result_.emplace(str);
+    }
     {
         result_.emplace(templ);
     }
@@ -91,17 +97,17 @@ namespace Forward {
             return;
 
         std::string& result = result_.value();
-        size_t ArgPos;
+        size_t arg_pos;
 
         while (true) 
         {
-            ArgPos = result.find(arg.Joined());
+            arg_pos = result.find(arg.Joined());
 
-            if (ArgPos == std::string::npos)
+            if (arg_pos == std::string::npos)
                 break;
 
-            auto const& begin = result.cbegin() + ArgPos;
-            auto const& end = result.cbegin() + ArgPos + arg.Joined().size(); 
+            auto const& begin = result.cbegin() + arg_pos;
+            auto const& end = result.cbegin() + arg_pos + arg.Joined().size();
 
             result.replace(begin, end, arg.Data());
         }
