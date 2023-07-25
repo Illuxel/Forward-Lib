@@ -13,7 +13,6 @@ enable_testing()
 add_executable(TestDb ${TEST_SOURCE})
 
 target_link_libraries(TestDb
-PRIVATE 
     GTest::gtest_main
     Fl::db
 )

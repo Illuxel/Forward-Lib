@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
 set(BENCH_SOURCE
     bench_url.cpp
@@ -7,7 +7,6 @@ set(BENCH_SOURCE
 add_executable(BenchNet ${BENCH_SOURCE})
 
 target_link_libraries(BenchNet
-PUBLIC
     benchmark::benchmark
     Fl::net
 )
