@@ -1,45 +1,36 @@
-name: CMake
+name: C++ Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - dev
   pull_request:
-    branches: [ "main" ]
-
-env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Debug
+    branches:
+      - main
+      - dev
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-    - name: Install Boost
+    - name: Install Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget
-        wget https://boostorg.jfrog.io/artifactory/main/release/1.81.0/source/boost_1_81_0.tar.gz
-        tar xf boost_1_81_0.tar.gz
-        cd boost_1_81_0/
-        sudo ./bootstrap.sh
-        sudo ./b2 install
+        sudo apt-get install -y libmysqlcppconn-dev libssl-dev libboost-all-dev
 
-    - name: Install MySQL Connector/C++
+    - name: Set up CMake 3.24
+      uses: borgar/setup-cmake@v2
+      with:
+        cmake-version: '3.24'
+
+    - name: Build Debug
       run: |
-        sudo apt-get install libmysqlcppconn-dev
-
-    - name: Configure CMake
-      run: |
-        cmake -B ${{github.workspace}}/build \
-              -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
-              -DBOOST_ROOT=/usr/local/include
-
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: Test
-      working-directory: ${{github.workspace}}/build
-      run: ctest -C ${{env.BUILD_TYPE}}
+        mkdir -p build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=Debug ..
+        cmake --build .
