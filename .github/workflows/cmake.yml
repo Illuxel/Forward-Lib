@@ -23,10 +23,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libmysqlcppconn-dev libssl-dev libboost-all-dev
 
-    - name: Set up CMake 3.24
+    - name: Set up Latest CMake
       uses: borgar/setup-cmake@v2
-      with:
-        cmake-version: '3.24'
 
     - name: Build Debug
       run: |
