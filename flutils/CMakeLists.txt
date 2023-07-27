@@ -17,7 +17,6 @@ set(FLUTILS_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/utils)
 set(FLUTILS_INCLUDE
     fl/utils/Exception.hpp
     fl/utils/Memory.hpp
-    fl/utils/Enum.hpp
     fl/utils/Flags.hpp
 
     fl/utils/TypedArg.hpp
@@ -35,8 +34,6 @@ set(FLUTILS_SOURCE
     ${FLUTILS_INCLUDE}
 
     fl/utils/Exception.cpp
-
-    fl/utils/Enum.cpp
     fl/utils/Flags.cpp
 
     fl/utils/StringArg.cpp
