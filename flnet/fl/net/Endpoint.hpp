@@ -7,15 +7,15 @@ namespace Forward {
     class Endpoint
     {
     private:
-        tcp::endpoint m_Endpoint;
+        tcp::endpoint endpoint_;
 
     public:
         Endpoint();
         Endpoint(std::string_view str);
-        Endpoint(std::string_view ip, unsigned short port);
+        Endpoint(std::string_view ip, uint16_t port);
 
         std::string Address() const;
-        unsigned short Port() const;
+        uint16_t Port() const;
 
         net::ip::tcp Protocol() const;
 
