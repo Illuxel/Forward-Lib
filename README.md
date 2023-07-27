@@ -5,8 +5,8 @@ Description: Soon
 ## List of task
 
 - [x] Add basic net system
-- [ ] Http Routing
-- [x] Async MySQL Connector C++ Layer (using async method or accessing from multiple threads)
+- [ ] Http Routing (allow register routes on the fly, supports concurrency)
+- [x] Async MySQL Connector C++ Layer (supports async method or accessing from multiple threads)
 - [ ] Add auth sytem (SSL, encryption, 2 factor auth)
 
 ## Dependencies
