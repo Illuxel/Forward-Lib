@@ -20,7 +20,7 @@ set(FLUTILS_INCLUDE
     fl/utils/Enum.hpp
     fl/utils/Flags.hpp
 
-    fl/utils/TypelessArg.hpp
+    fl/utils/TypedArg.hpp
     fl/utils/StringArg.hpp
     fl/utils/StringBuilder.hpp
 
@@ -39,7 +39,6 @@ set(FLUTILS_SOURCE
     fl/utils/Enum.cpp
     fl/utils/Flags.cpp
 
-    
     fl/utils/StringArg.cpp
     fl/utils/StringBuilder.cpp
 
