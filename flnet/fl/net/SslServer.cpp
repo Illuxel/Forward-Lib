@@ -56,7 +56,7 @@ namespace Forward {
 
         if (!pass.empty())
         {
-            secure_context_.set_password_callback([&](std::size_t, net::ssl::context::password_purpose){
+            secure_context_.set_password_callback([&](uint64_t, net::ssl::context::password_purpose){
                 return pass.data();
             });
         }

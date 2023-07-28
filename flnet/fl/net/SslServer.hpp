@@ -3,8 +3,6 @@
 #include "fl/utils/Memory.hpp"
 #include "fl/net/AsyncListener.hpp"
 
-#include <thread>
-
 namespace Forward {
 
     class SslServer 
@@ -13,7 +11,7 @@ namespace Forward {
         ssl::context secure_context_;
 
     private:
-        size_t io_count_;
+        uint8_t io_count_;
         net::io_context io_context_;
         std::vector<std::thread> io_sessions_;
 
