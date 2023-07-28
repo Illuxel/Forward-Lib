@@ -28,7 +28,7 @@ namespace Forward {
         std::string GetRouteFilePath(std::string_view target) const;
         std::string GetContentFilePath(std::string_view content) const;
 
-        void RegisterRoute(std::string_view target);
+        void RegisterTarget(std::string_view target);
         void RegisterContent(std::string_view target);
 
         bool IsTarget(std::string_view target) const;

@@ -53,7 +53,7 @@ namespace Forward {
         return web_file->FullPath();
     }
 
-    void HttpRouter::RegisterRoute(std::string_view target) 
+    void HttpRouter::RegisterTarget(std::string_view target)
     {
         auto const& prep_route = PrepareRouteName(target);
         routes_.insert(std::make_pair(target.data(), prep_route));
