@@ -22,7 +22,7 @@ namespace Forward {
     void LoadWebPageContent(std::string_view path, http::response<http::file_body>& res, beast::error_code& ec)
     {   
         http::file_body::value_type body;
-        body.open(path.c_str(), beast::file_mode::scan, ec);
+        body.open(path.data(), beast::file_mode::scan, ec);
 
         if (ec)
             return;
@@ -66,17 +66,15 @@ namespace Forward {
     http::message_generator HttpResponder::HandleRequest(HttpRequest&& req) const 
     {
         auto url = req.Url();
-        auto target = url.Target();
 
-        auto method = req.Base().method();
-        
         if (!url.IsValid())
             return bad_request_(req, http::status::bad_request);
 
-        if (!HttpUrl::IsTargetLegal(target))
+        auto target = url.Path();
+        auto method = req.Base().method();
+        
+        if (!HttpUrl::IsPathLegal(target))
             return bad_request_(req, http::status::bad_request);
-
-        std::lock_guard<std::mutex> lock(mutex_);
 
         // without router 
         if (!router_)
