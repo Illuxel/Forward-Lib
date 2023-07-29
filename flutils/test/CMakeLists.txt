@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 set(TEST_SOURCE
     test_main.cpp
     test_flags.cpp
-    test_stringarg.cpp
+    test_typedarg.cpp
     test_stringbuilder.cpp
     # test_log.cpp
     test_datetime.cpp
