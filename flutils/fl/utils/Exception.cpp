@@ -49,12 +49,14 @@ namespace Forward {
 
         if (msg_.empty())
             return msg_.c_str();
+
         return "Unknown exception";
     }
 
     bool Exception::IsError() const
     {
         std::shared_lock lock(mtx_);
+
         return is_error;
     }
 
