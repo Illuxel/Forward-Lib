@@ -19,14 +19,16 @@ set(NET_INCLUDE
     fl/net/Core.hpp
 
     fl/net/Endpoint.hpp
-    fl/net/AsyncListener.hpp
+
+    fl/net/TcpServer.hpp
     fl/net/SslServer.hpp
 )
 set(NET_SOURCE
     ${NET_INCLUDE}
 
     fl/net/Endpoint.cpp
-    fl/net/AsyncListener.cpp
+
+    fl/net/TcpServer.cpp
     fl/net/SslServer.cpp
 )
 
