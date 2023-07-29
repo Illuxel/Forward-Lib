@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	// Connecting to MySQL database using address, user name and password
 	bool is_conn = db->Connect(ADDRESS, USER_NAME, USER_PASSWORD);
 
-	// Check if connection succeded 
+	// Check if connection succeeded 
 
 	if (!is_conn)
 	{
