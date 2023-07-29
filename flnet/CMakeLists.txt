@@ -21,6 +21,8 @@ set(NET_INCLUDE
     fl/net/Endpoint.hpp
 
     fl/net/TcpServer.hpp
+    fl/net/SecureLayer.hpp
+
     fl/net/SslServer.hpp
 )
 set(NET_SOURCE
@@ -29,6 +31,8 @@ set(NET_SOURCE
     fl/net/Endpoint.cpp
 
     fl/net/TcpServer.cpp
+    fl/net/SecureLayer.cpp
+
     fl/net/SslServer.cpp
 )
 
