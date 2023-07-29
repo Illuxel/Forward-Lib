@@ -19,7 +19,7 @@ namespace Forward {
 
         net::ip::tcp Protocol() const;
 
-        operator net::ip::tcp::endpoint() const;
+        operator net::ip::tcp::endpoint const&() const&;
     };
     
 } // namespace Forward

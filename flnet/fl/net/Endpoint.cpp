@@ -40,7 +40,7 @@ namespace Forward {
         return endpoint_.protocol();
     }
 
-    Endpoint::operator net::ip::tcp::endpoint() const
+    Endpoint::operator net::ip::tcp::endpoint const&() const&
     {
         return endpoint_;
     }
