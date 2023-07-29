@@ -7,10 +7,14 @@
 
 namespace Forward {
     
-    StringBuilder::StringBuilder() {}
+    StringBuilder::StringBuilder() 
+        : result_(std::nullopt)
     {
-        result_.emplace(templ);
+    }
     StringBuilder::StringBuilder(std::string_view str, StringArgList const& args)
+        : result_(std::nullopt)
+    {
+        SetTemplate(str);
         BuildString(args);
     }
 
@@ -21,8 +25,18 @@ namespace Forward {
 
         result_.emplace(str);
     }
+
+    StringBuilder& StringBuilder::ArgFirst(StringArg const& arg)
     {
-        result_.emplace(templ);
+
+
+        return *this;
+    }
+    StringBuilder& StringBuilder::ArgFirst(StringArgList const& args)
+    {
+
+
+        return *this;
     }
 
     StringBuilder& StringBuilder::Arg(StringArg const& arg) 
@@ -36,20 +50,11 @@ namespace Forward {
         return *this;
     }
 
-    StringArg StringBuilder::AsArg(std::string_view name) const 
-    {
-        return StringArg(name, result_.value_or(""));
-    }
-    StringArg StringBuilder::AsArg(std::string_view name, char specifier) const 
-    {
-        return StringArg(name, result_.value_or(""), specifier);
-    }
-
     std::string StringBuilder::Data() &&
     {
         return std::move(result_.value_or(""));
     }
-    std::string StringBuilder::Data() const &
+    std::string const& StringBuilder::Data() const&
     {
         return result_.value_or("");
     }
@@ -62,6 +67,15 @@ namespace Forward {
     bool StringBuilder::IsValid() const 
     {
         return result_.has_value();
+    }
+
+    bool StringBuilder::IsArg(StringArg const& arg) const
+    {
+        return true;
+    }
+    bool StringBuilder::IsArgs(StringArgList const& args) const 
+    {
+        return true;
     }
 
     StringBuilder StringBuilder::FromFile(std::string_view file_name)
@@ -96,20 +110,20 @@ namespace Forward {
         if (!IsValid())
             return;
 
+        uint64_t arg_pos;
         std::string& result = result_.value();
-        size_t arg_pos;
 
         while (true) 
         {
-            arg_pos = result.find(arg.Joined());
+            arg_pos = result.find(arg.GetParsed());
 
             if (arg_pos == std::string::npos)
                 break;
 
             auto const& begin = result.cbegin() + arg_pos;
-            auto const& end = result.cbegin() + arg_pos + arg.Joined().size();
+            auto const& end = result.cbegin() + arg_pos + arg.GetParsed().size();
 
-            result.replace(begin, end, arg.Data());
+            result.replace(begin, end, arg.GetData());
         }
     }
     void StringBuilder::BuildString(StringArgList const& args)

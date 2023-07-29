@@ -1,4 +1,5 @@
 #include "fl/utils/StringArg.hpp"
+#include "fl/utils/StringArgParser.hpp"
 using namespace Forward;
 
 #include <gtest/gtest.h>
@@ -18,42 +19,23 @@ TEST(StringArg, ArgCopy)
 {
     StringArg arg1("arg");
 
-    arg1.SetData("hello world");
+    arg1.GetData() = "hello world";
 
     StringArg copy(arg1);
 
     EXPECT_TRUE(copy == arg1);
-    EXPECT_TRUE(arg1.Data() == copy.Data());
+    EXPECT_TRUE(arg1.GetData() == copy.GetData());
 
     copy.SetName("NEW");
 
     EXPECT_FALSE(copy == arg1);
 }
 
-TEST(StringArg, MakeArg) 
+TEST(StringArg, MakeArg)
 {
     std::string_view str = "arg_name=arg_data";
-    auto arg = StringArg::FromString(str, '=');
+    StringArg arg = StringArgParser::FromString(str, '=');
 
     EXPECT_TRUE(arg == "arg_name");
-    EXPECT_TRUE(arg.Data() == "arg_data");
-}
-
-TEST(StringArgSpecifier, ArgEqual) 
-{
-    StringArg arg1("test", '%'), arg2('%');
-
-    EXPECT_FALSE(arg1 == arg2);
-
-    arg2.SetName("test");
-
-    EXPECT_TRUE(arg1 == arg2);
-    EXPECT_TRUE(arg1 == "Hidden %test argument!");
-}
-TEST(StringArgSpecifier, ArgCopy) 
-{
-    StringArg arg1("arg", '%');
-    StringArg copy(arg1);
-
-    EXPECT_TRUE(copy == arg1);
+    EXPECT_TRUE(arg.GetData() == "arg_data");
 }

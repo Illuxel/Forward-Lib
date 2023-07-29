@@ -21,6 +21,7 @@ set(FLUTILS_INCLUDE
 
     fl/utils/TypedArg.hpp
     fl/utils/StringArg.hpp
+    fl/utils/StringArgParser.hpp
     fl/utils/StringBuilder.hpp
 
     fl/utils/DateTime.hpp
@@ -35,8 +36,9 @@ set(FLUTILS_SOURCE
 
     fl/utils/Exception.cpp
     fl/utils/Flags.cpp
+    
 
-    fl/utils/StringArg.cpp
+    fl/utils/StringArgParser.cpp
     fl/utils/StringBuilder.cpp
 
     fl/utils/DateTime.cpp

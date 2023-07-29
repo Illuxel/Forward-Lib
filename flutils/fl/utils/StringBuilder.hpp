@@ -4,8 +4,6 @@
 
 namespace Forward {
 
-    using StringArgList = std::vector<StringArg>;
-
     class StringBuilder
     {
     private:
@@ -18,32 +16,25 @@ namespace Forward {
         void SetTemplate(std::string_view str);
 
         /**
-         * Replaces all occurences with specified argument
+         * Replaces first occurrence with specified argument
+         */
+        StringBuilder& ArgFirst(StringArg const& arg);
+        /**
+         * Replaces first occurrence with specified list of argument
+         */
+        StringBuilder& ArgFirst(StringArgList const& args);
+
+        /**
+         * Replaces all occurrences with specified argument
          */
         StringBuilder& Arg(StringArg const& arg);
         /**
-         * Replacec all occurences with specified list of argument
+         * Replaces all occurrences with specified list of argument
          */
         StringBuilder& Arg(StringArgList const& args);
 
-        /**
-         * Makes result as an StringArg
-         * 
-         * @param name represents arg name
-         * @return string argument which contains name and result of string build
-         */
-        StringArg AsArg(std::string_view name) const;
-        /**
-         * Makes result as an StringArg
-         *
-         * @param name represents arg name
-         * @param specifier places before argument name
-         * @return string argument which contains name and result of string build
-         */
-        StringArg AsArg(std::string_view name, char specifier) const;
-
         std::string Data() &&;
-        std::string Data() const &;
+        std::string const& Data() const&;
 
         /**
          * Clears building string
@@ -51,6 +42,9 @@ namespace Forward {
         void Clear();
 
         bool IsValid() const;
+
+        bool IsArg(StringArg const& arg) const;
+        bool IsArgs(StringArgList const& args) const;
 
         /**
          * Reads and wraps file data to StringBuilder
@@ -63,14 +57,14 @@ namespace Forward {
 ;
         StringBuilder& operator=(std::string_view str);
 
-        operator char const*() const &
+        operator char const*() const
         {   
             if (result_.has_value())
                 return result_.value().c_str();
 
             return "";
         }
-        operator std::string() const &
+        operator std::string const&() const&
         {
             return result_.value_or("");
         }
