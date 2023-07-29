@@ -22,19 +22,19 @@ namespace Forward {
         constexpr HttpResponseWrapper(http::response<Body> const& response)
             : response_(response) {}
 
-        constexpr auto const& Base() const &
+        constexpr auto const& base() const&
         {
             return response_;
         }
-        constexpr auto& Base() &
+        constexpr auto& base() &
         {
             return response_;
         }
-        constexpr auto&& Base() &&
+        constexpr auto&& base() &&
         {
             return std::move(response_);
         }
-        constexpr auto&& Base() const&&
+        constexpr auto const&& base() const&&
         {
             return std::move(response_);
         }
@@ -67,7 +67,7 @@ namespace Forward {
         }
         constexpr operator http::response<Body>&() &
         {
-            return &response_;
+            return response_;
         }
         constexpr operator http::response<Body>&&() &&
         {

@@ -24,19 +24,19 @@ namespace Forward {
         HttpRequestWrapper(http::request<Body> const& request) 
             : request_(request) {}
 
-        constexpr auto const& Base() const &
+        constexpr auto const& base() const &
         {
             return request_;
         }
-        constexpr auto& Base() &
+        constexpr auto& base() &
         {
             return request_;
         }
-        constexpr auto&& Base() &&
+        constexpr auto&& base() &&
         {
             return std::move(request_);
         }
-        constexpr auto&& Base() const&&
+        constexpr auto&& base() const&&
         {
             return std::move(request_);
         }
