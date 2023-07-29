@@ -21,9 +21,9 @@ TEST(Flags, Equal)
     EXPECT_TRUE(flags.Test(MyEnum::Third));
     EXPECT_TRUE(flags.Test(MyEnum::Third | MyEnum::First));
 
-    auto test5 = flags.Test(MyEnum::Second);
-    EXPECT_FALSE(test5);
+    auto test1 = flags.Test(MyEnum::Second);
+    EXPECT_FALSE(test1);
 
-    auto test6 = flags.Test(MyEnum::None);
-    EXPECT_FALSE(test6);
+    auto test2 = flags.Test(MyEnum::None);
+    EXPECT_FALSE(test2);
 }
