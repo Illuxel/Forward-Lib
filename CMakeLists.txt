@@ -59,8 +59,6 @@ include(GNUInstallDirs)
 
 add_subdirectory(vendor)
 
-set(FL_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fl)
-
 set(namespace Fl)
 
 set(FL_INCLUDE
