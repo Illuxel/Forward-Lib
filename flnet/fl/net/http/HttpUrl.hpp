@@ -8,7 +8,7 @@ namespace Forward {
     {
     private:
         bool valid_;
-        std::optional<std::string> protocol_, domain_, target_, query_, section_;
+        std::optional<std::string> protocol_, domain_, path_, query_, section_;
 
     public:
         HttpUrl();
@@ -18,7 +18,7 @@ namespace Forward {
 
         std::string Protocol() const;
         std::string Domain() const;
-        std::string Target() const;
+        std::string Path() const;
         std::string Section() const;
 
         HttpQuery Query() const;

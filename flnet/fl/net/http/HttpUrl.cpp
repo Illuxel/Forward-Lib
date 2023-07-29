@@ -27,7 +27,7 @@ namespace Forward {
 
         protocol_.emplace(match[1].str());
         domain_.emplace(match[2].str());
-        target_.emplace(match[3].str());
+        path_.emplace(match[3].str());
         query_.emplace(match[4].str());
         section_.emplace(match[5].str());
     }
@@ -40,9 +40,9 @@ namespace Forward {
     {
         return domain_.value_or("");
     }
-    std::string HttpUrl::Target() const
+    std::string HttpUrl::Path() const
     {
-        return target_.value_or("");
+        return path_.value_or("");
     }
     std::string HttpUrl::Section() const
     {
@@ -64,7 +64,7 @@ namespace Forward {
     }
     bool HttpUrl::HasTarget() const 
     {
-        return target_.has_value();
+        return path_.has_value();
     }
     bool HttpUrl::HasSection() const
     {
