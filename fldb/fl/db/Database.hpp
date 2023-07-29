@@ -42,7 +42,7 @@ namespace Forward {
         };
 
     private:
-        sql::Driver* driver_ = nullpyt;
+        sql::Driver* driver_ = nullptr;
         std::unordered_map<Database::Info, Ref<DBConnection>, Database::Info::Hash> conn_pool_;
 
         mutable std::shared_mutex conn_pool_mtx_;
@@ -55,7 +55,7 @@ namespace Forward {
         /**
          * Call MySQL API driver. This is safe function
          *
-         * @return intsance of MySQL driver that managed by API
+         * @return instance of MySQL driver that managed by API
          */
         static sql::Driver* GetDriver();
 
@@ -151,7 +151,7 @@ namespace Forward {
         /**
          * Closes all database connections with tag
          * 
-         * @param db_name dataabse connection tag
+         * @param db_name database connection tag
          */
         static void CloseAll(std::string_view db_name);
 
