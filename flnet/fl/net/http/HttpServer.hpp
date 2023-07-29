@@ -38,6 +38,6 @@ namespace Forward {
         }
 
     protected:
-        virtual void OnSocketAccept(beast::error_code ec, tcp::socket&& socket) override;
+        virtual void OnSocketAccept(sys::error_code ec, tcp::socket socket) override;
     };
 }

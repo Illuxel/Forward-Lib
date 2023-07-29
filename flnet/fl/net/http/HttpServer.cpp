@@ -36,7 +36,7 @@ namespace Forward {
             router_->RegisterContent(folder);
     }
 
-    void HttpServer::OnSocketAccept(beast::error_code ec, tcp::socket&& socket)
+    void HttpServer::OnSocketAccept(sys::error_code ec, tcp::socket socket)
     {
         SslServer::OnSocketAccept(ec, std::move(socket));
     }

@@ -14,7 +14,7 @@ namespace Forward {
         // Set SNI Hostname (many hosts need this to handshake successfully)
         if(! SSL_set_tlsext_host_name(stream_.native_handle(), host.data()))
         {
-            beast::error_code ec{static_cast<int>(::ERR_get_error()), net::error::get_ssl_category()};
+            sys::error_code ec{static_cast<int>(::ERR_get_error()), net::error::get_ssl_category()};
             FL_LOG("HttpClient", ec.message());
             return;
         }
@@ -35,7 +35,7 @@ namespace Forward {
                 shared_from_this()));
     }
 
-    void HttpClient::OnResolve(beast::error_code ec, tcp::resolver::results_type results)
+    void HttpClient::OnResolve(sys::error_code ec, tcp::resolver::results_type results)
     {
         if(ec)
             return FL_LOG("resolve", ec.message());
@@ -51,7 +51,7 @@ namespace Forward {
                 shared_from_this()));
     }
 
-    void HttpClient::OnConnect(beast::error_code ec, tcp::resolver::results_type::endpoint_type)
+    void HttpClient::OnConnect(sys::error_code ec, tcp::resolver::results_type::endpoint_type)
     {
         if(ec)
             return FL_LOG("connect", ec.message());
@@ -64,7 +64,7 @@ namespace Forward {
                 shared_from_this()));
     }
 
-    void HttpClient::OnHandshake(beast::error_code ec)
+    void HttpClient::OnHandshake(sys::error_code ec)
     {
         if(ec)
             return FL_LOG("handshake", ec.message());
@@ -79,7 +79,7 @@ namespace Forward {
                 shared_from_this()));
     }
 
-    void HttpClient::OnWrite(beast::error_code ec, std::size_t bytes_transferred)
+    void HttpClient::OnWrite(sys::error_code ec, std::size_t bytes_transferred)
     {
         boost::ignore_unused(bytes_transferred);
 
@@ -93,7 +93,7 @@ namespace Forward {
                 shared_from_this()));
     }
 
-    void HttpClient::OnRead(beast::error_code ec, std::size_t bytes_transferred)
+    void HttpClient::OnRead(sys::error_code ec, std::size_t bytes_transferred)
     {
         boost::ignore_unused(bytes_transferred);
 
@@ -113,7 +113,7 @@ namespace Forward {
                 shared_from_this()));
     }
 
-    void HttpClient::OnShutdown(beast::error_code ec)
+    void HttpClient::OnShutdown(sys::error_code ec)
     {
         if(ec == net::error::eof)
         {

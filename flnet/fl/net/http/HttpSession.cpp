@@ -43,7 +43,7 @@ namespace Forward {
                 &HttpSession::OnHandshake,
                 shared_from_this()));
     }
-    void HttpSession::OnHandshake(beast::error_code ec) 
+    void HttpSession::OnHandshake(sys::error_code ec) 
     {
         if(ec)
             return FL_LOG("handshake", ec.message());
@@ -77,7 +77,7 @@ namespace Forward {
                 keep_alive
             ));
     }
-    void HttpSession::OnWrite(bool keep_alive, beast::error_code ec, std::size_t bytes_transferred)
+    void HttpSession::OnWrite(bool keep_alive, sys::error_code ec, std::size_t bytes_transferred)
     {
         boost::ignore_unused(bytes_transferred);
 
@@ -101,7 +101,7 @@ namespace Forward {
                 &HttpSession::OnClose,
                 shared_from_this()));
     }
-    void HttpSession::OnClose(beast::error_code ec)
+    void HttpSession::OnClose(sys::error_code ec)
     {
         if(ec)
             return FL_LOG("OnClose", ec.message());
