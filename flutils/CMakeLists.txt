@@ -35,7 +35,6 @@ set(FLUTILS_SOURCE
     ${FLUTILS_INCLUDE}
 
     fl/utils/Exception.cpp
-    fl/utils/Flags.cpp
     
 
     fl/utils/StringArgParser.cpp
