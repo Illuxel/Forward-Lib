@@ -7,12 +7,8 @@
 
 namespace Forward {
     
-    StringBuilder::StringBuilder() 
-        : result_(std::nullopt)
-    {
-    }
+    StringBuilder::StringBuilder() {}
     StringBuilder::StringBuilder(std::string_view str, StringArgList const& args)
-        : result_(std::nullopt)
     {
         SetTemplate(str);
         BuildString(args);
@@ -56,7 +52,7 @@ namespace Forward {
     }
     std::string const& StringBuilder::Data() const&
     {
-        return result_.value_or("");
+        return result_.value();
     }
 
     void StringBuilder::Clear() 

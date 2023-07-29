@@ -8,21 +8,22 @@
 namespace Forward {
 	
 	/**
-	 * 
+	 * Key value pair class that supports argument parsing
 	 * 
 	 */
 	template<class ValueType>
 	class TypedArg
 	{
 	private:
+		std::string arg_parsed_;
+
 		std::string arg_name_;
 		std::string arg_format_;
 
-		std::optional<ValueType> arg_value_;
+		std::optional<ValueType> arg_value_ = std::nullopt;
 
 	public:
-		constexpr TypedArg()
-			: arg_value_(std::nullopt) {}
+		constexpr TypedArg() {}
 
 		constexpr TypedArg(std::string_view arg_name)
 			: arg_name_(arg_name) {}
@@ -56,7 +57,9 @@ namespace Forward {
 		{
 			return arg_format_;
 		}
-
+		/**
+		 * 
+		 */
 		std::string GetParsed() const 
 		{
 			return "";
@@ -113,7 +116,7 @@ namespace Forward {
 		}
 
 		static std::vector<TypedArg<ValueType>>
-		MakeArgs(std::vector<std::string> const& args, std::string_view arg_format)
+		MakeArgs(std::vector<std::string> const& args, std::string_view arg_format = "")
 		{
 			std::vector<TypedArg<ValueType>> arg_list;
 
@@ -140,11 +143,15 @@ namespace Forward {
 
 		bool operator==(std::string_view right) const
 		{
-			return HasName() && arg_name_ == right;
+			if (!HasFormat())
+				return arg_name_ == right;
+
+			return GetParsed() == right;
 		}
 		bool operator==(TypedArg<ValueType> const& right) const
 		{
-			return arg_name_ == right.arg_name_;
+			return GetName() == right.GetName()
+				&& GetFormat() == right.GetFormat();
 		}
 
 		constexpr TypedArg(TypedArg<ValueType>&& right) noexcept

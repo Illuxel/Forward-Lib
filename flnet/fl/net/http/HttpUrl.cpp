@@ -4,12 +4,13 @@
 
 namespace Forward {
     
-    HttpUrl::HttpUrl()
-        : valid_(false) {}
+    HttpUrl::HttpUrl() {}
     HttpUrl::HttpUrl(std::string_view url)
-        : valid_(false)
     {
-        auto decoded = UrlDecodeUtf8(url);
+        if (url.empty())
+            return;
+
+        std::string decoded = UrlDecodeUtf8(url);
         SetUrl(decoded);
     }
 
@@ -20,67 +21,66 @@ namespace Forward {
         std::string copy(url.data());
         std::regex urlRegex("^(?:(https?):\\/\\/)?(?:([^\\/\\?#]+))?([^\\?#]*)(?:\\?([^#]*))?(?:#(.*))?$");
 
-        valid_ = std::regex_match(copy, match, urlRegex);
+        is_valid = std::regex_match(copy, match, urlRegex);
 
-        if (!valid_) 
-            return;
+        if (!is_valid) return;
 
-        protocol_.emplace(match[1].str());
-        domain_.emplace(match[2].str());
-        path_.emplace(match[3].str());
-        query_.emplace(match[4].str());
-        section_.emplace(match[5].str());
+        protocol_ = match[1].str();
+        domain_ = match[2].str();
+        path_ = match[3].str();
+        query_ = match[4].str();
+        section_ = match[5].str();
     }
 
     std::string HttpUrl::Protocol() const
     {
-        return protocol_.value_or("");
+        return protocol_;
     }
     std::string HttpUrl::Domain() const
     {
-        return domain_.value_or("");
+        return domain_;
     }
     std::string HttpUrl::Path() const
     {
-        return path_.value_or("");
+        return path_;
     }
     std::string HttpUrl::Section() const
     {
-        return section_.value_or("");
+        return section_;
     }
 
     HttpQuery HttpUrl::Query() const
     {
-        return HttpQuery(query_.value_or(""));
+        return HttpQuery(query_);
     }
 
     bool HttpUrl::HasProtocol() const 
     {
-        return protocol_.has_value();
+        return protocol_.empty();
     }
     bool HttpUrl::HasDomain() const 
     {
-        return domain_.has_value();
+        return domain_.empty();
     }
     bool HttpUrl::HasTarget() const 
     {
-        return path_.has_value();
+        return path_.empty();
     }
     bool HttpUrl::HasSection() const
     {
-        return section_.has_value();
+        return section_.empty();
     }
     
     bool HttpUrl::IsValid() const
     {
-        return valid_;
+        return is_valid;
     }
 
-    bool HttpUrl::IsTargetLegal(std::string_view target)
+    bool HttpUrl::IsPathLegal(std::string_view path)
     {
-        if (target.empty() ||
-            target.front() != '/' ||
-            target.find("..") != std::string_view::npos)
+        if (path.empty() ||
+            path.front() != '/' ||
+            path.find("..") != std::string_view::npos)
             return false;
         
         return true;

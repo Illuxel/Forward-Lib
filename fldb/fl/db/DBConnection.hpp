@@ -19,10 +19,10 @@ namespace Forward {
 	class DBConnection
 	{
 	private:
-		sql::Driver* driver_;
-		Scope<sql::Connection> connection_;
+		sql::Driver* driver_ = nullptr;
+		Scope<sql::Connection> connection_ = nullptr;
 
-		bool is_scheme;
+		bool is_scheme = false;
 
 		mutable std::mutex conn_mtx_;           // for connection ptr ONLY
 		mutable std::shared_mutex data_mtx_;    // for everything else
@@ -207,9 +207,11 @@ namespace Forward {
 				{
 					DBTypes::PreparedQuery query(connection_->prepareStatement(sql.data()));
 
-					//BindValue(query.get(), std::forward<Args>(args)...);
+					query.BindValue(std::forward<Args>(args)...);
 
-					result = std::move(query.Execute());
+					query.Execute();
+
+					//result = std::move(query.Execute());
 				}
 				catch (std::exception const& e)
 				{

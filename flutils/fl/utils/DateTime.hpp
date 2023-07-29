@@ -7,7 +7,7 @@
 #include <optional>
 
 namespace Forward {
-    
+   
     /**
      * Represents date time class with some feautures 
      * 
@@ -23,8 +23,11 @@ namespace Forward {
      */
     class DateTime
     {
+    public:
+        using DateTimeChrono = std::chrono::system_clock::time_point;
+
     private:
-        std::optional<std::chrono::system_clock::time_point> time_point_;
+        std::optional<DateTimeChrono> time_point_ = std::nullopt;
 
     public:
         static constexpr inline const uint32_t StartYear = 1900;
@@ -34,7 +37,7 @@ namespace Forward {
 
         DateTime();
 
-        DateTime(std::chrono::system_clock::time_point time_point);
+        DateTime(DateTimeChrono const& time_point);
         DateTime(std::string_view time, std::string_view format = DateTime::DefaultFormat);
 
         DateTime(DateTime&& right) noexcept;
@@ -84,7 +87,7 @@ namespace Forward {
          *
          * @return 
          */
-        static std::chrono::system_clock::time_point FromTmToChrono(std::tm time_info);
+        static DateTimeChrono FromTmToChrono(std::tm time_info);
         /**
          * Converts chrono time point to C tm
          * 
@@ -92,7 +95,7 @@ namespace Forward {
          * 
          * @return 
          */
-        static std::tm FromChronoToTm(std::chrono::system_clock::time_point time_point);
+        static std::tm FromChronoToTm(DateTimeChrono time_point);
 
         /**
          * HH     -  %I 12-hour format
@@ -115,12 +118,9 @@ namespace Forward {
         DateTime& operator=(DateTime&& right) noexcept;
         DateTime& operator=(DateTime const& right) noexcept;
 
-        operator std::chrono::system_clock::time_point() const
+        operator DateTimeChrono() const
         {
-            if (!IsValid())
-                return std::chrono::system_clock::time_point();
-
-            return time_point_.value();
+            return time_point_.value_or(DateTimeChrono());
         }
         operator std::tm() const
         {

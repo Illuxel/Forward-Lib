@@ -8,13 +8,10 @@ namespace Forward {
 
     DBConnection::DBConnection(sql::Driver* driver)
         : driver_(driver)
-        , is_scheme(false)
     {
     }
 
     DBConnection::DBConnection(sql::Connection* connection)
-        : driver_(nullptr)
-        , is_scheme(false)
     {
         if (!connection)
             return;
@@ -26,8 +23,6 @@ namespace Forward {
             is_scheme = true;
     }
     DBConnection::DBConnection(Scope<sql::Connection>&& connection)
-        : driver_(nullptr)
-        , is_scheme(false) 
     {
         if (!connection)
             return;
@@ -41,7 +36,6 @@ namespace Forward {
 
     DBConnection::DBConnection(sql::Driver* driver, sql::ConnectOptionsMap const& connection_opt)
         : driver_(driver)
-        , is_scheme(false)
     {
         Connect(connection_opt);
     }
@@ -50,7 +44,6 @@ namespace Forward {
         std::string_view user, 
         std::string_view password)
         : driver_(driver)
-        , is_scheme(false)
     {
         Connect(host, user, password);
     }

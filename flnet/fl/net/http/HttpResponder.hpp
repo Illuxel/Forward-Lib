@@ -1,7 +1,5 @@
 #pragma once
 
-#include "fl/utils/Flags.hpp"
-
 #include "fl/net/http/HttpRequest.hpp"
 #include "fl/net/http/HttpResponse.hpp"
 
@@ -23,7 +21,7 @@ namespace Forward {
         };
 
     private:
-        Ref<HttpRouter const> router_;
+        Ref<HttpRouter const> router_ = nullptr;
 
         BadRequest bad_request_;
         std::unordered_multimap<std::string, HandlerData> handlers_;

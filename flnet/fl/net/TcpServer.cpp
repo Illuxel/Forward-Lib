@@ -8,27 +8,23 @@ namespace Forward {
 
     TcpServer::TcpServer()
         : acceptor_(io_context_)
-        , callback_(std::nullopt)
     {
     }
 
     TcpServer::TcpServer(uint8_t io_count)
         : io_context_(io_count)
         , acceptor_(io_context_)
-        , callback_(std::nullopt)
     {
     }
     TcpServer::TcpServer(uint8_t io_count, Endpoint const& endpoint)
-        : callback_(std::nullopt)
-        , endpoint_(endpoint)
+        : endpoint_(endpoint)
         , io_context_(io_count)
         , acceptor_(io_context_)
     {
     }
 
     TcpServer::TcpServer(Endpoint const& endpoint)
-        : callback_(std::nullopt)
-        , endpoint_(endpoint)
+        : endpoint_(endpoint)
         , acceptor_(io_context_)
     {
     }

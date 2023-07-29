@@ -4,13 +4,11 @@ namespace Forward {
 
     Exception::Exception()
         : std::exception{}
-        , is_error(false) 
     {
     }
 
     Exception::Exception(std::string_view msg)
         : std::exception{}
-        , is_error(true)
     {
         msg_ = msg;
     }

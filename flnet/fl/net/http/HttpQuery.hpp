@@ -10,8 +10,8 @@ namespace Forward {
     class HttpQuery
     {
     private:
-        bool is_valid;
-        std::optional<std::unordered_map<std::string, std::string>> params_;
+        std::unordered_map<std::string, std::string> params_;
+        bool is_valid = false;
 
     public:
         HttpQuery();
@@ -25,11 +25,9 @@ namespace Forward {
         std::vector<std::string> Keys() const;
 
         std::string ToString() const;
+        std::vector<StringArg> ToArgs(std::string_view arg_format = "") const;
 
-        std::vector<StringArg> ToArgs() const;
-        std::vector<StringArg> ToArgs(char specifier) const;
-
-        size_t Size() const;
+        uint64_t Size() const;
 
         bool IsValid() const;
 

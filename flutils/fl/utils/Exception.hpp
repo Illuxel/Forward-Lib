@@ -11,8 +11,8 @@ namespace Forward {
     class Exception : public std::exception
     {
     private:
-        bool is_error;
         std::string msg_;
+        bool is_error = false;
 
         mutable std::shared_mutex mtx_;
 

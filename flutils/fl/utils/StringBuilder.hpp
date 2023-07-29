@@ -7,7 +7,7 @@ namespace Forward {
     class StringBuilder
     {
     private:
-        std::optional<std::string> result_;
+        std::optional<std::string> result_ = std::nullopt;
 
     public:
         StringBuilder();
@@ -66,7 +66,7 @@ namespace Forward {
         }
         operator std::string const&() const&
         {
-            return result_.value_or("");
+            return result_.value();
         }
 
     private:

@@ -15,7 +15,7 @@ namespace Forward {
             std::string Name;
             std::thread::id ThreadID;
 
-            bool IsSeparate;
+            bool IsSeparate = false;
 
             Info();
             Info(std::string_view db_name, bool is_separate = false);
@@ -42,7 +42,7 @@ namespace Forward {
         };
 
     private:
-        sql::Driver* driver_;
+        sql::Driver* driver_ = nullpyt;
         std::unordered_map<Database::Info, Ref<DBConnection>, Database::Info::Hash> conn_pool_;
 
         mutable std::shared_mutex conn_pool_mtx_;

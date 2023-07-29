@@ -6,7 +6,7 @@
 
 namespace Forward {
 
-    HttpResponse DefaultBadRequestCallBack(http::request<http::string_body> const& req, http::status status)
+    HttpResponse DefaultBadRequestCallback(http::request<http::string_body> const& req, http::status status)
     {
         http::response<http::string_body> res(status, req.version());
 
@@ -19,7 +19,7 @@ namespace Forward {
         return std::move(res);
     }
 
-    void LoadWebPageContent(std::string const& path, http::response<http::file_body>& res, beast::error_code ec)
+    void LoadWebPageContent(std::string_view path, http::response<http::file_body>& res, beast::error_code& ec)
     {   
         http::file_body::value_type body;
         body.open(path.c_str(), beast::file_mode::scan, ec);
@@ -36,12 +36,12 @@ namespace Forward {
 
     HttpResponder::HttpResponder()
     {
-        bad_request_ = DefaultBadRequestCallBack;
+        bad_request_ = DefaultBadRequestCallback;
     }
     HttpResponder::HttpResponder(Ref<HttpRouter const> const& router)
         : router_(router) 
     {
-        bad_request_ = DefaultBadRequestCallBack;
+        bad_request_ = DefaultBadRequestCallback;
     }
 
     void HttpResponder::AddRouteHandler(HttpResponder::HandlerData const& data)
@@ -154,7 +154,7 @@ namespace Forward {
             if (is_content)
                 path = router_->GetContentFilePath(target);
 
-            beast::error_code ec;
+            sys::error_code ec;
 
             LoadWebPageContent(path, resFile, ec);
 

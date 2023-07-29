@@ -7,8 +7,8 @@ namespace Forward {
     class HttpUrl
     {
     private:
-        bool valid_;
-        std::optional<std::string> protocol_, domain_, path_, query_, section_;
+        std::string protocol_, domain_, path_, query_, section_;
+        bool is_valid = false;
 
     public:
         HttpUrl();
@@ -30,7 +30,7 @@ namespace Forward {
 
         bool IsValid() const;
         
-        static bool IsTargetLegal(std::string_view target);
+        static bool IsPathLegal(std::string_view path);
     };
 
 } // namespace Forward

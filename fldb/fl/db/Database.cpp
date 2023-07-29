@@ -5,8 +5,6 @@
 namespace Forward {
 
     Database::Info::Info()
-        : Name("")
-        , IsSeparate(false)
     {
         ThreadID = std::this_thread::get_id();
     }
@@ -20,9 +18,7 @@ namespace Forward {
     bool Database::Info::operator==(Database::Info const& right) const
     {
         if (!IsSeparate)
-        {
             return Name == right.Name;
-        }
 
         return ThreadID == right.ThreadID
             && Name == right.Name

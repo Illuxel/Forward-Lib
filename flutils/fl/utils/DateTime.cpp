@@ -1,6 +1,4 @@
 #include "fl/utils/DateTime.hpp"
-using namespace std::chrono;
-
 #include "fl/utils/StringBuilder.hpp"
 
 #include <iomanip>
@@ -9,18 +7,17 @@ using namespace std::chrono;
 namespace Forward {
 
     DateTime::DateTime()
-        : time_point_(std::nullopt)
     {
+        using std::chrono::system_clock;
+
         time_point_.emplace(system_clock::now());
     }
 
-    DateTime::DateTime(std::chrono::system_clock::time_point time_point)
-        : time_point_(std::nullopt)
+    DateTime::DateTime(DateTimeChrono const& time_point)
     {
         time_point_.emplace(time_point);
     }
     DateTime::DateTime(std::string_view time, std::string_view format)
-        : time_point_(std::nullopt)
     {
         *this = FromString(time, format);
     }
@@ -58,6 +55,9 @@ namespace Forward {
 
     uint8_t DateTime::Seconds() const
     {
+        using std::chrono::seconds;
+        using std::chrono::duration_cast;
+
         if (!IsValid())
             return 0;
 
@@ -66,6 +66,9 @@ namespace Forward {
     }
     uint8_t DateTime::Minutes() const
     {
+        using std::chrono::minutes;
+        using std::chrono::duration_cast;
+
         if (!IsValid())
             return 0;
 
@@ -74,6 +77,9 @@ namespace Forward {
     }
     uint8_t DateTime::Hours() const
     {
+        using std::chrono::hours;
+        using std::chrono::duration_cast;
+
         if (!IsValid())
             return 0;
 
@@ -124,18 +130,22 @@ namespace Forward {
         if (ss.fail())
             return DateTime();
 
-        system_clock::time_point time_point = FromTmToChrono(time_info);
+        DateTimeChrono time_point = FromTmToChrono(time_info);
 
         return DateTime(time_point);
     }
 
-    system_clock::time_point DateTime::FromTmToChrono(std::tm time_info)
+    DateTime::DateTimeChrono DateTime::FromTmToChrono(std::tm time_info)
     {
+        using std::chrono::system_clock;
+
         time_t time = std::mktime(&time_info);
         return system_clock::from_time_t(time);
     }
-    std::tm DateTime::FromChronoToTm(system_clock::time_point time_point)
+    std::tm DateTime::FromChronoToTm(DateTimeChrono time_point)
     {
+        using std::chrono::system_clock;
+
         time_t time = system_clock::to_time_t(time_point);
         return *std::localtime(&time);
     }
@@ -163,7 +173,7 @@ namespace Forward {
 
         return time_point_.value() == right.time_point_.value();
     }
-    bool DateTime::operator==(std::chrono::system_clock::time_point const& right) const
+    bool DateTime::operator==(DateTimeChrono const& right) const
     {
         if (!IsValid())
             return false;

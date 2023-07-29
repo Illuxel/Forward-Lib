@@ -17,9 +17,9 @@ namespace Forward {
         net::io_context io_context_;
 
         Endpoint endpoint_;
-        std::optional<OnAccept> callback_;
+        std::optional<OnAccept> callback_ = std::nullopt;
 
-        bool is_listening;
+        bool is_listening = false;
 
     public:
         TcpServer();
