@@ -75,7 +75,8 @@ namespace Forward {
 
     static constexpr inline const char* CreateSubTypeString(MimeType::SubType sub_type)
     {
-        throw Exception("Specified unknown mime subtype");
+        //throw Exception("Specified unknown mime subtype");
+        return nullptr;
     }
 
     MimeType::MimeType()
