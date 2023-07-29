@@ -64,19 +64,19 @@ namespace Forward {
 
 		constexpr ValueType const& GetData() const&
 		{
-			return arg_value_.value_or(ValueType());
+			return arg_value_.value();
 		}
 		constexpr ValueType& GetData() &
 		{
-			return arg_value_.value_or(ValueType());
+			return arg_value_.value();
 		}
 		constexpr ValueType&& GetData() &&
 		{
-			return arg_value_.value_or(ValueType());
+			return std::move(arg_value_.value());
 		}
-		constexpr ValueType&& GetData() const&&
+		constexpr ValueType const&& GetData() const&&
 		{
-			return arg_value_.value_or(ValueType());
+			return std::move(arg_value_.value());
 		}
 
 		/**
