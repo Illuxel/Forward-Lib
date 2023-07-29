@@ -22,15 +22,15 @@ namespace Forward {
 
             bool operator==(Database::Info const& right) const;
 
-            operator bool() const&
+            explicit operator bool() const& noexcept
             {
                 return IsSeparate;
             }
-            operator std::string() const&
+            operator std::string() const& noexcept
             {
                 return Name;
             }
-            operator std::thread::id() const&
+            operator std::thread::id() const& noexcept
             {
                 return ThreadID;
             }
