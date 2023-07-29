@@ -28,6 +28,8 @@ set(FLUTILS_INCLUDE
     fl/utils/MimeType.hpp
 
     fl/utils/Timer.hpp
+
+    fl/utils/LoggerStream.hpp
     fl/utils/Logger.hpp
     fl/utils/Log.hpp
 )
@@ -43,6 +45,7 @@ set(FLUTILS_SOURCE
     fl/utils/DateTime.cpp
     fl/utils/MimeType.cpp
 
+    fl/utils/LoggerStream.cpp
     fl/utils/Logger.cpp
     fl/utils/Log.cpp
 )

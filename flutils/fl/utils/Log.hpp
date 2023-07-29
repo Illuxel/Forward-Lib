@@ -1,9 +1,8 @@
 #pragma once
 
-#include "fl/utils/Memory.hpp"
 #include "fl/utils/Logger.hpp"
+#include "fl/utils/Memory.hpp"
 
-#include <iostream>
 #include <unordered_map>
 
 namespace Forward {
@@ -11,27 +10,36 @@ namespace Forward {
 	class Log
 	{
     private:
-		static std::unordered_map<std::string, Ref<Logger>> logs_;
+		std::shared_mutex pool_mtx_;
+		std::unordered_map<std::string, Ref<Logger>> pool_;
 
 	public:
-		Log(Log const&) = delete;
-		Log(Log&&) = delete;
+		static Ref<Logger> Get(std::string_view log_name = "");
 
-		static Ref<Logger> Get(std::string_view name = "");
-
-		static void Innit(std::string_view name = "");
-		static void Remove(std::string_view name);
+		static void Init(std::string_view log_name = "");
+		static void Remove(std::string_view log_name = "");
 	
+		Log(Log&&) = delete;
+		Log(Log const&) = delete;
+
+	private: 
+		Log();
+
+		static Log& Instance();
 	};
 }
 
-void printInfo(std::string const& call, std::string const& msg);
+template<typename T>
+void PrintInfo(std::string const& call, T const& msg) 
+{
+	std::cout << msg << std::endl;
+}
 
 #define FL_LOG(call, msg) \
-	printInfo(call, msg)
+	PrintInfo(call, msg)
 
 #define FL_ERR(call, msg) \
-	printInfo(call, msg); \
+	PrintInfo(call, msg); \
 	throw Exception(msg)
 
 	//Forward::Log::Get()->Log(Forward::Logger::Level::level, __FUNCTION__, __VA_ARGS__); 
