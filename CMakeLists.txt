@@ -145,30 +145,24 @@ install(TARGETS flapi client
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(FILES ${FL_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/forward)
-install(FILES ${FLCLIENT_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/api)
- 
 install(EXPORT fl-targets
     FILE fl-targets.cmake
     NAMESPACE ${namespace}::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fl
 )
 
+install(FILES ${FL_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/forward)
+install(FILES ${FLCLIENT_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/api)
+ 
 #--------------< Package version >--------------#
 
 include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/fl-config-version.cmake
+write_basic_package_version_file(fl-config-version.cmake
     VERSION ${ForwardLib_VERSION}
     COMPATIBILITY ExactVersion
 )
-
-install(
-    FILES
-        fl-config.cmake
-        fl-config-version.cmake
-    DESTINATION 
-        ${CMAKE_INSTALL_LIBDIR}/cmake/fl
+install(FILES cmake/fl-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/fl-config-version.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fl
 )
 
 set_target_properties(flapi 
