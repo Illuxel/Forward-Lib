@@ -1,3 +1,4 @@
+add_subdirectory(flib_sqlite3)
 add_subdirectory(jwt-cpp)
 
 if (FL_ENABLE_TESTING)

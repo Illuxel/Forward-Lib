@@ -18,6 +18,23 @@ endif()
 
 #--------------< Vars >--------------#
 
+set(SQLITE3_PRIVATE_INCLUDE
+
+)
+set(SQLITE3_PRIVATE_SOURCE
+    ${SQLITE3_PRIVATE_INCLUDE}
+
+)
+
+set(MYSQL_PRIVATE_INCLUDE
+    fl/db/private/mysql/DriverLock.hpp
+)
+set(MYSQL_PRIVATE_SOURCE
+    ${MYSQL_PRIVATE_INCLUDE}
+
+    fl/db/private/mysql/DriverLock.cpp
+)
+
 set(FLDB_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/db)
 set(FLDB_INCLUDE 
 
@@ -39,16 +56,11 @@ set(FLDB_SOURCE
     fl/db/Database.cpp
 )
 
-set(FLDB_PRIVATE_INCLUDE
-    fl/db/private/mysql/DriverLock.hpp
+add_library(db STATIC 
+    ${FLDB_SOURCE} 
+    ${MYSQL_PRIVATE_SOURCE}
+    ${SQLITE3_PRIVATE_SOURCE}
 )
-set(FLDB_PRIVATE_SOURCE
-    ${FLDB_PRIVATE_INCLUDE}
-
-    fl/db/private/mysql/DriverLock.cpp
-)
-
-add_library(db STATIC ${FLDB_SOURCE} ${FLDB_PRIVATE_SOURCE})
 
 target_include_directories(db
 PUBLIC 
@@ -57,21 +69,22 @@ PUBLIC
 
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 PRIVATE
-    ${FLDB_PRIVATE_SOURCE}
+    ${MYSQL_PRIVATE_INCLUDE}
+    ${SQLITE3_PRIVATE_INCLUDE}
 )
 target_link_libraries(db
 PRIVATE
     OpenSSL::Crypto
     OpenSSL::SSL    
-    Boost::system
+
     ${MYSQL_LIB}
     ${MYSQL_CPPCONN_LIB}
 PUBLIC
+    SqLite3::SqLite3
     Fl::utils
 )
 
-install(TARGETS db 
-    EXPORT fl-targets
+install(TARGETS db EXPORT fl-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
