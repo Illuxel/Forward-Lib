@@ -10,7 +10,7 @@ option(FL_ENABLE_TESTING "Enabling testing, will add google test feautures in C+
 option(FL_ENABLE_EXAMPLES "Enabling benchmarking, will add google benchmark feautures in C++" ON)
 option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" ON)
 
-option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
+# option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -36,7 +36,7 @@ if(NOT TARGET OPENSSL)
     find_package(OpenSSL 1.1.1 REQUIRED)
 endif()
 
-if(NOT Boost_FOUND)
+if(NOT Boost)
 
     if (WIN32)
         list(APPEND CMAKE_PREFIX_PATH $ENV{BOOST})
@@ -56,8 +56,6 @@ endif()
 
 include(cmake/cxx-common.cmake)
 include(GNUInstallDirs)
-
-add_subdirectory(vendor)
 
 set(namespace Fl)
 
@@ -86,6 +84,10 @@ set(FLCLIENT_SOURCE
 
     fl/forward/Client.cpp
 )
+
+#--------------< External dependencies >--------------#
+
+add_subdirectory(vendor)
 
 #--------------< Including sublibs >--------------#
 
@@ -124,6 +126,8 @@ PUBLIC
 )
 target_link_libraries(client PUBLIC ${namespace}::flapi)
 
+#--------------< Building tests and examples >--------------#
+
 if (FL_ENABLE_EXAMPLES)
     add_subdirectory(examples)
 endif()
@@ -150,18 +154,9 @@ install(EXPORT fl-targets
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fl
 )
 
-#--------------< Configuration File >--------------#
-
-include(CMakePackageConfigHelpers)
-
-configure_package_config_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fl-config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/fl-config.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fl
-)
-
 #--------------< Package version >--------------#
 
+include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
     ${CMAKE_CURRENT_BINARY_DIR}/fl-config-version.cmake
     VERSION ${ForwardLib_VERSION}
@@ -170,15 +165,10 @@ write_basic_package_version_file(
 
 install(
     FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/fl-config.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/fl-config-version.cmake
+        fl-config.cmake
+        fl-config-version.cmake
     DESTINATION 
         ${CMAKE_INSTALL_LIBDIR}/cmake/fl
-)
-
-export(EXPORT fl-targets
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/cmake/fl-targets.cmake
-    NAMESPACE ${namespace}::
 )
 
 set_target_properties(flapi 
