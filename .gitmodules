@@ -7,3 +7,6 @@
 [submodule "vendor/jwt-cpp"]
 	path = vendor/jwt-cpp
 	url = https://github.com/Thalhammer/jwt-cpp.git
+[submodule "vendor/sqlite3-cmake"]
+	path = vendor/sqlite3-cmake
+	url = https://github.com/EEdle506/sqlite3-cmake.git
