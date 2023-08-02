@@ -108,10 +108,10 @@ namespace Forward {
         acceptor_.async_accept(
             net::make_strand(io_context_),
             boost::beast::bind_front_handler(
-                &TcpServer::CheckSocketError,
+                &TcpServer::HandleSocketError,
                 shared_from_this()));
     }
-    void TcpServer::CheckSocketError(sys::error_code ec, tcp::socket socket)
+    void TcpServer::HandleSocketError(sys::error_code ec, tcp::socket socket)
     {
         if (ec)
         {
@@ -122,7 +122,7 @@ namespace Forward {
         if (callback_.has_value())
             callback_.value()(ec, std::move(socket));
         else 
-            OnSocketAccept(ec, std::move(socket));
+            this->OnSocketAccept(ec, std::move(socket));
 
         DoSocketAccept();
     }

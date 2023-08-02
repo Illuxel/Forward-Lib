@@ -48,18 +48,20 @@ namespace Forward {
     {
         if (!router_) 
         {
-            handlers_.emplace(data.Target, std::move(data));
-            return;
+            handlers_.emplace(data.Target, data);
         }
-
-        handlers_.emplace(
-            router_->GetPreparedTarget(data.Target),
-            std::move(data)
-        );
+        else 
+        {
+            handlers_.emplace(
+                router_->GetPreparedTarget(data.Target),
+                data
+            );
+        }
     }
 
     void HttpResponder::SetBadHandler(BadRequest const& method)
     {
+        std::unique_lock lock(res_mtx_);
         bad_request_ = method;
     }
 
@@ -70,8 +72,8 @@ namespace Forward {
         if (!url.IsValid())
             return bad_request_(req, http::status::bad_request);
 
-        auto target = url.Path();
-        auto method = req.Base().method();
+        std::string target = url.Path();
+        http::verb method = req.base().method();
         
         if (!HttpUrl::IsPathLegal(target))
             return bad_request_(req, http::status::bad_request);
@@ -79,12 +81,14 @@ namespace Forward {
         // without router 
         if (!router_)
         {
-            HttpResponse res(http::status::ok, req.Base().version());
-            res.Base().keep_alive(req.Base().keep_alive());
-            res.Base().set(http::field::server, BOOST_BEAST_VERSION_STRING);
+            HttpResponse res(http::status::ok, req.base().version());
+            res.base().keep_alive(req.base().keep_alive());
+            res.base().set(http::field::server, BOOST_BEAST_VERSION_STRING);
 
-            auto const& handler_it = std::find_if(handlers_.begin(), handlers_.end(), 
-            [&target, &method](std::pair<std::string, HandlerData> const& pair)
+            std::shared_lock lock(res_mtx_);
+
+            auto const& handler_it = std::find_if(handlers_.cbegin(), handlers_.cend(), 
+            [target, method](std::pair<std::string, HandlerData> const& pair)
             {
                 HandlerData const& handler = pair.second;
                 std::string handler_target = pair.first;
@@ -97,7 +101,7 @@ namespace Forward {
                 return false;
             });
 
-            if (handler_it == handlers_.end())
+            if (handler_it == handlers_.cend())
                 return bad_request_(req, http::status::not_found);
 
             auto const& handler = *handler_it->second.Callback;
@@ -115,7 +119,7 @@ namespace Forward {
         if (!is_target && !is_content)
             return bad_request_(req, http::status::not_found);
 
-        auto const& only_target_it = std::find_if(handlers_.begin(), handlers_.end(),
+        auto const& only_target_it = std::find_if(handlers_.cbegin(), handlers_.cend(),
         [&is_target, &method](std::pair<std::string, HandlerData> const& pair)
         {
             auto const& h_method = pair.second.Method;
@@ -135,13 +139,13 @@ namespace Forward {
             return false;
         });
 
-        bool is_only_target = only_target_it != handlers_.end();
+        bool is_only_target = only_target_it != handlers_.cend();
 
         if (is_only_target || is_content)
         {
-            http::response<http::file_body> resFile(http::status::ok, req.Base().version());
+            http::response<http::file_body> resFile(http::status::ok, req.base().version());
 
-            resFile.keep_alive(req.Base().keep_alive());
+            resFile.keep_alive(req.base().keep_alive());
             resFile.set(http::field::server, BOOST_BEAST_VERSION_STRING);
                         
             std::string path;
@@ -167,7 +171,7 @@ namespace Forward {
 
         // section where only callback
 
-        auto const& only_handler_it = std::find_if(handlers_.begin(), handlers_.end(), 
+        auto const& only_handler_it = std::find_if(handlers_.cbegin(), handlers_.cend(), 
         [&prep_target, &method](std::pair<std::string, HandlerData> const& pair)
         {
             auto const& h_method = pair.second.Method;
@@ -182,18 +186,18 @@ namespace Forward {
             return false;
         });
 
-        bool is_only_handler = only_handler_it != handlers_.end();
+        bool is_only_handler = only_handler_it != handlers_.cend();
 
         if (!is_only_handler)
             return bad_request_(req, http::status::internal_server_error);
 
         auto const& handler = *only_handler_it->second.Callback;
 
-        HttpResponse res(http::status::ok, req.Base().version());
-        res.Base().keep_alive(req.Base().keep_alive());
-        res.Base().set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        HttpResponse res(http::status::ok, req.base().version());
+        res.base().keep_alive(req.base().keep_alive());
+        res.base().set(http::field::server, BOOST_BEAST_VERSION_STRING);
         res = handler(req, std::move(res));
-        res.Base().prepare_payload();
+        res.base().prepare_payload();
 
         return res;
     }

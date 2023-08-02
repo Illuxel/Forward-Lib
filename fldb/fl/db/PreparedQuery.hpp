@@ -7,7 +7,7 @@
 namespace Forward::DBTypes {
 
 	template<class Type>
-	static constexpr void SetQueryArg(sql::PreparedStatement* query, uint32_t column, Type value)
+	static constexpr void SetQueryArg(sql::PreparedStatement* query, uint32_t index, Type value)
 	{
 		if (!query)
 			throw std::runtime_error("Query is not initialized");
@@ -15,38 +15,41 @@ namespace Forward::DBTypes {
 		if constexpr (std::is_same<Type, std::istream*>) {
 
 			if constexpr (std::is_pointer<Type>) {
-				query->setBlob(column, value);
+				query->setBlob(index, value);
 			}
 		}
 		else if constexpr (std::is_same<Type, std::string>) {
-			query->setString(column, value);
+			query->setString(index, value);
 		}
 		else if constexpr (std::is_same<Type, char const*>) {
-			query->setString(column, value);
+			query->setString(index, value);
 		}
 		else if constexpr (std::is_same<Type, std::string_view) {
-			query->setString(column, value.data());
+			query->setString(index, value.data());
+		}
+		else if constexpr (std::is_same <Type, Datetime) {
+			query->setString(index, value.data());
 		}
 		else if constexpr (std::is_same<Type, DateTime>) {
-			query->setString(column, value);
+			query->setString(index, value.ToString());
 		}
 		else if constexpr (std::is_same<Type, bool>) {
-			query->setBoolean(column, value);
+			query->setBoolean(index, value);
 		}
 		else if constexpr (std::is_same<Type, double>) {
-			query->setDouble(column, value);
+			query->setDouble(index, value);
 		}
 		else if constexpr (std::is_same<Type, int32_t>) {
-			query->setInt(column, value);
+			query->setInt(index, value);
 		}
 		else if constexpr (std::is_same<Type, uint32_t>) {
-			query->setUInt(column, value);
+			query->setUInt(index, value);
 		}
 		else if constexpr (std::is_same<Type, int64_t>) {
-			query->setInt64(column, value);
+			query->setInt64(index, value);
 		}
 		else if constexpr (std::is_same<Type, uint64_t>) {
-			query->setUInt64(column, value);
+			query->setUInt64(index, value);
 		}
 		else {
 			throw std::runtime_error("Unsupported type");
@@ -55,9 +58,6 @@ namespace Forward::DBTypes {
 
 	class PreparedQuery : public Query
 	{
-	private:
-		uint32_t bind_val_;
-
 	public:
 		PreparedQuery();
 		PreparedQuery(sql::PreparedStatement* statement);
@@ -66,15 +66,18 @@ namespace Forward::DBTypes {
 		virtual ~PreparedQuery() override;
 
 		template <class ...Args>
-		void BindValue(Args&& ...args)
+		constexpr void BindValue(Args&& ...args)
 		{
 
+			
+
+			//(SetQueryArg(std::forward(args)), ...);
 		}
+
 		template <class Type>
-		void BindValue(uint32_t index, Type value)
+		constexpr void BindValue(uint32_t index, Type value)
 		{
 			
 		}
-
 	};
 }

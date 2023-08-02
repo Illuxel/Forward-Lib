@@ -3,6 +3,7 @@
 namespace Forward {
 
 	Log::Log() {}
+	Log::~Log() {}
 
 	Log& Log::Instance() 
 	{
@@ -37,16 +38,16 @@ namespace Forward {
 	void Log::Remove(std::string_view log_name)
 	{
 		Log& log = Log::Instance();
+		Ref<Logger> logger = Log::Get(log_name);
 
-		auto const& it = log.pool_.find(log_name.data());
-
-		if (it != log.pool_.end())
+		if (!logger)
 			return;
 
-		auto const name = it->first;
-		auto& logger = it->second;
+		{
+			std::shared_lock lock(log.pool_mtx_);
+			log.pool_.erase(log_name.data());
+		}
 
-		log.pool_.erase(name);
 		logger.reset();
 	}
 }

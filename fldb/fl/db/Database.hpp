@@ -50,8 +50,6 @@ namespace Forward {
         explicit Database();
 
     public:
-        ~Database();
-
         /**
          * Call MySQL API driver. This is safe function
          *
@@ -154,6 +152,8 @@ namespace Forward {
          * @param db_name database connection tag
          */
         static void CloseAll(std::string_view db_name);
+
+        ~Database();
 
         Database(Database&&) = delete;
         Database(Database const&) = delete;

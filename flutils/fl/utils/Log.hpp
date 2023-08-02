@@ -1,9 +1,9 @@
 #pragma once
 
-#include "fl/utils/Logger.hpp"
-#include "fl/utils/Memory.hpp"
-
 #include <unordered_map>
+
+#include "fl/utils/Memory.hpp"
+#include "fl/utils/Logger.hpp"
 
 namespace Forward {
 
@@ -14,16 +14,21 @@ namespace Forward {
 		std::unordered_map<std::string, Ref<Logger>> pool_;
 
 	public:
+
 		static Ref<Logger> Get(std::string_view log_name = "");
 
 		static void Init(std::string_view log_name = "");
 		static void Remove(std::string_view log_name = "");
 	
+		static std::vector <std::string> LogNames();
+
+		~Log();
+
 		Log(Log&&) = delete;
 		Log(Log const&) = delete;
 
 	private: 
-		Log();
+		explicit Log();
 
 		static Log& Instance();
 	};
@@ -32,6 +37,9 @@ namespace Forward {
 template<typename T>
 void PrintInfo(std::string const& call, T const& msg) 
 {
+	static std::mutex out_mtx_;
+
+	std::lock_guard lock(out_mtx_);
 	std::cout << msg << std::endl;
 }
 

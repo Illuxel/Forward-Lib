@@ -10,7 +10,7 @@ namespace Forward::DBTypes {
 	{
 	protected:
 		Exception query_ec_;
-		Scope<sql::Statement> query_data_;
+		Scope<sql::Statement> query_data_ = nullptr;
 
 	public:
 		Query();

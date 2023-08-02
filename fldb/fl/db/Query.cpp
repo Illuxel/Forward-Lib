@@ -2,22 +2,14 @@
 
 namespace Forward::DBTypes {
 
-	Query::Query()
-		: query_data_(nullptr)
-	{
-	}
+	Query::Query() {}
 	Query::Query(sql::Statement* statement)
-		: query_data_(statement)
-	{
-	}
+		: query_data_(statement) {}
 	Query::Query(Scope<sql::Statement>&& statement)
-		: query_data_(nullptr)
 	{
 		query_data_ = std::move(statement);
 	}
-	Query::~Query()
-	{
-	}
+	Query::~Query() {}
 
 	void Query::SetQuery()
 	{

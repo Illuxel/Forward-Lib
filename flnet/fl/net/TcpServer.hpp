@@ -57,6 +57,6 @@ namespace Forward {
 
     private:
         void DoSocketAccept();
-        void CheckSocketError(sys::error_code ec, tcp::socket socket);
+        void HandleSocketError(sys::error_code ec, tcp::socket socket);
     };
 } // namespace Forward

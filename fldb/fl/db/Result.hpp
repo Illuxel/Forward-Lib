@@ -18,7 +18,7 @@ namespace Forward::DBTypes {
 		if constexpr (std::is_same<Type, std::istream*>::value) {
 			return result->getBlob(column);
 		}
-		// Text to DB
+		// Text
 		else if constexpr (std::is_same<Type, char const*>::value) {
 			return result->getString(column);
 		}
@@ -55,30 +55,30 @@ namespace Forward::DBTypes {
 	class Result
 	{
 	private:
-		Scope<sql::ResultSet> result_;
+		Scope<sql::ResultSet> result_ = nullptr;
 
 	public:
 		Result();
 		Result(sql::ResultSet* result);
 		Result(Scope<sql::ResultSet>&& right);
 
-		Result(Result&& result);
+		Result(Result&& result) noexcept;
 		Result& operator=(Result&& right) noexcept;
 
 		template<class Type>
-		Type Get(uint32_t column) const
+		constexpr Type Get(uint32_t column) const
 		{
 			if (column == 0)
 				throw std::invalid_argument("Invalid column name");
 
 			if (IsEmpty())
 				throw std::runtime_error("Query result is empty");
-
+			
 			return GetResultFromType<Type>(result_.get(), column);
 		}
 
 		template<class Type>
-		std::optional<Type> Get(std::string_view column) const
+		constexpr Type Get(std::string_view column) const
 		{
 			int column = result_->findColumn(column.data());
 			return Get<Type>(column);
@@ -90,7 +90,7 @@ namespace Forward::DBTypes {
 		bool IsValid() const;
 		bool IsEmpty() const;
 
-		operator bool() const
+		explicit operator bool() const
 		{
 			return IsEmpty();
 		}
