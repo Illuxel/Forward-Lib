@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 project(ForwardLib 
     VERSION 0.0.1
