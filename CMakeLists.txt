@@ -35,7 +35,7 @@ if(NOT TARGET OPENSSL)
     find_package(OpenSSL 1.1.1 REQUIRED)
 endif()
 
-if(NOT Boost_FOUND)
+if(NOT TARGET Boost)
 
     if (WIN32)
         list(APPEND CMAKE_PREFIX_PATH $ENV{BOOST})
@@ -49,7 +49,7 @@ if(NOT Boost_FOUND)
     set(Boost_USE_RELEASE_LIBS ON)
     set(Boost_USE_MULTITHREADED ON)
 
-    find_package(Boost 1.81 REQUIRED system json COMPONENTS)
+    find_package(Boost REQUIRED system json COMPONENTS)
 
 endif()
 
