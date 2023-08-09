@@ -36,8 +36,12 @@ namespace Forward {
             router_->RegisterContent(folder);
     }
 
-    void HttpServer::OnSocketAccept(sys::error_code ec, tcp::socket socket)
+    void HttpServer::OnSocketError(sys::error_code ec)
     {
-        SslServer::OnSocketAccept(ec, std::move(socket));
+
+    }
+    void HttpServer::OnSocketAccept(tcp::socket socket)
+    {
+
     }
 }

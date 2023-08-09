@@ -3,36 +3,21 @@
 
 namespace Forward {
 
-    SslServer::SslServer(ssl::context::method method)
+    SslServer::SslServer(
+        ssl::context::method method, 
+        uint8_t io_count
+    )
         : SecureLayer(method)
-        , TcpServer()
+        , TcpServer(io_count)
     {
+
     }
 
-    SslServer::SslServer(ssl::context::method method, uint8_t io_count)
-        : SecureLayer(method)
-        , TcpServer()
-        , io_count_(io_count)
+    void SslServer::OnSocketError(sys::error_code ec)
     {
-        io_sessions_.reserve(io_count_);
+
     }
-
-    void SslServer::Listen(sys::error_code& ec)
-    {
-        TcpServer::Listen(ec);
-
-        for (auto i = 0; i < io_count_; ++i)
-        {
-            io_sessions_.emplace_back(
-            [this]() {
-                this->GetContext().run();
-            });
-        }
-
-        this->GetContext().run();
-    }
-
-    void SslServer::OnSocketAccept(sys::error_code ec, tcp::socket socket)
+    void SslServer::OnSocketAccept(tcp::socket socket)
     {
 
     }

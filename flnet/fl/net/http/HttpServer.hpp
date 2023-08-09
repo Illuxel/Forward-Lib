@@ -7,7 +7,7 @@
 
 namespace Forward {
 
-    class HttpServer : public SslServer
+    class HttpServer final : public SslServer
     {
     private:
         Ref<HttpRouter> router_;
@@ -16,8 +16,8 @@ namespace Forward {
         Ref<HttpResponder> responder_;
 
     public:
-        HttpServer(net::ssl::context::method method, uint8_t io_count);
-        HttpServer(std::string_view web_dir, net::ssl::context::method method, uint8_t io_count);
+        HttpServer(net::ssl::context::method method, uint8_t io_count = 1);
+        HttpServer(std::string_view web_dir, net::ssl::context::method method, uint8_t io_count = 1);
 
         void SetBadRequest(HttpResponder::BadRequest const& handler);
         void SetContentFolders(std::vector<std::string> const& folders);
@@ -25,19 +25,20 @@ namespace Forward {
         template<typename ...Args>
         constexpr void Route(Args&& ...args) 
         {
-            HttpResponder::HandlerData data {std::forward<Args>(args)...};
+            HttpResponder::RouteHandler handler {std::forward<Args>(args)...};
 
-            if (!data.Target.empty())
+            if (!handler.Target.empty())
                 if (router_)
-                    router_->RegisterRoute(data.Target);
+                    router_->RegisterRoute(handler.Target);
 
-            if (!data.Target.empty()
-                || data.Method.has_value()
-                && data.Callback.has_value())
-                responder_->AddRouteHandler(data);
+            if (!handler.Target.empty()
+                || handler.Method.has_value()
+                && handler.Callback.has_value())
+                responder_->AddRouteHandler(handler);
         }
 
     protected:
-        virtual void OnSocketAccept(sys::error_code ec, tcp::socket socket) override;
+        virtual void OnSocketError(sys::error_code ec) override;
+        virtual void OnSocketAccept(tcp::socket socket) override;
     };
 }

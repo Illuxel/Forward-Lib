@@ -6,66 +6,27 @@
 
 namespace Forward {
 
-    TcpServer::TcpServer()
-        : acceptor_(io_context_)
-    {
-    }
-
     TcpServer::TcpServer(uint8_t io_count)
         : io_context_(io_count)
         , acceptor_(io_context_)
     {
     }
-    TcpServer::TcpServer(uint8_t io_count, Endpoint const& endpoint)
-        : endpoint_(endpoint)
-        , io_context_(io_count)
-        , acceptor_(io_context_)
-    {
-    }
 
-    TcpServer::TcpServer(Endpoint const& endpoint)
-        : endpoint_(endpoint)
-        , acceptor_(io_context_)
-    {
-    }
-    TcpServer::TcpServer(Endpoint const& endpoint, OnAccept const& callback)
-        : endpoint_(endpoint) 
-        , acceptor_(io_context_)
-    {
-        SetCallback(callback);
-    }
-
-    void TcpServer::SetEndpoint(Endpoint const& endpoint)
-    {
-        endpoint_ = endpoint;
-    }
-    void TcpServer::SetCallback(OnAccept const& callback)
-    {
-        callback_.emplace(callback);
-    }
-
-    net::io_context& TcpServer::GetContext()
-    {
-        return io_context_;
-    }
-
-    void TcpServer::Listen()
+    void TcpServer::Listen(Endpoint const& endpoint)
     {
         sys::error_code ec;
-
-        Listen(ec);
-        FL_LOG("Listener", ec);
+        Listen(endpoint, ec);
     }
-    void TcpServer::Listen(sys::error_code& ec)
+    void TcpServer::Listen(Endpoint const& endpoint, sys::error_code& ec)
     {
         if (IsListening())
         {
-            FL_LOG("Listener", "Already listening");
+            FL_LOG("Listener", "already listening");
             return;
         }
 
         // Open the acceptor
-        acceptor_.open(endpoint_.Protocol(), ec);
+        acceptor_.open(endpoint.Protocol(), ec);
 
         if(ec)
             return;
@@ -77,7 +38,7 @@ namespace Forward {
             return;
 
         // Bind to the server address
-        acceptor_.bind(endpoint_, ec);
+        acceptor_.bind(endpoint, ec);
 
         if(ec)
             return;
@@ -98,7 +59,11 @@ namespace Forward {
         return is_listening;
     }
 
-    void TcpServer::OnSocketAccept(sys::error_code ec, tcp::socket socket)
+    void TcpServer::OnSocketError(sys::error_code ec)
+    {
+    
+    }
+    void TcpServer::OnSocketAccept(tcp::socket socket)
     {
 
     }
@@ -108,21 +73,19 @@ namespace Forward {
         acceptor_.async_accept(
             net::make_strand(io_context_),
             boost::beast::bind_front_handler(
-                &TcpServer::HandleSocketError,
+                &TcpServer::HandleSocket,
                 shared_from_this()));
     }
-    void TcpServer::HandleSocketError(sys::error_code ec, tcp::socket socket)
+    void TcpServer::HandleSocket(sys::error_code ec, tcp::socket socket)
     {
         if (ec)
         {
             FL_LOG("TcpServer", ec);
+            OnSocketError(ec);
             return;
         }
 
-        if (callback_.has_value())
-            callback_.value()(ec, std::move(socket));
-        else 
-            this->OnSocketAccept(ec, std::move(socket));
+        OnSocketAccept(std::move(socket));
 
         DoSocketAccept();
     }
