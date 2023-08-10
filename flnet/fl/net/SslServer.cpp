@@ -13,6 +13,10 @@ namespace Forward {
 
     }
 
+    SslServer::~SslServer()
+    {
+    }
+
     void SslServer::OnSocketError(sys::error_code ec)
     {
 

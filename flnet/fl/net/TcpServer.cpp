@@ -12,6 +12,11 @@ namespace Forward {
     {
     }
 
+    TcpServer::~TcpServer()
+    {
+    
+    }
+
     void TcpServer::Listen(Endpoint const& endpoint)
     {
         sys::error_code ec;

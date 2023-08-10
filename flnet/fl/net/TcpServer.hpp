@@ -5,7 +5,7 @@
 namespace Forward {
 
     /**
-     * 
+     * TCP Server that accepts sockets
      */
     class TcpServer : public std::enable_shared_from_this<TcpServer>
     {
@@ -19,6 +19,7 @@ namespace Forward {
 
     public:
         TcpServer(uint8_t io_count = 1);
+        virtual ~TcpServer();
 
         void Listen(Endpoint const& endpoint);
         void Listen(Endpoint const& endpoint, sys::error_code& ec);
