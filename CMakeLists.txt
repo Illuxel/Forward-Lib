@@ -12,8 +12,6 @@ option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark fea
 
 # option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 if (NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
     set(CMAKE_INSTALL_INCLUDEDIR "include")
 endif()
