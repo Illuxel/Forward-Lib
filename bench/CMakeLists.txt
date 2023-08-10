@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 set(BENCH_SOURCE
-    
+    bench_main.cpp
 )
 
 add_executable(BenchClient ${BENCH_SOURCE})

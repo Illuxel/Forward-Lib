@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
     set(CMAKE_INSTALL_LIBDIR "lib")
@@ -8,12 +8,12 @@ include(../cmake/FindMySQL.cmake)
 
 #--------------< Tests >--------------#
 
-if (FL_ENABLE_TESTING)
-    add_subdirectory(test)
-endif()
-
 if (FL_ENABLE_BENCHMARKS)
     add_subdirectory(bench)
+endif()
+
+if (FL_ENABLE_TESTING)
+    add_subdirectory(test)
 endif()
 
 #--------------< Vars >--------------#
@@ -65,9 +65,9 @@ add_library(db STATIC
 target_include_directories(db
 PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${MYSQL_CPPCONN_INCLUDE}>
-
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+
+    ${MYSQL_CPPCONN_INCLUDE}
 PRIVATE
     ${MYSQL_PRIVATE_INCLUDE}
     ${SQLITE3_PRIVATE_INCLUDE}
@@ -80,13 +80,16 @@ PRIVATE
     ${MYSQL_LIB}
     ${MYSQL_CPPCONN_LIB}
 PUBLIC
-    SqLite3::SqLite3
+    SQLite::SQLite
     Fl::utils
 )
 
-install(TARGETS db EXPORT fl-targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
 install(FILES ${FLDB_INCLUDE} DESTINATION ${FLDB_INSTALL_DIR})
 install(DIRECTORY ${MYSQL_CPPCONN_INCLUDE} DESTINATION .)
+
+install(TARGETS db SQLite EXPORT fl-targets
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
