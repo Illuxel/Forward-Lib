@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 project(ForwardLib 
     VERSION 0.5.0
@@ -23,9 +23,7 @@ endif()
 if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 elseif(APPLE)
-
 elseif(UNIX)
-
 endif()
 
 #--------------< Packages >--------------#
@@ -147,40 +145,41 @@ PROPERTIES
 
 #--------------< Exporting targets >--------------#
 
+install(FILES ${FL_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/forward)
+install(FILES ${FLCLIENT_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/api)
+
 install(TARGETS flapi client
     EXPORT fl-targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+ 
+#--------------< Package configure >--------------#
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/fl-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/fl-config.cmake
+    INSTALL_DESTINATION ${FL_INSTALL_LIBDIR}
+    PATH_VARS
+        CMAKE_INSTALL_LIBDIR
+        CMAKE_INSTALL_INCLUDEDIR
+)
+write_basic_package_version_file(cmake/fl-config-version.cmake
+    VERSION ${ForwardLib_VERSION}
+    COMPATIBILITY ExactVersion
+)
+
+install(FILES 
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/fl-config.cmake 
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/fl-config-version.cmake
+    DESTINATION ${FL_INSTALL_LIBDIR}
 )
 
 install(EXPORT fl-targets
     FILE fl-targets.cmake
     NAMESPACE ${namespace}::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fl
-)
-
-install(FILES ${FL_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/forward)
-install(FILES ${FLCLIENT_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/api)
- 
-#--------------< Package version >--------------#
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(fl-config-version.cmake
-    VERSION ${ForwardLib_VERSION}
-    COMPATIBILITY ExactVersion
-)
-install(FILES cmake/fl-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/fl-config-version.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fl
-)
-
-set_target_properties(flapi 
-PROPERTIES
-    VERSION ${ForwardLib_VERSION} 
-    SOVERSION ${ForwardLib_VERSION}
-)
-set_target_properties(client 
-PROPERTIES 
-    VERSION ${ForwardLib_VERSION}
-    SOVERSION ${ForwardLib_VERSION}
+    DESTINATION ${FL_INSTALL_LIBDIR}
 )
