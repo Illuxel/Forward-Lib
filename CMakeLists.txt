@@ -49,6 +49,8 @@ include(GNUInstallDirs)
 
 set(namespace Fl)
 
+set(FL_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/cmake/fl)
+set(FL_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR}/cmake/fl)
 set(FL_INCLUDE
     fl/forward/Account.hpp
     fl/forward/Channel.hpp
