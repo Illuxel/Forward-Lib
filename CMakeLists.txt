@@ -81,6 +81,20 @@ set(FLCLIENT_SOURCE
 
 add_subdirectory(vendor)
 
+#--------------< Building tests and examples >--------------#
+
+if (FL_ENABLE_EXAMPLES)
+    add_subdirectory(examples)
+endif()
+
+if (FL_ENABLE_BENCHMARK)
+    add_subdirectory(bench)
+endif()
+
+if (FL_ENABLE_TESTING)
+    add_subdirectory(test)
+endif()
+
 #--------------< Including sublibs >--------------#
 
 add_subdirectory(flutils)
@@ -118,15 +132,7 @@ PUBLIC
 )
 target_link_libraries(client PUBLIC ${namespace}::flapi)
 
-#--------------< Building tests and examples >--------------#
 
-if (FL_ENABLE_EXAMPLES)
-    add_subdirectory(examples)
-endif()
-
-if (FL_ENABLE_TESTING)
-    add_subdirectory(test)
-endif()
 
 #--------------< Exporting targets >--------------#
 
