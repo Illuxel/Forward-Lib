@@ -51,7 +51,7 @@ namespace Forward {
 
         is_listening = true;
 
-        DoSocketAccept();
+        AcceptNextSocket();
     }
 
     bool TcpServer::IsListening() const
@@ -68,7 +68,7 @@ namespace Forward {
 
     }
 
-    void TcpServer::DoSocketAccept()
+    void TcpServer::AcceptNextSocket()
     {
         acceptor_.async_accept(
             net::make_strand(io_context_),
@@ -87,7 +87,7 @@ namespace Forward {
 
         OnSocketAccept(std::move(socket));
 
-        DoSocketAccept();
+        AcceptNextSocket();
     }
      
 } // namespace Forward

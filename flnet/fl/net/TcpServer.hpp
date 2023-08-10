@@ -30,8 +30,8 @@ namespace Forward {
         virtual void OnSocketAccept(tcp::socket socket);
 
     private:
-        void DoSocketAccept();
         void HandleSocket(sys::error_code ec, tcp::socket socket);
+        void AcceptNextSocket();
 
     };
 } // namespace Forward
