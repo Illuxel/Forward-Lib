@@ -51,6 +51,7 @@ set(namespace Fl)
 
 set(FL_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/cmake/fl)
 set(FL_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR}/cmake/fl)
+
 set(FL_INCLUDE
     fl/forward/Account.hpp
     fl/forward/Channel.hpp
@@ -133,6 +134,16 @@ PUBLIC
 target_link_libraries(client PUBLIC ${namespace}::flapi)
 
 
+set_target_properties(flapi 
+PROPERTIES
+    VERSION ${ForwardLib_VERSION} 
+    SOVERSION ${ForwardLib_VERSION}
+)
+set_target_properties(client 
+PROPERTIES 
+    VERSION ${ForwardLib_VERSION}
+    SOVERSION ${ForwardLib_VERSION}
+)
 
 #--------------< Exporting targets >--------------#
 
