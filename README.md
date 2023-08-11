@@ -15,6 +15,6 @@ Description: Soon
 - [Boost 1.81](https://github.com/boostorg/boost/tree/boost-1.81.0)
 - [MySQL Connector C++ 8.0.33 (Debug)](https://github.com/mysql/mysql-connector-cpp/tree/8.0)
 - [JWT-CPP](https://github.com/Thalhammer/jwt-cpp)
-<!-- - SqLite -->
+- [SqLite3](https://github.com/EEdle506/sqlite3-cmake.git)
 
 ## How to install
