@@ -1,4 +1,5 @@
-#include "MimeType.hpp"
+#include "fl/utils/MimeType.hpp"
+#include "fl/utils/Exception.hpp"
 
 namespace Forward {
 
@@ -21,7 +22,7 @@ namespace Forward {
         { "bmp",  { MimeType::Img, MimeType::SubType::Bmp,     "bmp" }},
         { "ico",  { MimeType::Img, MimeType::SubType::Ico,     "x-icon" }},
         { "svg",  { MimeType::Img, MimeType::SubType::Svg,     "svg+xml" }},
-        { "svgz",  { MimeType::Img, MimeType::SubType::Svg,    "svg+xml" }},
+        { "svgz", { MimeType::Img, MimeType::SubType::Svg,    "svg+xml" }},
         { "mp3",  { MimeType::Audio, MimeType::SubType::Mpeg,  "mpeg" }},
         { "m4a",  { MimeType::Audio, MimeType::SubType::Mpeg,  "mpeg" }},
         { "m4b",  { MimeType::Audio, MimeType::SubType::Mpeg,  "mpeg" }},
@@ -45,48 +46,48 @@ namespace Forward {
         { "pptx", { MimeType::App, MimeType::SubType::Pptx,    "vnd.openxmlformats-officedocument.presentationml.presentation" }}
     };
 
-    static constexpr inline const char* CreateTypeString(MimeType::Type type)
+    static constexpr inline const char* EnumTypeToString(MimeType::Type type)
     {
         switch (type)
         {
         case MimeType::Text: 
-            return "text/";
+            return "text";
         case MimeType::App: 
-            return "application/";
+            return "application";
         case MimeType::Img: 
-            return "image/";
+            return "image";
         case MimeType::Audio: 
-            return "audio/";
+            return "audio";
         case MimeType::Video: 
-            return "video/";
+            return "video";
         case MimeType::Msg: 
-            return "message/";
+            return "message";
         case MimeType::Multi: 
-            return "multipart/";
+            return "multipart";
         case MimeType::Model: 
-            return "model/";
+            return "model";
         case MimeType::Example: 
-            return "example/";
+            return "example";
         }
 
-        return "";
+        throw Exception("Specified unknown mime type");
     }
 
     static constexpr inline const char* CreateSubTypeString(MimeType::SubType sub_type)
     {
-        return "";
+        //throw Exception("Specified unknown mime subtype");
+        return nullptr;
     }
 
     MimeType::MimeType()
-        : type_{MimeType::App}
-        , sub_type_{SubType::Unknown}
-        , sub_type_str_{"*"}
-        , ext_name_{""} {}
+        : sub_type_str_("*") {}
+
     MimeType::MimeType(std::string_view ext)
     {
         *this = MimeType::FromString(ext);
     }
-    MimeType::MimeType(Type type, SubType sub_type,  std::string_view sub_type_str, std::string_view ext)
+
+    MimeType::MimeType(Type type, SubType sub_type, std::string_view sub_type_str, std::string_view ext)
         : type_{type}
         , sub_type_{sub_type}
         , sub_type_str_{sub_type_str}
@@ -110,7 +111,7 @@ namespace Forward {
     }
     std::string MimeType::GetMimeName() const 
     {
-        return CreateTypeString(type_) + sub_type_str_;
+        return EnumTypeToString(type_) + '/' + sub_type_str_;
     }
 
     bool MimeType::IsUnknown() const 
@@ -126,7 +127,7 @@ namespace Forward {
     
     bool MimeType::HasExtension(std::string_view ext)
     {
-        auto const& only_ext = ExtensionOnly(ext);
+        std::string_view only_ext = ExtensionOnly(ext);
         auto const& it = mime_types_.find(only_ext);
 
         return it != mime_types_.end() && !ext.empty();
@@ -137,8 +138,8 @@ namespace Forward {
         if (!HasExtension(ext))
             return MimeType();
 
-        auto only_ext = ExtensionOnly(ext);
-        auto mime_type = mime_types_.at(only_ext);
+        std::string_view only_ext = ExtensionOnly(ext);
+        MimeType mime_type = mime_types_.at(only_ext);
 
         mime_type.ext_name_ = only_ext;
 
@@ -147,16 +148,17 @@ namespace Forward {
 
     std::string MimeType::RemoveExtension(std::string_view file)
     {
-        auto const& ext = MimeType::FromString(file);
-        if (!ext.IsValid())
+        MimeType mime_type = MimeType::FromString(file);
+
+        if (!mime_type.IsValid())
             return file.data();
     
-        return std::string(file.substr(0, file.size() - ext.GetExtName(false).size()));
+        return std::string(file.substr(0, file.size() - mime_type.GetExtName(false).size()));
     }
     std::string_view MimeType::ExtensionOnly(std::string_view str)
     {
-        auto const dot_pos = str.find('.');    
-        auto const is_dot = dot_pos != std::string::npos;
+        uint64_t const dot_pos = str.find('.');    
+        uint64_t const is_dot = dot_pos != std::string::npos;
 
         return str.substr(is_dot ? dot_pos + 1 : 0, str.size());
     }

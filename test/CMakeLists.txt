@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 set(TEST_SOURCE
     test_main.cpp
@@ -12,8 +12,7 @@ enable_testing()
 
 add_executable(TestClient ${TEST_SOURCE})
 
-target_link_libraries(TestClient
-PUBLIC    
+target_link_libraries(TestClient   
     GTest::gtest_main
     Fl::client
 )

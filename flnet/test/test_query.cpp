@@ -24,10 +24,10 @@ TEST(HttpQueryTest, ValidQuery) {
     EXPECT_TRUE(query.IsValid());
     EXPECT_TRUE(query.HasKey("p"));
 
-    EXPECT_STREQ(query.Value("p").data(), "value1");
+    EXPECT_TRUE(query.Value("p") == "value1");
 
-    EXPECT_STREQ(query.Arg("p").Name().data(), "p");
-    EXPECT_STREQ(query.Arg("p").Data().data(), "value1");
+    EXPECT_TRUE(query.Arg("p").GetName() == "p");
+    EXPECT_TRUE(query.Arg("p").GetData() == "value1");
 }
 
 TEST(HttpQueryTest, MultipleQuery) {
@@ -39,9 +39,9 @@ TEST(HttpQueryTest, MultipleQuery) {
     EXPECT_TRUE(query.HasKey("param1"));
     EXPECT_TRUE(query.HasKey("p"));
 
-    EXPECT_STREQ(query.Value("param1").data(), "value1");
-    EXPECT_STREQ(query.Value("p").data(), "v");
+    EXPECT_TRUE(query.Value("param1") == "value1");
+    EXPECT_TRUE(query.Value("p") == "v");
 
-    EXPECT_STREQ(query.Arg("param1").Data().data(), "value1");
-    EXPECT_STREQ(query.Arg("p").Data().data(), "v");
+    EXPECT_TRUE(query.Arg("param1").GetData() == "value1");
+    EXPECT_TRUE(query.Arg("p").GetData() == "v");
 }

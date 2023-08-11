@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
   set(CMAKE_INSTALL_LIBDIR "lib")
@@ -19,14 +19,20 @@ set(NET_INCLUDE
     fl/net/Core.hpp
 
     fl/net/Endpoint.hpp
-    fl/net/AsyncListener.hpp
+
+    fl/net/TcpServer.hpp
+    fl/net/SecureLayer.hpp
+
     fl/net/SslServer.hpp
 )
 set(NET_SOURCE
     ${NET_INCLUDE}
 
     fl/net/Endpoint.cpp
-    fl/net/AsyncListener.cpp
+
+    fl/net/TcpServer.cpp
+    fl/net/SecureLayer.cpp
+
     fl/net/SslServer.cpp
 )
 
@@ -84,8 +90,10 @@ PUBLIC
 install(FILES ${NET_INCLUDE}  DESTINATION ${NET_INTALL_DIR})
 install(FILES ${HTTP_INCLUDE} DESTINATION ${HTTP_INTALL_DIR})
 
-install(TARGETS net
+install(TARGETS net jwt-cpp
     EXPORT fl-targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )

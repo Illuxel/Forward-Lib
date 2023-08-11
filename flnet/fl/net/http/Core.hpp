@@ -1,21 +1,25 @@
 #pragma once
 
 #include <set>
-#include <string>
-#include <vector>
 #include <unordered_map>
 
-#include <optional>
 #include <filesystem>
 
-#include <mutex>
 #include <shared_mutex>
+
+#include "fl/net/Core.hpp"
+
+#include "fl/utils/MimeType.hpp"
+#include "fl/utils/StringArg.hpp"
 
 #include <boost/json.hpp>
 namespace json = boost::json;
 
-#include "fl/net/Core.hpp"
+#include <boost/beast/version.hpp>
 
-#include "fl/utils/Memory.hpp"
-#include "fl/utils/MimeType.hpp"
-#include "fl/utils/StringArg.hpp"
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <boost/beast/ssl.hpp>
+
+namespace beast = boost::beast;
+namespace http = beast::http;

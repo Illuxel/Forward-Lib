@@ -24,17 +24,21 @@ namespace Forward {
         HttpRequestWrapper(http::request<Body> const& request) 
             : request_(request) {}
 
-        auto& Base() & 
+        constexpr auto const& base() const &
         {
             return request_;
         }
-        auto&& Base() &&
+        constexpr auto& base() &
+        {
+            return request_;
+        }
+        constexpr auto&& base() &&
         {
             return std::move(request_);
         }
-        auto const& Base() const &
+        constexpr auto&& base() const&&
         {
-            return request_;
+            return std::move(request_);
         }
 
         HttpUrl Url() const 
@@ -57,20 +61,24 @@ namespace Forward {
             request_ = {};
         }
 
-        operator http::request<Body>&() & 
+        constexpr operator http::request<Body>&() &
         {
             return &request_;
         }
-        operator http::request<Body>&&() &&
+        constexpr operator http::request<Body>&&() &&
         {
             return std::move(request_);
         }
-        operator http::request<Body>() const &
+        constexpr operator http::request<Body> && () const&&
+        {
+            return std::move(request_);
+        }
+        constexpr operator http::request<Body> const&() const&
         {
             return request_;
         }
 
-        operator http::message_generator() 
+        constexpr operator http::message_generator()
         {
             return std::move(request_);
         }

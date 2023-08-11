@@ -1,82 +1,159 @@
 #include "fl/utils/DateTime.hpp"
 #include "fl/utils/StringBuilder.hpp"
 
-#include <map>
-using namespace std::chrono;
+#include <iomanip>
+#include <sstream>
 
 namespace Forward {
 
-    DateTime::DateTime() 
-        : time_point_(std::chrono::system_clock::now()) {}
-    DateTime::DateTime(DateTime const& right)
-        : time_point_(right.time_point_)
-        , date_time_(right.date_time_) {}
-    DateTime::DateTime(DateTime&& right)
-        : time_point_(std::move(right.time_point_))
-        , date_time_(std::move(right.date_time_)) {}
-
-    short DateTime::Seconds() const 
+    DateTime::DateTime()
     {
-        return duration_cast<std::chrono::seconds>(time_point_.time_since_epoch())
+        using std::chrono::system_clock;
+
+        time_point_.emplace(system_clock::now());
+    }
+
+    DateTime::DateTime(DateTimeChrono const& time_point)
+    {
+        time_point_.emplace(time_point);
+    }
+    DateTime::DateTime(std::string_view time, std::string_view format)
+    {
+        *this = FromString(time, format);
+    }
+
+    DateTime::DateTime(DateTime&& right) noexcept
+    {
+        time_point_ = std::move(right.time_point_);
+    }
+    DateTime::DateTime(DateTime const& right) noexcept
+    {
+        time_point_ = right.time_point_;
+    }
+
+    uint8_t DateTime::Day() const
+    {
+        if (!IsValid())
+            return 0;
+
+        return FromChronoToTm(time_point_.value()).tm_mday;
+    }
+    uint8_t DateTime::Month() const
+    {
+        if (!IsValid())
+            return 0;
+
+        return 1 + FromChronoToTm(time_point_.value()).tm_mon;
+    }
+    uint32_t DateTime::Year() const
+    {
+        if (!IsValid())
+            return 0;
+
+        return StartYear + FromChronoToTm(time_point_.value()).tm_year;
+    }
+
+    uint8_t DateTime::Seconds() const
+    {
+        using std::chrono::seconds;
+        using std::chrono::duration_cast;
+
+        if (!IsValid())
+            return 0;
+
+        return duration_cast<seconds>(time_point_->time_since_epoch())
             .count();
     }
-    short DateTime::Minutes() const 
+    uint8_t DateTime::Minutes() const
     {
-        return duration_cast<std::chrono::minutes>(time_point_.time_since_epoch())
+        using std::chrono::minutes;
+        using std::chrono::duration_cast;
+
+        if (!IsValid())
+            return 0;
+
+        return duration_cast<minutes>(time_point_->time_since_epoch())
             .count();
     }
-    short DateTime::Hours() const 
+    uint8_t DateTime::Hours() const
     {
-        return duration_cast<std::chrono::hours>(time_point_.time_since_epoch())
+        using std::chrono::hours;
+        using std::chrono::duration_cast;
+
+        if (!IsValid())
+            return 0;
+
+        return duration_cast<hours>(time_point_->time_since_epoch())
             .count();
     }
-    
-    short DateTime::Day() const 
+
+    bool DateTime::IsValid() const
     {
-        CacheTm();
-        return date_time_->tm_mday;
-    }
-    short DateTime::Month() const 
-    {
-        CacheTm();
-        return date_time_->tm_mon + 1;
-    }
-    size_t DateTime::Year() const 
-    {
-        CacheTm();
-        return date_time_->tm_year + 1900;
-    }
-
-    std::string DateTime::ToString() const
-    {
-        return ToString(default_format);
-    }
-    std::string DateTime::ToString(std::string_view format) const
-    {
-        std::string c_format;
-
-        if (format.empty() || format.size() > max_format_size)
-            c_format = ConvertToCFormat(default_format);
-        else 
-            c_format = ConvertToCFormat(format);
-
-        CacheTm();
-
-        char buffer[max_format_size];
-
-        if (std::strftime(buffer, max_format_size, c_format.data(), &date_time_.value()) == 0)
-            return "";
-
-        return buffer;
+        return time_point_.has_value();
     }
 
     DateTime DateTime::Now()
     {
         return DateTime();
     }
+
+    std::string DateTime::ToString(std::string_view format) const
+    {
+        if (!IsValid())
+            return "";
+
+        if (format.empty())
+            return "";
+
+        std::tm dtime = FromChronoToTm(time_point_.value());
+        std::string c_format = ConvertToCFormat(format);
+
+        char buffer[MaxFormatSize];
+
+        std::strftime(buffer, MaxFormatSize, c_format.c_str(), &dtime);
+
+        return buffer;
+    }
+
+    DateTime DateTime::FromString(std::string_view time, std::string_view format)
+    {
+        if (format.empty())
+            return DateTime();
+
+        std::tm time_info;
+        std::istringstream ss(time.data());
+
+        std::string c_format = ConvertToCFormat(format);
+
+        ss >> std::get_time(&time_info, c_format.c_str());
+
+        if (ss.fail())
+            return DateTime();
+
+        DateTimeChrono time_point = FromTmToChrono(time_info);
+
+        return DateTime(time_point);
+    }
+
+    DateTime::DateTimeChrono DateTime::FromTmToChrono(std::tm time_info)
+    {
+        using std::chrono::system_clock;
+
+        time_t time = std::mktime(&time_info);
+        return system_clock::from_time_t(time);
+    }
+    std::tm DateTime::FromChronoToTm(DateTimeChrono time_point)
+    {
+        using std::chrono::system_clock;
+
+        time_t time = system_clock::to_time_t(time_point);
+        return *std::localtime(&time);
+    }
+
     std::string DateTime::ConvertToCFormat(std::string_view format) 
     {
-        auto c_style_format = StringArg::MakeArgs({
+        std::vector<StringArg> c_format
+        = StringArg::MakeArgs({
             {"HH", "%I"},       // 12-hour format
             {"hh", "%H"},       // 24-hour format
             {"mm", "%M"},       // minutes (0-59)
@@ -86,29 +163,35 @@ namespace Forward {
             {"YYYY", "%Y"}      // year (e.g., 2021)
         });
 
-        StringBuilder build(format, c_style_format);
-        return build;
+        return StringBuilder(format, c_format);
     }
 
-    void DateTime::CacheTm() const 
+    bool DateTime::operator==(DateTime const& right) const
     {
-        if (date_time_.has_value())
-            return;
+        if (!IsValid() && !right.IsValid())
+            return false;
 
-        auto time = system_clock::to_time_t(time_point_);
-        date_time_.emplace(*std::localtime(&time));
+        return time_point_.value() == right.time_point_.value();
+    }
+    bool DateTime::operator==(DateTimeChrono const& right) const
+    {
+        if (!IsValid())
+            return false;
+
+        return time_point_.value() == right;
     }
 
-    DateTime& DateTime::operator=(DateTime const& right) 
+    DateTime& DateTime::operator=(DateTime&& right) noexcept
     {
-        date_time_ = right.date_time_;
-        time_point_ = right.time_point_;
+        time_point_ = std::move(right.time_point_);
+
         return *this;
     }
-
-    bool DateTime::operator==(DateTime const& right)
+    DateTime& DateTime::operator=(DateTime const& right) noexcept
     {
-        return time_point_ == right.time_point_;
+        time_point_ = right.time_point_;
+
+        return *this;
     }
 
 } // namespace Forward

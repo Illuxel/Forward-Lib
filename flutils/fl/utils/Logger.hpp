@@ -1,22 +1,18 @@
 #pragma once
 
-#include "fl/utils/Memory.hpp"
 #include "fl/utils/Flags.hpp"
-
 #include "fl/utils/DateTime.hpp"
 
-#include <chrono>
-#include <fstream>
+#include "fl/utils/LoggerStream.hpp"
 
 #include <queue>
-#include <shared_mutex>
 
 namespace Forward {
 	
 	class Logger : std::enable_shared_from_this<Logger>
 	{
 	public:
-		enum class Level : unsigned int
+		enum class Level : uint8_t
 		{
 			INFO = 		0,	
 			DEBUG = 	1 << 0,
@@ -26,53 +22,49 @@ namespace Forward {
 			TRACE = 	1 << 4,
 		};
 
-		enum class OutputFlag : unsigned int
+		enum class OutputFlag : uint8_t
 		{
 			None,
 			File = 1 << 0,		// flag enables writing to file
 			Console = 1 << 1	// flag enables printing to console
 		};
-
-		ENABLE_ENUM_FLAGS(OutputFlag, OutputFlags);
+		ENUM_FLAGS(OutputFlag, OutputFlags);
 
 		struct Message
 		{
-			Logger::Level Level;
-			std::string Data, Caller;
 			DateTime Time;
+			Logger::Level Level;
+			std::string Caller, Data;
 		};
 
 	private:
 		std::string file_name_, time_format_, msg_format_;
 
-		OutputFlags output_flags_;
+		OutputFlags out_mode_;
 
 		std::ofstream file_;
-		Ref<std::queue <Message>> msg_queue_;
+		std::queue<Message> msg_queue_;
 
-		mutable std::mutex mutex_;
+		mutable std::shared_mutex io_mtx_, queue_mtx_;
 
 	public:
-		static constexpr inline const char* default_file_name = "log-dd-MM-hh-mm.txt";
-		static constexpr inline const char* default_time_format = "dd-MM-hh-mm";
-		static constexpr inline const char* default_msg_format = "[%t] %l: %m";
+		static constexpr inline const char* DefaultMsgFormat = "%t %l: %m";
+		static constexpr inline const char* DefaultFileFormat = "log-dd-MM-hh-mm.txt";
 
 	public:
 		Logger();
 		Logger(std::string_view file_name, Logger::OutputFlags flags);
-		Logger(std::string_view file_name, 
+		Logger(std::string_view file_name, Logger::OutputFlags flags,
 			std::string_view msg_format, 
-			std::string_view time_format, 
-			Logger::OutputFlags flags);
+			std::string_view time_format);
 		
 		~Logger();
 
+
 		void SetOutputMode(Logger::OutputFlags mode);
+
 		/**
-		 *	Set file name
-		 *	
-		 *	You can use datetime format to a file name.
-		 * 	You can insert name with path and extension ONLY	
+		 *	Sets file name format of outputted log file. Use datetime format 
 		 */
 		void SetFileName(std::string_view file_name);
 		/**
@@ -96,8 +88,11 @@ namespace Forward {
 		// void BeginTrace(std::string_view func_name);
 		// void EndTrace(std::string_view func_name);
 
-		Message& FirstLog() const;
-		Message& LastLog() const;
+		Message& FirstLog() &;
+		Message const& FirstLog() const&;
+
+		Message& LastLog() &;
+		Message const& LastLog() const&;
 
 		void ConsoleOut(std::string_view data);
 		void WriteInFile(std::string_view data);

@@ -4,12 +4,11 @@ namespace Forward {
 
     Exception::Exception()
         : std::exception{}
-        , is_error(false) 
     {
     }
+
     Exception::Exception(std::string_view msg)
         : std::exception{}
-        , is_error(true)
     {
         msg_ = msg;
     }
@@ -18,11 +17,18 @@ namespace Forward {
     {
         SetError(ec);
     }
-    Exception::Exception(Exception const& ec)
-        : std::exception(ec)
-        , is_error(ec.is_error)
+
+    Exception::Exception(Exception&& right) noexcept
+        : std::exception(std::move(right))
     {
-        msg_ = ec.msg_;
+        is_error = std::move(right.is_error);
+        msg_ = std::move(right.msg_);
+    }
+    Exception::Exception(Exception const& right) noexcept
+        : std::exception(right)
+    {
+        is_error = right.is_error;
+        msg_ = right.msg_;
     }
 
     Exception::~Exception() {}
@@ -41,12 +47,14 @@ namespace Forward {
 
         if (msg_.empty())
             return msg_.c_str();
+
         return "Unknown exception";
     }
 
     bool Exception::IsError() const
     {
         std::shared_lock lock(mtx_);
+
         return is_error;
     }
 

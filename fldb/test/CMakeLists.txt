@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 set(TEST_SOURCE 
-    test_mysql.cpp
     test_main.cpp
+    test_mysql.cpp
+    test_sqlite.cpp
 )
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
@@ -13,7 +14,6 @@ enable_testing()
 add_executable(TestDb ${TEST_SOURCE})
 
 target_link_libraries(TestDb
-PRIVATE 
     GTest::gtest_main
     Fl::db
 )

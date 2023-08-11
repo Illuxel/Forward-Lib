@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 set(TEST_SOURCE
     test_query.cpp
@@ -17,7 +17,6 @@ enable_testing()
 add_executable(TestNet ${TEST_SOURCE})
 
 target_link_libraries(TestNet
-PUBLIC    
     GTest::gtest_main
     Fl::net
 )

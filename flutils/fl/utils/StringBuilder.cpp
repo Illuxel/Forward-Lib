@@ -8,40 +8,51 @@
 namespace Forward {
     
     StringBuilder::StringBuilder() {}
-    StringBuilder::StringBuilder(std::string_view templ, std::vector<StringArg> const& args) 
+    StringBuilder::StringBuilder(std::string_view str, StringArgList const& args)
     {
-        result_.emplace(templ);
+        SetTemplate(str);
         BuildString(args);
     }
 
-    void StringBuilder::SetTemplate(std::string_view templ)
+    void StringBuilder::SetTemplate(std::string_view str)
     {
-        result_.emplace(templ);
+        if (str.empty())
+            return;
+
+        result_.emplace(str);
+    }
+
+    StringBuilder& StringBuilder::ArgFirst(StringArg const& arg)
+    {
+
+
+        return *this;
+    }
+    StringBuilder& StringBuilder::ArgFirst(StringArgList const& args)
+    {
+
+
+        return *this;
     }
 
     StringBuilder& StringBuilder::Arg(StringArg const& arg) 
     {
-        this->BuildString(arg);
+        BuildString(arg);
         return *this;
     }
-    StringBuilder& StringBuilder::Arg(std::vector<StringArg> const& args)
+    StringBuilder& StringBuilder::Arg(StringArgList const& args)
     {
-        this->BuildString(args);
+        BuildString(args);
         return *this;
     }
 
-    StringArg StringBuilder::AsArg(std::string_view name) const 
+    std::string StringBuilder::Data() &&
     {
-        return StringArg(name, result_.value_or(""));
+        return std::move(result_.value_or(""));
     }
-    StringArg StringBuilder::AsArg(std::string_view name, char specifier) const 
+    std::string const& StringBuilder::Data() const&
     {
-        return StringArg(name, result_.value_or(""), specifier);
-    }
-
-    std::string StringBuilder::Data() const
-    {
-        return result_.value_or("");
+        return result_.value();
     }
 
     void StringBuilder::Clear() 
@@ -49,10 +60,19 @@ namespace Forward {
         result_.reset();
     }
 
-    // StringBuilder StringBuilder::MakeString(std::string_view templ)
-    // {
+    bool StringBuilder::IsValid() const 
+    {
+        return result_.has_value();
+    }
 
-    // }
+    bool StringBuilder::IsArg(StringArg const& arg) const
+    {
+        return true;
+    }
+    bool StringBuilder::IsArgs(StringArgList const& args) const 
+    {
+        return true;
+    }
 
     StringBuilder StringBuilder::FromFile(std::string_view file_name)
     {
@@ -70,16 +90,11 @@ namespace Forward {
 
         return build;
     }
-    StringBuilder StringBuilder::FromFile(std::string_view file_name, std::vector<StringArg> const& args)
+    StringBuilder StringBuilder::FromFile(std::string_view file_name, StringArgList const& args)
     {
         return StringBuilder::FromFile(file_name).Arg(args);
     }
 
-    StringBuilder& StringBuilder::operator=(char const* arr)
-    {
-        SetTemplate(arr);
-        return *this;
-    }
     StringBuilder& StringBuilder::operator=(std::string_view templ)
     {
         SetTemplate(templ);
@@ -88,27 +103,26 @@ namespace Forward {
 
     void StringBuilder::BuildString(StringArg const& arg)
     {
-        std::string& result = result_.value();
-
-        if (result.empty())
+        if (!IsValid())
             return;
 
-        size_t ArgPos;
+        uint64_t arg_pos;
+        std::string& result = result_.value();
 
         while (true) 
         {
-            ArgPos = result.find(arg.Joined());
+            arg_pos = result.find(arg.GetParsed());
 
-            if (ArgPos == std::string::npos)
+            if (arg_pos == std::string::npos)
                 break;
 
-            auto const& begin = result.cbegin() + ArgPos;
-            auto const& end = result.cbegin() + ArgPos + arg.Joined().size(); 
+            auto const& begin = result.cbegin() + arg_pos;
+            auto const& end = result.cbegin() + arg_pos + arg.GetParsed().size();
 
-            result.replace(begin, end, arg.Data());
+            result.replace(begin, end, arg.GetData());
         }
     }
-    void StringBuilder::BuildString(std::vector<StringArg> const& args) 
+    void StringBuilder::BuildString(StringArgList const& args)
     {
         for (auto& arg : args)
             BuildString(arg);

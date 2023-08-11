@@ -53,16 +53,11 @@ namespace Forward {
         return files;
     }
 
-    WebFilesSystem::WebFilesSystem() 
-        : is_valid(false) {}
-
+    WebFilesSystem::WebFilesSystem() {}
     WebFilesSystem::WebFilesSystem(std::string_view web_root) 
-        : is_valid(false)
     {
         if (!std::filesystem::is_directory(web_root)) 
             return;
-
-        is_valid = true;
 
         SetWebRoot(web_root);
     }
@@ -72,6 +67,8 @@ namespace Forward {
         std::unique_lock lock(wfs_mutex_);
         web_root_ = web_root;
         files_ = IterateFiles(web_root_);
+
+        is_valid = !files_.empty();
     }
     std::string_view WebFilesSystem::GetWebRoot() const 
     {

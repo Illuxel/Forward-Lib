@@ -50,7 +50,7 @@ namespace Forward {
         // all stored files in web site 
         std::vector<WebFileInfo> files_;
 
-        bool is_valid;
+        bool is_valid = false;
 
         mutable std::shared_mutex wfs_mutex_;
 

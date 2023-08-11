@@ -3,33 +3,41 @@ using namespace Forward;
 
 #include <gtest/gtest.h>
 
-TEST(DateTime, ToCFormat)
+TEST(DateTime, ToCFormatParse)
 {
-    std::string out = DateTime::ConvertToCFormat("DD-MM-YYYY hh-mm-ss");
+    std::string out = DateTime::ConvertToCFormat("DD-MM-YYYY hh:mm:ss");
 
-    EXPECT_STREQ(out.c_str(), "%d-%m-%Y %H-%M-%S");
+    EXPECT_TRUE(out == "%d-%m-%Y %H:%M:%S");
 }
 
-TEST(DateTime, NowToString)
-{
-    std::string now = DateTime::Now().ToString("DD-MM-YYYY hh-mm-ss");
-    std::string latenow = DateTime::Now().ToString("DD-MM-YYYY hh-mm-ss");
-
-    EXPECT_STREQ(now.c_str(), latenow.c_str());
-}
-
-TEST(DateTime, CopyEq)
+TEST(DateTime, Copy)
 {
     auto now = DateTime::Now();
     auto copy = now;
 
+    EXPECT_TRUE(now.IsValid());
+    EXPECT_TRUE(copy.IsValid());
+
     EXPECT_TRUE(now == copy);
 }
 
-#include <optional>
+TEST(DateTime, FromString)
+{
+    DateTime dtime1 = DateTime::FromString("16-12-2023 15:12:30");
+    DateTime dtime2 = DateTime::FromString("1-1-2023 15:12:30");
 
-TEST(DateTime, Exception)
+    EXPECT_TRUE(dtime1.IsValid());
+    EXPECT_TRUE(dtime2.IsValid());
+
+    EXPECT_TRUE(dtime1.ToString("MM") == "12");
+    EXPECT_TRUE(dtime2.ToString("YYYY") == "2023");
+}
+
+TEST(DateTime, FailParse)
 {
     std::string now = DateTime::Now().ToString("dafsd   4252  2s");
-    std::string latenow = DateTime::Now().ToString("strange text");
+    std::string late_now = DateTime::Now().ToString("strange text");
+
+    EXPECT_TRUE(now == "dafsd   4252  2s");
+    EXPECT_TRUE(late_now == "strange text");
 }

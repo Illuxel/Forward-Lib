@@ -21,13 +21,13 @@ namespace Forward {
         // Start the asynchronous operation
         void Run(std::string_view host, std::string_view port, std::string_view target);
 
-        void OnResolve(beast::error_code ec, tcp::resolver::results_type results);
-        void OnConnect(beast::error_code ec, tcp::resolver::results_type::endpoint_type);
-        void OnHandshake(beast::error_code ec);
+        void OnResolve(sys::error_code ec, tcp::resolver::results_type results);
+        void OnConnect(sys::error_code ec, tcp::resolver::results_type::endpoint_type);
+        void OnHandshake(sys::error_code ec);
 
-        void OnWrite(beast::error_code ec, std::size_t bytes_transferred);
-        void OnRead(beast::error_code ec, std::size_t bytes_transferred);
+        void OnWrite(sys::error_code ec, std::size_t bytes_transferred);
+        void OnRead(sys::error_code ec, std::size_t bytes_transferred);
         
-        void OnShutdown(beast::error_code ec);
+        void OnShutdown(sys::error_code ec);
     };
 }

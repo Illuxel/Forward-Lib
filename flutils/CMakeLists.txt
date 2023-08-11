@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
   set(CMAKE_INSTALL_LIBDIR "lib")
@@ -17,24 +17,35 @@ set(FLUTILS_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/utils)
 set(FLUTILS_INCLUDE
     fl/utils/Exception.hpp
     fl/utils/Memory.hpp
-    fl/utils/DateTime.hpp
-    fl/utils/Enum.hpp
     fl/utils/Flags.hpp
-    fl/utils/MimeType.hpp
+
+    fl/utils/TypedArg.hpp
     fl/utils/StringArg.hpp
+    fl/utils/StringArgParser.hpp
     fl/utils/StringBuilder.hpp
+
+    fl/utils/DateTime.hpp
+    fl/utils/MimeType.hpp
+
+    fl/utils/Timer.hpp
+
+    fl/utils/LoggerStream.hpp
     fl/utils/Logger.hpp
     fl/utils/Log.hpp
 )
 set(FLUTILS_SOURCE
     ${FLUTILS_INCLUDE}
+
     fl/utils/Exception.cpp
-    fl/utils/DateTime.cpp
-    fl/utils/Enum.cpp
-    fl/utils/Flags.cpp
-    fl/utils/MimeType.cpp
-    fl/utils/StringArg.cpp
+    
+
+    fl/utils/StringArgParser.cpp
     fl/utils/StringBuilder.cpp
+
+    fl/utils/DateTime.cpp
+    fl/utils/MimeType.cpp
+
+    fl/utils/LoggerStream.cpp
     fl/utils/Logger.cpp
     fl/utils/Log.cpp
 )
@@ -47,9 +58,10 @@ PUBLIC
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-install(FILES ${FLUTILS_INCLUDE}  DESTINATION ${FLUTILS_INSTALL_DIR})
-install(TARGETS utils 
-    EXPORT fl-targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+install(FILES ${FLUTILS_INCLUDE} DESTINATION ${FLUTILS_INSTALL_DIR})
+install(TARGETS utils EXPORT fl-targets
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )

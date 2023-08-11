@@ -1,44 +1,48 @@
 #include "fl/net/Endpoint.hpp"
+#include "fl/utils/Exception.hpp"
 
 namespace Forward {
     
     Endpoint::Endpoint() 
     {
-        m_Endpoint = {net::ip::address_v4(), 8080};
+        endpoint_ = {net::ip::address_v4(), 80};
     }
     Endpoint::Endpoint(std::string_view str) 
     {
-        auto const it = str.find(':');
+        size_t const it = str.find(':');
 
-        auto const ip = str.substr(0, it);
+        if (it == std::string::npos)
+            throw Exception("Failed to parse address");
 
-        auto const portStr = str.substr(it + 1, str.size());
-        auto const port = static_cast<unsigned short>(std::atoi(portStr.data()));
+        std::string_view ip = str.substr(0, it);
 
-        m_Endpoint = {net::ip::make_address(ip), port};
+        std::string_view const port_str = str.substr(it + 1, str.size());
+        uint16_t const port = static_cast<uint16_t>(std::atoi(port_str.data()));
+
+        endpoint_ = {net::ip::make_address(ip), port};
     }
-    Endpoint::Endpoint(std::string_view ip, unsigned short port) 
+    Endpoint::Endpoint(std::string_view ip, uint16_t port)
     {
-        m_Endpoint = {net::ip::make_address(ip), port};
+        endpoint_ = {net::ip::make_address(ip), port};
     }
 
     std::string Endpoint::Address() const 
     {
-        return m_Endpoint.address().to_string();
+        return endpoint_.address().to_string();
     }
-    unsigned short Endpoint::Port() const 
+    uint16_t Endpoint::Port() const 
     {
-        return m_Endpoint.port();
+        return endpoint_.port();
     }
 
     net::ip::tcp Endpoint::Protocol() const 
     {
-        return m_Endpoint.protocol();
+        return endpoint_.protocol();
     }
 
-    Endpoint::operator net::ip::tcp::endpoint() const
+    Endpoint::operator net::ip::tcp::endpoint const&() const&
     {
-        return m_Endpoint;
+        return endpoint_;
     }
 } // namespace
 

@@ -1,7 +1,8 @@
 #include "fl/net/http/HttpQuery.hpp"
-#include "fl/utils/StringArg.hpp"
 
-#include <iostream>
+#include "fl/utils/StringArg.hpp"
+#include "fl/utils/StringArgParser.hpp"
+
 #include <sstream>
 #include <iomanip>
 #include <codecvt>
@@ -11,49 +12,71 @@
 
 namespace Forward {
 
-    std::string UrlEncodeUtf8(std::string_view input) {
+    std::string UrlEncodeUtf8(std::string_view input)
+    {
         std::ostringstream encoded;
+
         encoded << std::hex << std::uppercase << std::setfill('0');
 
-        for (const unsigned char c : input) {
-            if (c <= 0x7F) {
-                if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+        for (unsigned char const c : input)
+        {
+            if (c <= 0x7F) 
+            {
+                if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') 
+                {
                     encoded << c;
-                } else {
+                }
+                else if (c == ' ') 
+                {
+                    encoded << '+';
+                }
+                else 
+                {
                     encoded << '%' << std::setw(2) << static_cast<int>(c);
                 }
-            } else {
+            } 
+            else 
+            {
                 encoded << '%' << std::setw(2) << static_cast<int>(c);
             }
         }
+
         return encoded.str();
     }
-    std::string UrlDecodeUtf8(std::string_view input) {
+    std::string UrlDecodeUtf8(std::string_view input)
+    {
         std::ostringstream decoded;
-        for (std::size_t i = 0; i < input.size(); ++i) {
-            if (input[i] == '%') {
+
+        for (uint64_t i = 0; i < input.size(); ++i) 
+        {
+            if (input[i] == '%') 
+            {
                 auto hexCode = input.substr(i + 1, 2);
                 unsigned char decodedChar = std::stoi(hexCode.data(), nullptr, 16);
+
                 decoded << decodedChar;
                 i += 2; // Skip the two hexadecimal characters
-            } else if (input[i] == '+') {
+            } 
+            else if (input[i] == '+') 
+            {
                 decoded << ' '; // Replace '+' with space
-            } else {
-                decoded << input[i]; // Append other characters as is
+            } 
+            else 
+            {
+                decoded << input[i];
             }
         }
+
         return decoded.str();
     }
 
-    HttpQuery::HttpQuery() 
-        : is_valid(false){}
+    HttpQuery::HttpQuery() {}
     HttpQuery::HttpQuery(std::string_view query)
-        : is_valid(false)
     {
-        auto decoded = UrlDecodeUtf8(query);
-
-        if (decoded.empty())
+        if (query.empty())
             return;
+
+        std::string decoded = UrlDecodeUtf8(query);
 
         if (decoded.front() == '?')
             decoded.erase(0, 1);
@@ -70,28 +93,26 @@ namespace Forward {
 
         while (true)
         {
-            if (view.empty()) break;
+            if (view.empty())
+                break;
 
-            auto const sep_pos = view.find('&');
-            auto const delim_pos = view.find('=');
+            uint64_t const sep_pos = view.find('&');
+            uint64_t const delim_pos = view.find('=');
 
-            bool const is_sep = sep_pos != std::string::npos;
-            bool const is_delim = delim_pos != std::string::npos;
+            bool is_sep = sep_pos != std::string::npos;
+            bool is_delim = delim_pos != std::string::npos;
 
             if (!is_delim) break;
 
-            auto const& param = view.substr(0, 
+            std::string_view param = view.substr(0,
                 is_sep
                 ? sep_pos
                 : view.size()
             );
 
-            auto const& arg = StringArg::FromString(param);
+            StringArg arg = StringArgParser::FromString(param);
 
-            if (!params_.has_value())
-                params_.emplace();
-
-            params_->insert(std::make_pair(arg.Name(), arg.Data()));
+            params_.insert(std::make_pair(arg.GetName(), arg.GetData()));
 
             view = view.substr(
                 is_sep
@@ -99,28 +120,23 @@ namespace Forward {
                 : param.size(), view.size());
         }
 
-        if (params_.has_value())
-            is_valid = true;
+        is_valid = true;
     }
 
     StringArg HttpQuery::Arg(std::string_view key) const
     {
-        StringArg arg;
-
         if (!HasKey(key))
-            return arg;
+            return StringArg();
 
-        arg.SetName(key);
-        arg.SetData(Value(key));
-
-        return arg;
+        return StringArg(key, Value(key).data());
     }
+
     std::string_view HttpQuery::Value(std::string_view key) const 
     {
         if (!HasKey(key)) 
             return "";
 
-        return params_->at(key.data());
+        return params_.at(key.data());
     }
 
     std::vector<std::string> HttpQuery::Keys() const
@@ -130,11 +146,11 @@ namespace Forward {
         if (!IsValid())
             return keys;
 
-        keys.reserve(params_->size());
+        keys.reserve(Size());
 
         std::transform(
-            params_->cbegin(), 
-            params_->cend(), 
+            params_.cbegin(), 
+            params_.cend(), 
             std::back_inserter(keys), 
             [](auto const& pair){ return pair.first; }
         );
@@ -144,12 +160,12 @@ namespace Forward {
 
     std::string HttpQuery::ToString() const
     {
-        std::string temp;
+        std::string temp = "?";
 
         if (!IsValid())
             return temp;
 
-        for (auto const& [key, val] : params_.value())
+        for (auto const& [key, val] : params_)
         {
             if (!temp.empty())
                 temp.push_back('&');
@@ -157,43 +173,33 @@ namespace Forward {
             temp.append(key + '=' + val);
         }
 
-        return "?" + temp;
+        return temp;
     }
     
-    std::vector<StringArg> HttpQuery::ToArgs() const 
+    std::vector<StringArg> HttpQuery::ToArgs(std::string_view arg_format) const
     {
         std::vector<StringArg> args;
 
         if (!IsValid())
             return args;
 
-        args.reserve(params_->size());
+        args.reserve(Size());
 
         std::transform(
-            params_->cbegin(), 
-            params_->cend(), 
+            params_.cbegin(), 
+            params_.cend(), 
             std::back_inserter(args), 
-            [](auto const& pair){ return StringArg(pair.first, pair.second); }
+            [&arg_format](auto const& pair) {
+                return StringArg(pair.first, pair.second, arg_format); 
+            }
         );
 
         return args;
     }
-    std::vector<StringArg> HttpQuery::ToArgs(char specifier) const 
+
+    uint64_t HttpQuery::Size() const
     {
-        auto args = ToArgs();
-
-        for (auto& arg : args)
-            arg.SetSpecifier(specifier);
-
-        return args;
-    }
-
-    size_t HttpQuery::Size() const
-    {
-        if (!params_.has_value())
-            return 0;
-
-        return params_->size();
+        return params_.size();
     }
 
     bool HttpQuery::IsValid() const 
@@ -206,6 +212,6 @@ namespace Forward {
         if (!IsValid())
             return false;
 
-        return params_->find(key.data()) != params_->cend();
+        return params_.find(key.data()) != params_.cend();
     }
 }

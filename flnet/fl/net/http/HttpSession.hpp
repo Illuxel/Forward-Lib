@@ -35,7 +35,7 @@ namespace Forward {
     protected:
         /**
          *
-         * void HttpSession::OnRead(beast::error_code ec, size_t bytes_transferred)
+         * void HttpSession::OnRead(sys::error_code ec, size_t bytes_transferred)
          * {
          *     boost::ignore_unused(bytes_transferred);
          * 
@@ -48,15 +48,15 @@ namespace Forward {
          *     ... Your code
          *  
          *  }*/
-        virtual void OnRead(beast::error_code ec, std::size_t bytes_transferred) = 0;
+        virtual void OnRead(sys::error_code ec, std::size_t bytes_transferred) = 0;
 
     private:
         void OnRun();
-        void OnHandshake(beast::error_code ec);
+        void OnHandshake(sys::error_code ec);
 
         void Read();
 
-        void OnWrite(bool keep_alive, beast::error_code ec, std::size_t bytes_transferred);
-        void OnClose(beast::error_code ec);
+        void OnWrite(bool keep_alive, sys::error_code ec, std::size_t bytes_transferred);
+        void OnClose(sys::error_code ec);
     };
 }

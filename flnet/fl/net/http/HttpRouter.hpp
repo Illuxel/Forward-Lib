@@ -1,8 +1,18 @@
 #pragma once
 
+#include "fl/utils/Memory.hpp"
+
 #include "fl/net/http/WebFileSystem.hpp"
 
 namespace Forward {
+
+    struct RouteComparator
+    {
+        bool operator()(std::string_view left, std::string_view right) const 
+        {
+            return false;
+        }
+    };
 
     class HttpRouter
     {
@@ -13,11 +23,14 @@ namespace Forward {
         MimeType def_ext_;
 
         // file system to store every document info
-        Scope<WebFilesSystem const> wfs_;
+        Scope<WebFilesSystem> wfs_;
+
         // folders where assets, styles, scripts stored
-        std::set<std::string> content_folder_;
+        std::set<std::string> content_;
         // key: reg route, value: prepared route
-        std::map<std::string, std::string> routes_;
+        std::map<std::string, std::string, RouteComparator> routes_;
+
+        mutable std::shared_mutex router_mutex_;
 
     public:
         HttpRouter();
@@ -28,7 +41,7 @@ namespace Forward {
         std::string GetRouteFilePath(std::string_view target) const;
         std::string GetContentFilePath(std::string_view content) const;
 
-        void RegisterRoute(std::string_view target);
+        void RegisterTarget(std::string_view target);
         void RegisterContent(std::string_view target);
 
         bool IsTarget(std::string_view target) const;

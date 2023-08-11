@@ -21,7 +21,7 @@ namespace Forward {
             Example
         };
 
-        enum class SubType : uint8_t
+        enum class SubType : uint16_t
         {
             Unknown = 9,
 
@@ -54,8 +54,8 @@ namespace Forward {
         };
 
     private:
-        Type type_;
-        SubType sub_type_; 
+        Type type_ = MimeType::App;
+        SubType sub_type_ = SubType::Unknown;
 
         std::string ext_name_, sub_type_str_;
 

@@ -85,38 +85,38 @@ namespace Forward {
     };
 }
 
-#define ENABLE_ENUM_FLAGS(Enum, FlagsName) \
-    using FlagsName = Forward::EnumFlags<Enum>
+#define ENUM_FLAGS(EnumType, FlagsName) \
+    using FlagsName = Forward::EnumFlags<EnumType>
 
-#define DECLARE_ENUM_OPERATORS(Enum) \
-    static_assert(std::is_enum_v<Enum>, "EnumFlags requires an enum type."); \
-    inline constexpr Enum operator|(Enum lhs, Enum rhs) noexcept \
+#define DECLARE_ENUM_OPERATORS(EnumType) \
+    static_assert(std::is_enum_v<EnumType>, "EnumFlags requires an enum type."); \
+    inline constexpr EnumType operator|(EnumType lhs, EnumType rhs) noexcept \
     {                                                            \
-        return static_cast<Enum>(                                \
-            static_cast<std::underlying_type_t<Enum>>(lhs) |     \
-            static_cast<std::underlying_type_t<Enum>>(rhs));     \
+        return static_cast<EnumType>(                                \
+            static_cast<std::underlying_type_t<EnumType>>(lhs) |     \
+            static_cast<std::underlying_type_t<EnumType>>(rhs));     \
     }                                                            \
-    inline constexpr Enum operator&(Enum lhs, Enum rhs) noexcept \
+    inline constexpr EnumType operator&(EnumType lhs, EnumType rhs) noexcept \
     {                                                            \
-        return static_cast<Enum>(                                \
-            static_cast<std::underlying_type_t<Enum>>(lhs) &     \
-            static_cast<std::underlying_type_t<Enum>>(rhs));     \
+        return static_cast<EnumType>(                                \
+            static_cast<std::underlying_type_t<EnumType>>(lhs) &     \
+            static_cast<std::underlying_type_t<EnumType>>(rhs));     \
     }                                                            \
-    inline constexpr Enum operator^(Enum lhs, Enum rhs) noexcept \
+    inline constexpr EnumType operator^(EnumType lhs, EnumType rhs) noexcept \
     {                                                            \
-        return static_cast<Enum>(                                \
-            static_cast<std::underlying_type_t<Enum>>(lhs) ^     \
-            static_cast<std::underlying_type_t<Enum>>(rhs));     \
+        return static_cast<EnumType>(                                \
+            static_cast<std::underlying_type_t<EnumType>>(lhs) ^     \
+            static_cast<std::underlying_type_t<EnumType>>(rhs));     \
     }                                                            \
-    inline constexpr Enum operator~(Enum value) noexcept         \
+    inline constexpr EnumType operator~(EnumType value) noexcept         \
     {                                                            \
-        return static_cast<Enum>(~static_cast<std::underlying_type_t<Enum>>(value)); \
+        return static_cast<EnumType>(~static_cast<std::underlying_type_t<EnumType>>(value)); \
     }                                                            \
-    inline constexpr Enum& operator|=(Enum& lhs, Enum rhs) noexcept \
+    inline constexpr EnumType& operator|=(EnumType& lhs, EnumType rhs) noexcept \
     {                                                               \
         return lhs = lhs | rhs;                                     \
     }                                                               \
-    inline constexpr Enum& operator&=(Enum& lhs, Enum rhs) noexcept \
+    inline constexpr EnumType& operator&=(EnumType& lhs, EnumType rhs) noexcept \
     {                                                               \
         return lhs = lhs & rhs;                                     \
     }

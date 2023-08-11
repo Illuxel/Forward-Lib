@@ -17,22 +17,26 @@ namespace Forward {
         HttpResponseWrapper(http::status status, int version)
             : response_(status, version) {}
 
-        HttpResponseWrapper(http::response<Body>&& response)
+        constexpr HttpResponseWrapper(http::response<Body>&& response)
             : response_(std::move(response)){}
-        HttpResponseWrapper(http::response<Body> const& response) 
+        constexpr HttpResponseWrapper(http::response<Body> const& response)
             : response_(response) {}
 
-        auto& Base() & 
+        constexpr auto const& base() const&
         {
             return response_;
         }
-        auto&& Base() &&
+        constexpr auto& base() &
+        {
+            return response_;
+        }
+        constexpr auto&& base() &&
         {
             return std::move(response_);
         }
-        auto const& Base() const &
+        constexpr auto const&& base() const&&
         {
-            return response_;
+            return std::move(response_);
         }
 
         void Clear() 
@@ -57,20 +61,24 @@ namespace Forward {
             return std::move(res);
         } 
 
-        operator http::response<Body>&() & 
-        {
-            return &response_;
-        }
-        operator http::response<Body>&&() &&
-        {
-            return std::move(response_);
-        }
-        operator http::response<Body>() const &
+        constexpr operator http::response<Body> const&() const&
         {
             return response_;
         }
+        constexpr operator http::response<Body>&() &
+        {
+            return response_;
+        }
+        constexpr operator http::response<Body>&&() &&
+        {
+            return std::move(response_);
+        }
+        constexpr operator http::response<Body>&&() const&&
+        {
+            return std::move(response_);
+        }
 
-        operator http::message_generator() 
+        constexpr operator http::message_generator()
         {
             return std::move(response_);
         }

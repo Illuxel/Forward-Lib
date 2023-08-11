@@ -1,4 +1,6 @@
 #include "fl/utils/Logger.hpp"
+
+#include "fl/utils/StringArgParser.hpp"
 #include "fl/utils/StringBuilder.hpp"
 
 #include <iostream>
@@ -31,20 +33,19 @@ namespace Forward {
 	{
 		SetOutputMode(OutputFlag::Console | OutputFlag::File);
 
-		SetFileName(default_file_name);
-		SetDateTimeFormat(default_time_format);
-		SetMessageFormat(default_msg_format);
+		SetFileName(DefaultFileFormat);
+		SetDateTimeFormat(DateTime::DefaultFormat);
+		SetMessageFormat(DefaultMsgFormat);
 	}
-	Logger::Logger(std::string_view file_name, Logger::OutputFlags flags)
-		: output_flags_(flags)
+	Logger::Logger(std::string_view file_name, Logger::OutputFlags mode)
+		: out_mode_(mode)
 	{
 		SetFileName(file_name);
-
-		SetDateTimeFormat(default_time_format);
-		SetMessageFormat(default_msg_format);
+		SetDateTimeFormat(DateTime::DefaultFormat);
+		SetMessageFormat(DefaultMsgFormat);
 	}
-	Logger::Logger(std::string_view file_name, std::string_view msg_format, std::string_view time_format, Logger::OutputFlags flags)
-		: output_flags_(flags)
+	Logger::Logger(std::string_view file_name, Logger::OutputFlags mode, std::string_view msg_format, std::string_view time_format)
+		: out_mode_(mode)
 	{
 		SetFileName(file_name);
 		SetMessageFormat(msg_format);
@@ -53,13 +54,12 @@ namespace Forward {
 
     Logger::~Logger()
     {
-		msg_queue_.reset();
 		file_.close();
     }
 
-	void Logger::SetOutputMode(Logger::OutputFlags output_mode)
+	void Logger::SetOutputMode(Logger::OutputFlags mode)
 	{
-		output_flags_ = output_mode;
+		out_mode_ = mode;
 	}
 
 	void Logger::SetFileName(std::string_view file_name)
@@ -75,44 +75,49 @@ namespace Forward {
 		msg_format_ = msg_format;
 	}
 
-	Logger::Message& Logger::FirstLog() const
+	Logger::Message& Logger::FirstLog() &
 	{
-		return msg_queue_->back();
+		std::shared_lock lock(queue_mtx_);
+		return msg_queue_.back();
 	}
-	Logger::Message& Logger::LastLog() const
+	Logger::Message const& Logger::FirstLog() const&
 	{
-		return msg_queue_->front();
+		std::shared_lock lock(queue_mtx_);
+		return msg_queue_.back();
+	}
+
+	Logger::Message& Logger::LastLog() &
+	{
+		std::shared_lock lock(queue_mtx_);
+		return msg_queue_.front();
+	}
+	Logger::Message const& Logger::LastLog() const&
+	{
+		std::shared_lock lock(queue_mtx_);
+		return msg_queue_.front();
 	}
 
 	void Logger::PushMessage(Logger::Message const& msg) 
 	{
-		if (!msg_queue_)
-			msg_queue_ = MakeRef<std::queue <Message>>();
-
-		std::lock_guard<std::mutex> lock(mutex_);
-		msg_queue_->push(msg);
+		std::unique_lock lock(queue_mtx_);
+		msg_queue_.push(msg);
 	}
 
 	void Logger::LogImplHelper() 
 	{
 		auto parsed_msg = ParseMessageFormat();
 		
-		std::future<void> console = std::async(std::launch::async, [this](std::string parsed_msg) {
-			this->ConsoleOut(parsed_msg);
-		}, parsed_msg);
-		
-		console.wait();
+		//std::async(std::launch::async, [this](std::string parsed_msg) {
+		//	this->ConsoleOut(parsed_msg);
+		//}, parsed_msg);
 
-		std::future<void> write = std::async(std::launch::async, [this](std::string parsed_msg) {
-			this->WriteInFile(parsed_msg);
-		}, parsed_msg);
-		
-		write.wait();
+		//std::async(std::launch::async, [this](std::string parsed_msg) {
+		//	this->WriteInFile(parsed_msg);
+		//}, parsed_msg);
 	}
 	
 	void Logger::LogImpl(Logger::Level level) 
 	{
-		std::lock_guard<std::mutex> lock(mutex_);
 		auto& msg = LastLog();
 		msg.Level = level;
 	}
@@ -122,10 +127,9 @@ namespace Forward {
 	}
 	void Logger::LogImpl(std::string const& data)
 	{
-		std::lock_guard<std::mutex> lock(mutex_);
 		auto& msg = LastLog();
 
-		if (msg.Caller.empty()) 
+		if (msg.Caller.empty())
 		{
 			msg.Caller = data;
 			return;
@@ -134,45 +138,42 @@ namespace Forward {
 		msg.Data += data + ' ';
 	}
 
+	/**
+	 *	%t - appends time
+	 *	%c - appends caller
+	 *	%m - appends log message
+	 *	%l - appends log level
+	 */
 	std::string Logger::ParseMessageFormat()
 	{
-		std::lock_guard<std::mutex> lock(mutex_);
-
-		auto& msg = LastLog();
-		/**
-		 *	%t - appends time 
-		 *	%c - appends caller
-		 *	%m - appends log message
-		 *	%l - appends log level
-		 */
-		auto msg_format_args = StringArg::MakeArgs({'t','c','m','l'}, true);
-	
-		msg_format_args[0].SetData(msg.Time.ToString()); 
-		msg_format_args[1].SetData(msg.Caller); 
-		msg_format_args[2].SetData(msg.Data); 
-		msg_format_args[3].SetData(FromEnumToString(msg.Level)); 
+		Message const& msg = LastLog();
+		
+		auto msg_format_args = 
+		StringArg::MakeArgs(
+		{
+			{ "t", msg.Time.ToString() },
+			{ "c", msg.Caller },
+			{ "m", msg.Data	},
+			{ "l", FromEnumToString(msg.Level) }
+		});
 
 		return StringBuilder(msg_format_, msg_format_args);
 	}
 
 	void Logger::ConsoleOut(std::string_view data) 
 	{
-		auto is_console = output_flags_.Test(OutputFlag::Console);
-
-		if (!is_console)
+		if (!out_mode_.Test(OutputFlag::Console))
 			return;
 
-		std::lock_guard<std::mutex> lock(mutex_);
+		std::unique_lock lock(io_mtx_);
 		std::cout << data << std::endl;
 	}
 	void Logger::WriteInFile(std::string_view data)
 	{
-		auto is_file = output_flags_.Test(OutputFlag::File);
-
-		if (!is_file)
+		if (!out_mode_.Test(OutputFlag::File))
 			return;
 
-		std::lock_guard<std::mutex> lock(mutex_);
+		std::unique_lock lock(io_mtx_);
 
 		if (!file_.is_open())
 		{

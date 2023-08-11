@@ -1,40 +1,31 @@
 #pragma once
 
 #include "fl/utils/Memory.hpp"
-#include "fl/net/AsyncListener.hpp"
 
-#include <thread>
+#include "fl/net/TcpServer.hpp"
+#include "fl/net/SecureLayer.hpp"
 
 namespace Forward {
-
-    class SslServer 
+    /**
+     * Secure TCP Server
+     */
+    class SslServer : public TcpServer, public SecureLayer
     {
-    protected:
-        ssl::context secure_context_;
-
-    private:
-        size_t io_count_;
-        net::io_context io_context_;
-        std::vector<std::thread> io_sessions_;
-
-        Ref<AsyncListener> listener_;
-    
     public:
         /**
-         *  @param method   sets encription method of SSL connection.
-         *                  by default it will use latest secure method
-         *  @param io_count specify amount of threads to io 
+         * Construct server with user defined amount of io threads
+         * 
+         * @param method sets encryption method of SSL connection.
+         *                 By default it will use latest secure method
+         * @param io_count specify amount of threads to io 
          */
-        SslServer(ssl::context::method method, uint8_t io_count);
+        SslServer(ssl::context::method method, uint8_t io_count = 1);
 
-        void Listen(Endpoint const& endpoint);
+        virtual ~SslServer() override;
 
-        void SetupFileSslCert(std::string_view filename, 
-            net::ssl::context::file_format format = net::ssl::context::pem);
-        void SetupFileSslCertKey(std::string_view filename, std::string_view pass = "",
-            net::ssl::context::file_format format = net::ssl::context::pem);
+    protected:
+        virtual void OnSocketError(sys::error_code ec);
+        virtual void OnSocketAccept(tcp::socket socket);
 
-        virtual void OnSocketAccept(beast::error_code ec, tcp::socket&& socket);
     };
-
 }
