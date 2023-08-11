@@ -34,6 +34,10 @@ endif()
 
 if(NOT TARGET Boost)
 
+    if (WIN32)
+        list(APPEND CMAKE_PREFIX_PATH $ENV{BOOST_DIR})
+    endif()
+
     if (NOT BUILD_SHARED_LIBS)
         set(Boost_USE_STATIC_LIBS ON)
     endif()
