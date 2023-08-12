@@ -2,16 +2,16 @@
 
 #include "fl/net/http/HttpClient.hpp"
 
-namespace Forward {
+#include "fl/forward/Chat.hpp"
 
-    class Chat;
+namespace Forward::API {
 
-    class Client : public std::enable_shared_from_this<Client>
+    class Client
     {
-        Ref<HttpClient> sender_;
+        Ref<Web::HttpClient> sender_;
 
     public:
-        explicit Client();
+        Client();
 
         bool Login(std::string_view email, std::string_view password);
         bool Register(std::string_view username, std::string_view email, std::string_view password);

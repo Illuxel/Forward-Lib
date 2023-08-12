@@ -5,12 +5,18 @@
 #include "fl/net/TcpServer.hpp"
 #include "fl/net/SecureLayer.hpp"
 
-namespace Forward {
+namespace Forward::Net {
     /**
      * Secure TCP Server
      */
     class SslServer : public TcpServer, public SecureLayer
     {
+    public:
+
+
+    private:
+
+
     public:
         /**
          * Construct server with user defined amount of io threads
@@ -19,13 +25,13 @@ namespace Forward {
          *                 By default it will use latest secure method
          * @param io_count specify amount of threads to io 
          */
-        SslServer(ssl::context::method method, uint8_t io_count = 1);
+        SslServer(Core::Ssl::context::method method, uint32_t io_count = 1);
 
         virtual ~SslServer() override;
 
     protected:
-        virtual void OnSocketError(sys::error_code ec);
-        virtual void OnSocketAccept(tcp::socket socket);
+        virtual void OnSocketError(Core::Error ec);
+        virtual void OnSocketAccept(Core::Tcp::socket socket);
 
     };
 }

@@ -1,33 +1,33 @@
 #pragma once
 
-#include "fl/utils/Log.hpp"
-
 #include "fl/net/http/Core.hpp"
 
-namespace Forward {
+namespace Forward::Web {
 
-    class HttpClient : public std::enable_shared_from_this<HttpClient>
+    class HttpClient
     {
     private:
-        tcp::resolver resolver_;
-        beast::ssl_stream<beast::tcp_stream> stream_;
-        beast::flat_buffer buffer_; // (Must persist between reads)
-        http::request<http::empty_body> req_;
-        http::response<http::string_body> res_;
+        Core::Tcp::resolver resolver_;
+        Core::Beast::ssl_stream<Core::Beast::tcp_stream> stream_;
+
+        Core::Beast::flat_buffer buffer_; // (Must persist between reads)
+
+        Http::request<Http::empty_body> req_;
+        Http::response<Http::string_body> res_;
 
     public:
-        explicit HttpClient(net::any_io_executor ex, ssl::context& ctx);
+        HttpClient(Core::Asio::any_io_executor ex, Core::Ssl::context& ctx);
 
         // Start the asynchronous operation
         void Run(std::string_view host, std::string_view port, std::string_view target);
 
-        void OnResolve(sys::error_code ec, tcp::resolver::results_type results);
-        void OnConnect(sys::error_code ec, tcp::resolver::results_type::endpoint_type);
-        void OnHandshake(sys::error_code ec);
+        void OnResolve(Core::Error ec, Core::Tcp::resolver::results_type results);
+        void OnConnect(Core::Error ec, Core::Tcp::resolver::results_type::endpoint_type);
+        void OnHandshake(Core::Error ec);
 
-        void OnWrite(sys::error_code ec, std::size_t bytes_transferred);
-        void OnRead(sys::error_code ec, std::size_t bytes_transferred);
+        void OnWrite(Core::Error ec, std::size_t bytes_transferred);
+        void OnRead(Core::Error ec, std::size_t bytes_transferred);
         
-        void OnShutdown(sys::error_code ec);
+        void OnShutdown(Core::Error ec);
     };
 }

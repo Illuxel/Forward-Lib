@@ -5,9 +5,9 @@
 #include "fl/net/http/HttpResponder.hpp"
 #include "fl/net/http/HttpSession.hpp"
 
-namespace Forward {
+namespace Forward::Web {
 
-    class HttpServer final : public SslServer
+    class HttpServer final : public Net::SslServer
     {
     private:
         Ref<HttpRouter> router_;
@@ -16,8 +16,8 @@ namespace Forward {
         Ref<HttpResponder> responder_;
 
     public:
-        HttpServer(net::ssl::context::method method, uint8_t io_count = 1);
-        HttpServer(std::string_view web_dir, net::ssl::context::method method, uint8_t io_count = 1);
+        HttpServer(Core::Ssl::context::method method, uint32_t io_count = 1);
+        HttpServer(std::string_view web_dir, Core::Ssl::context::method method, uint32_t io_count = 1);
 
         void SetBadRequest(HttpResponder::BadRequest const& handler);
         void SetContentFolders(std::vector<std::string> const& folders);
@@ -38,7 +38,7 @@ namespace Forward {
         }
 
     protected:
-        virtual void OnSocketError(sys::error_code ec) override;
-        virtual void OnSocketAccept(tcp::socket socket) override;
+        virtual void OnSocketError(Core::Error ec) override;
+        virtual void OnSocketAccept(Core::Tcp::socket socket) override;
     };
 }

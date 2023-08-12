@@ -4,18 +4,26 @@
 	#include <SDKDDKVer.h>
 #endif
 
-#include <optional>
-
 #include <boost/system/error_code.hpp>
-
-namespace sys = boost::system;
 
 #include <boost/asio/strand.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl.hpp>
 
-namespace net = boost::asio;
-namespace ssl = net::ssl;
+#include "fl/utils/Memory.hpp"
 
-using tcp = boost::asio::ip::tcp;
+namespace Forward::Net {
+		
+	namespace Core {
+
+		namespace Asio = boost::asio;
+		namespace Ip = Asio::ip;
+
+		namespace Ssl = Asio::ssl;
+
+		using Tcp = Asio::ip::tcp;
+		using Error = boost::system::error_code;
+
+	}
+}

@@ -2,7 +2,7 @@
 
 #include <regex>
 
-namespace Forward {
+namespace Forward::Web {
     
     HttpUrl::HttpUrl() {}
     HttpUrl::HttpUrl(std::string_view url)

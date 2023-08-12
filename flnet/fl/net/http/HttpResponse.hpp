@@ -2,24 +2,24 @@
 
 #include "fl/net/http/Core.hpp"
 
-namespace Forward {
+namespace Forward::Web {
 
     template<class Body>
     class HttpResponseWrapper
     {
     private:
-        http::response<Body> response_;
+        Http::response<Body> response_;
 
     public:
         HttpResponseWrapper() 
             : response_{} {}
 
-        HttpResponseWrapper(http::status status, int version)
+        HttpResponseWrapper(Http::status status, int version)
             : response_(status, version) {}
 
-        constexpr HttpResponseWrapper(http::response<Body>&& response)
+        constexpr HttpResponseWrapper(Http::response<Body>&& response)
             : response_(std::move(response)){}
-        constexpr HttpResponseWrapper(http::response<Body> const& response)
+        constexpr HttpResponseWrapper(Http::response<Body> const& response)
             : response_(response) {}
 
         constexpr auto const& base() const&
@@ -44,16 +44,16 @@ namespace Forward {
             request_ = {};
         }
 
-        static HttpResponseWrapper<http::string_body> Message(
-            http::response<http::string_body>&& res, 
+        static HttpResponseWrapper<Http::string_body> Message(
+            Http::response<Http::string_body>&& res,
             std::string const& msg) 
         {
             res.set(http::field::content_type, MimeType::FromString("txt").GetMimeName());
             res.body() = std::move(msg);
             return std::move(res);
         } 
-        static HttpResponseWrapper<http::string_body> Message(
-            http::response<http::string_body>&& res, 
+        static HttpResponseWrapper<Http::string_body> Message(
+            Http::response<Http::string_body>&& res,
             boost::json::value const& msg) 
         {
             res.set(http::field::content_type, MimeType::FromString("json").GetMimeName());
@@ -61,30 +61,30 @@ namespace Forward {
             return std::move(res);
         } 
 
-        constexpr operator http::response<Body> const&() const&
+        constexpr operator Http::response<Body> const&() const&
         {
             return response_;
         }
-        constexpr operator http::response<Body>&() &
+        constexpr operator Http::response<Body>&() &
         {
             return response_;
         }
-        constexpr operator http::response<Body>&&() &&
+        constexpr operator Http::response<Body>&&() &&
         {
             return std::move(response_);
         }
-        constexpr operator http::response<Body>&&() const&&
+        constexpr operator Http::response<Body>&&() const&&
         {
             return std::move(response_);
         }
 
-        constexpr operator http::message_generator()
+        constexpr operator Http::message_generator()
         {
             return std::move(response_);
         }
     };
 
-    using HttpResponse = HttpResponseWrapper<http::string_body>;
-    using HttpResponseFile = HttpResponseWrapper<http::file_body>;
-    using HttpResponseEmpty = HttpResponseWrapper<http::empty_body>;
+    using HttpResponse = HttpResponseWrapper<Http::string_body>;
+    using HttpResponseFile = HttpResponseWrapper<Http::file_body>;
+    using HttpResponseEmpty = HttpResponseWrapper<Http::empty_body>;
 }

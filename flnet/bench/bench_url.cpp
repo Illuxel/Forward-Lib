@@ -1,5 +1,5 @@
 #include "fl/net/http/HttpUrl.hpp"
-using namespace Forward;
+using namespace Forward::Web;
 
 #include <benchmark/benchmark.h>
 

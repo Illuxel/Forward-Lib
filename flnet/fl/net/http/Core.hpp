@@ -21,5 +21,15 @@ namespace json = boost::json;
 #include <boost/beast/http.hpp>
 #include <boost/beast/ssl.hpp>
 
-namespace beast = boost::beast;
-namespace http = beast::http;
+namespace Forward::Web {
+	
+	namespace Core {
+
+		using namespace Forward::Net::Core; // To use all core feautures of Net in Web 
+
+		namespace Beast = boost::beast;
+
+	}
+
+	namespace Http = Core::Beast::http;
+}

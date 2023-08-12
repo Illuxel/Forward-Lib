@@ -1,5 +1,5 @@
 #include "fl/net/TcpServer.hpp"
-using namespace Forward;
+using namespace Forward::Net;
 
 int main(int argc, char* argv[])
 {

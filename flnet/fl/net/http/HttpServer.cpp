@@ -1,12 +1,11 @@
 #include "fl/net/http/HttpServer.hpp"
 #include "fl/utils/Log.hpp"
 
-namespace Forward {
+namespace Forward::Web {
 
     HttpServer::HttpServer(
-        net::ssl::context::method method, 
-        uint8_t io_count
-    )
+        Core::Ssl::context::method method, 
+        uint32_t io_count)
         : SslServer(method, io_count)
     {
         responder_ = MakeRef<HttpResponder>();
@@ -14,9 +13,8 @@ namespace Forward {
 
     HttpServer::HttpServer(
         std::string_view web_dir,
-        net::ssl::context::method method, 
-        uint8_t io_count
-    )
+        Core::Ssl::context::method method, 
+        uint32_t io_count)
         : SslServer(method, io_count)
     {
         router_ = MakeRef<HttpRouter>(web_dir);
@@ -36,11 +34,11 @@ namespace Forward {
             router_->RegisterContent(folder);
     }
 
-    void HttpServer::OnSocketError(sys::error_code ec)
+    void HttpServer::OnSocketError(Core::Error ec)
     {
 
     }
-    void HttpServer::OnSocketAccept(tcp::socket socket)
+    void HttpServer::OnSocketAccept(Core::Tcp::socket socket)
     {
 
     }

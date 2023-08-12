@@ -2,7 +2,7 @@
 
 #include "fl/net/http/HttpQuery.hpp"
 
-namespace Forward {
+namespace Forward::Web {
     
     class HttpUrl
     {

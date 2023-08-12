@@ -2,7 +2,7 @@
 
 #include "fl/net/http/Core.hpp"
 
-namespace Forward {
+namespace Forward::Web {
 
     struct WebFileInfo
     {

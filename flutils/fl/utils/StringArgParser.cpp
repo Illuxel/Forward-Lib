@@ -13,7 +13,7 @@ namespace Forward {
 
     StringArg StringArgParser::FromString(std::string_view str, char sep, std::string_view format)
     {
-        uint64_t const pos = str.find(sep);
+        uint64_t pos = str.find(sep);
 
         if (pos == std::string::npos)
             return StringArg();

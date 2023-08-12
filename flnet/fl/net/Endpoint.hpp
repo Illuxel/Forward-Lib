@@ -2,12 +2,13 @@
 
 #include "fl/net/Core.hpp"
 
-namespace Forward {
+namespace Forward::Net {
     
     class Endpoint
     {
     private:
-        tcp::endpoint endpoint_;
+        bool is_valid = false;
+        Core::Tcp::endpoint endpoint_;
 
     public:
         Endpoint();
@@ -17,9 +18,11 @@ namespace Forward {
         std::string Address() const;
         uint16_t Port() const;
 
-        net::ip::tcp Protocol() const;
+        Core::Tcp Protocol() const;
 
-        operator net::ip::tcp::endpoint const&() const&;
+        bool IsValid() const { return is_valid; }
+
+        operator Core::Tcp::endpoint const&() const&;
     };
     
 } // namespace Forward
