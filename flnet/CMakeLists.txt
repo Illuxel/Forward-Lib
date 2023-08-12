@@ -22,8 +22,10 @@ set(NET_INCLUDE
 
     fl/net/TcpServer.hpp
     fl/net/SecureLayer.hpp
-
     fl/net/SslServer.hpp
+
+    fl/net/TcpSocket.hpp
+    fl/net/SslSocket.hpp
 )
 set(NET_SOURCE
     ${NET_INCLUDE}
@@ -32,8 +34,10 @@ set(NET_SOURCE
 
     fl/net/TcpServer.cpp
     fl/net/SecureLayer.cpp
-
     fl/net/SslServer.cpp
+
+    fl/net/TcpSocket.cpp
+    fl/net/SslSocket.cpp
 )
 
 # HTTP
