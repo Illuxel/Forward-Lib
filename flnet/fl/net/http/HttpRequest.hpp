@@ -2,26 +2,26 @@
 
 #include "fl/net/http/HttpUrl.hpp"
 
-namespace Forward {
+namespace Forward::Web {
 
     template<class Body>
     class HttpRequestWrapper
     {
     private:
-        http::request<Body> request_;
+        Http::request<Body> request_;
 
     public:
         HttpRequestWrapper()
             : request_{} {}
 
-        HttpRequestWrapper(http::status status, int version)
+        HttpRequestWrapper(Http::status status, int version)
             : request_(status, version) {}
-        HttpRequestWrapper(http::verb method, std::string_view target, int version)
+        HttpRequestWrapper(Http::verb method, std::string_view target, int version)
             : request_(method, target, version) {}
 
-        HttpRequestWrapper(http::request<Body>&& request)
+        HttpRequestWrapper(Http::request<Body>&& request)
             : request_(std::move(request)){}
-        HttpRequestWrapper(http::request<Body> const& request) 
+        HttpRequestWrapper(Http::request<Body> const& request)
             : request_(request) {}
 
         constexpr auto const& base() const &
@@ -61,30 +61,30 @@ namespace Forward {
             request_ = {};
         }
 
-        constexpr operator http::request<Body>&() &
+        constexpr operator Http::request<Body>&() &
         {
             return &request_;
         }
-        constexpr operator http::request<Body>&&() &&
+        constexpr operator Http::request<Body>&&() &&
         {
             return std::move(request_);
         }
-        constexpr operator http::request<Body> && () const&&
+        constexpr operator Http::request<Body> && () const&&
         {
             return std::move(request_);
         }
-        constexpr operator http::request<Body> const&() const&
+        constexpr operator Http::request<Body> const&() const&
         {
             return request_;
         }
 
-        constexpr operator http::message_generator()
+        constexpr operator Http::message_generator()
         {
             return std::move(request_);
         }
     };
 
-    using HttpRequest = HttpRequestWrapper<http::string_body>;
-    using HttpRequestFile = HttpRequestWrapper<http::file_body>;
-    using HttpRequestEmpty = HttpRequestWrapper<http::empty_body>;
+    using HttpRequest = HttpRequestWrapper<Http::string_body>;
+    using HttpRequestFile = HttpRequestWrapper<Http::file_body>;
+    using HttpRequestEmpty = HttpRequestWrapper<Http::empty_body>;
 }

@@ -2,7 +2,7 @@
 
 #include "fl/net/http/Core.hpp"
 
-namespace Forward {
+namespace Forward::Web {
 
     std::string UrlEncodeUtf8(std::string_view input);
     std::string UrlDecodeUtf8(std::string_view input);
@@ -10,8 +10,8 @@ namespace Forward {
     class HttpQuery
     {
     private:
-        std::unordered_map<std::string, std::string> params_;
         bool is_valid = false;
+        std::unordered_map<std::string, std::string> args_;
 
     public:
         HttpQuery();
@@ -30,7 +30,8 @@ namespace Forward {
         uint64_t Size() const;
 
         bool IsValid() const;
-
         bool HasKey(std::string_view key) const;
+
+        std::string& operator[](std::string_view key)&;
     };
 } // namespace Forward

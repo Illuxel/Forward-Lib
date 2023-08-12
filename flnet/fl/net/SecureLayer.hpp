@@ -2,19 +2,21 @@
 
 #include "fl/net/Core.hpp"
 
-namespace Forward {
+namespace Forward::Net {
 
 	class SecureLayer 
 	{
 	private:
-		ssl::context secure_context_;
+		Core::Ssl::context secure_context_;
 
 	public:
-		SecureLayer(ssl::context::method method);
+		SecureLayer(Core::Ssl::context::method method);
+
+		virtual ~SecureLayer();
 
 		void SetupFileSslCert(std::string_view filename,
-			net::ssl::context::file_format format = net::ssl::context::pem);
+			Core::Ssl::context::file_format format = Core::Ssl::context::pem);
 		void SetupFileSslCertKey(std::string_view filename, std::string_view pass = "",
-			net::ssl::context::file_format format = net::ssl::context::pem);
+			Core::Ssl::context::file_format format = Core::Ssl::context::pem);
 	};
 }

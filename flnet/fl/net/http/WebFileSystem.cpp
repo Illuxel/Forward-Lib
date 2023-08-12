@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-namespace Forward {
+namespace Forward::Web {
 
     std::vector<WebFileInfo> 
     IterateFiles(std::filesystem::path const& dir, std::filesystem::path base = "")

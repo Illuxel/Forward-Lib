@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Forward::types {
+namespace Forward::API {
 
 	class Chat {};
 }

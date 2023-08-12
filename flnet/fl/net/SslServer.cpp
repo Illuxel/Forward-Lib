@@ -1,27 +1,27 @@
 #include "fl/net/SslServer.hpp"
 #include "fl/utils/Log.hpp"
 
-namespace Forward {
+namespace Forward::Net {
 
     SslServer::SslServer(
-        ssl::context::method method, 
-        uint8_t io_count
+        Core::Ssl::context::method method, 
+        uint32_t io_count
     )
         : SecureLayer(method)
         , TcpServer(io_count)
     {
-
+        //ssl::stream<tcp>
     }
 
     SslServer::~SslServer()
     {
     }
 
-    void SslServer::OnSocketError(sys::error_code ec)
+    void SslServer::OnSocketError(Core::Error ec)
     {
 
     }
-    void SslServer::OnSocketAccept(tcp::socket socket)
+    void SslServer::OnSocketAccept(Core::Tcp::socket socket)
     {
 
     }

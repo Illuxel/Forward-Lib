@@ -4,7 +4,7 @@
 
 #include "fl/net/http/WebFileSystem.hpp"
 
-namespace Forward {
+namespace Forward::Web {
 
     struct RouteComparator
     {

@@ -35,12 +35,12 @@ namespace Forward {
 }
 
 template<typename T>
-void PrintInfo(std::string const& call, T const& msg) 
+void PrintInfo(std::string const& caller, T const& msg) 
 {
 	static std::mutex out_mtx_;
 
 	std::lock_guard lock(out_mtx_);
-	std::cout << msg << std::endl;
+	std::cout << caller << ": " << msg << std::endl;
 }
 
 #define FL_LOG(call, msg) \

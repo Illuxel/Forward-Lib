@@ -1,5 +1,6 @@
 #include "fl/net/http/WebFileSystem.hpp"
 using namespace Forward;
+using namespace Forward::Web;
 
 #include <gtest/gtest.h>
 

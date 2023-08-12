@@ -5,28 +5,28 @@
 
 #include "fl/net/http/HttpRouter.hpp"
 
-namespace Forward {
+namespace Forward::Web {
 
     class HttpResponder
     {
     public:
-        using CallBack = std::function<HttpResponse(HttpRequest const&, HttpResponse&&)>;
-        using BadRequest = std::function<HttpResponse(HttpRequest const&, http::status)>;
+        using Callback = std::function<HttpResponse(HttpRequest const&, HttpResponse&&)>;
+        using BadRequest = std::function<HttpResponse(HttpRequest const&, Http::status)>;
 
-        struct HandlerData
+        struct RouteData
         {
             std::string Target;
-            std::optional<http::verb> Method;
-            std::optional<CallBack> Callback;
+            std::optional<Http::verb> Method;
+            std::optional<HttpResponder::Callback> Handler;
         };
 
     private:
         Ref<HttpRouter const> router_ = nullptr;
 
         BadRequest bad_request_;
-        std::unordered_multimap<std::string, HandlerData> handlers_;
+        std::unordered_multimap<std::string, RouteData> handlers_;
 
-        mutable std::shared_mutex res_mtx_;
+        mutable std::shared_mutex mtx_;
 
     public:
         HttpResponder();
@@ -42,7 +42,7 @@ namespace Forward {
          *  
          *  
          */
-        void AddRouteHandler(HttpResponder::HandlerData const& data);
+        void AddRouteHandler(HttpResponder::RouteData const& route);
         /**
          *  @param method 
          * 
@@ -54,6 +54,6 @@ namespace Forward {
          *  
          *   accepts incoming request
          */
-        http::message_generator HandleRequest(HttpRequest&& req) const;
+        Http::message_generator HandleRequest(HttpRequest&& req) const;
     };
 }

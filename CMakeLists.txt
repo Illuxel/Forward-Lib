@@ -149,8 +149,7 @@ PROPERTIES
 
 #--------------< Exporting targets >--------------#
 
-install(FILES ${FL_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/forward)
-install(FILES ${FLCLIENT_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/api)
+install(FILES ${FL_INCLUDE} ${FLCLIENT_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/forward)
 
 install(TARGETS flapi client
     EXPORT fl-targets
