@@ -101,7 +101,9 @@ set(MYSQL_CPPCONN_LIB_NAME mysqlcppconn)
 set(MYSQL_CPPCONN_POSSIBLE_PATH
     "C:/Program Files/MySQL/Connector C++"
     "C:/Program Files/MySQL/Connector C++ 8.0"
+    "/usr/lib"
     "/usr/lib64"
+    "/usr/local/lib"
     "/usr/local/lib64"
 )
 
