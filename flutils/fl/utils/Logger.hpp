@@ -100,7 +100,6 @@ namespace Forward {
 		template<typename ...Args>
 		void Log(Args&&... args) 
 		{
-			std::lock_guard<std::mutex> lock(mutex_);
 			Message msg;
 
 			msg.Time = DateTime::Now();

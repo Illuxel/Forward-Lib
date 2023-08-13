@@ -62,22 +62,22 @@ namespace Forward::DBTypes {
 		Result& operator=(Result&& right) noexcept;
 
 		template<class Type>
-		constexpr Type Get(uint32_t column) const
+		constexpr Type Get(uint32_t index) const
 		{
-			if (column == 0)
-				throw std::invalid_argument("Invalid column name");
+			if (index == 0)
+				throw std::invalid_argument("Invalid column index");
 
 			if (IsEmpty())
 				throw std::runtime_error("Query result is empty");
 			
-			return GetResultFromType<Type>(result_.get(), column);
+			return GetResultFromType<Type>(result_.get(), index);
 		}
 
 		template<class Type>
 		constexpr Type Get(std::string_view column) const
 		{
-			int column = result_->findColumn(column.data());
-			return Get<Type>(column);
+			int index = result_->findColumn(column.data());
+			return Get<Type>(index);
 		}
 
 		uint32_t RowCount() const;
