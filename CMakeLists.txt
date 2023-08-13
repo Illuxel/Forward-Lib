@@ -12,7 +12,6 @@ option(FL_ENABLE_TESTING "Enabling testing, will add google test feautures in C+
 option(FL_ENABLE_EXAMPLES "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
 option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
 
-
 if (NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
     set(CMAKE_INSTALL_INCLUDEDIR "include")
 endif()
@@ -52,7 +51,6 @@ include(GNUInstallDirs)
 
 set(namespace Fl)
 
-set(FL_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/cmake/fl)
 set(FL_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR}/cmake/fl)
 
 set(FL_INCLUDE
