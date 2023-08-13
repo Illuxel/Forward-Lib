@@ -145,7 +145,7 @@ message(STATUS "Finding MySQL Connector C++: ${MYSQL_CPPCONN_LIB_NAME}")
 find_path(MYSQL_CPPCONN_PATH
     NAME include
     PATHS
-        ${MYSQL_POSSIBLE_PATH}
+        ${MYSQL_CPPCONN_POSSIBLE_PATH}
     ENV 
         ${MYSQL_CPPCONN_ENV}
     NO_DEFAULT_PATH
