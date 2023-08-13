@@ -90,6 +90,7 @@ set(MYSQL_CPPCONN_POSSIBLE_PATH
     "C:/Program Files/MySQL/Connector C++ 8.0"
     "/usr/include"
     "/usr/lib"
+    "lib/x86_64-linux-gnu" # for debian
 )
 
 set(MYSQL_CPPCONN_ENV
