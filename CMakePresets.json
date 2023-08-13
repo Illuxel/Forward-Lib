@@ -11,9 +11,6 @@
       "description": "Base preset for library developers",
       "binaryDir": "${sourceDir}/build",
       "hidden": true,
-      "architecture": {
-        "value": "x64"
-      },
       "cacheVariables": {
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/install/${presetName}",
         "CMAKE_BUILD_TYPE": "Debug",
