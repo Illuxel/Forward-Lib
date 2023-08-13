@@ -42,7 +42,7 @@ if(NOT TARGET Boost)
         set(Boost_USE_STATIC_LIBS ON)
     endif()
 
-    find_package(Boost REQUIRED system json COMPONENTS)
+    find_package(Boost 1.81 REQUIRED system json COMPONENTS)
 
 endif()
 

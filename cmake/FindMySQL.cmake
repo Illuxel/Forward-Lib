@@ -12,8 +12,8 @@ if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
         )
     else()
         set(MYSQL_PATH_SUFFIXES
-            "lib/debug"
-            "lib64/debug"
+            # "lib/debug"
+            # "lib64/debug"
         )
     endif()
 
@@ -28,8 +28,8 @@ elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
         )
     else()
         set(MYSQL_PATH_SUFFIXES
-            "lib"
-            "lib64"
+            # "lib"
+            # "lib64"
         )
     endif()
 
@@ -101,6 +101,7 @@ set(MYSQL_CPPCONN_LIB_NAME mysqlcppconn)
 set(MYSQL_CPPCONN_POSSIBLE_PATH
     "C:/Program Files/MySQL/Connector C++"
     "C:/Program Files/MySQL/Connector C++ 8.0"
+    "/usr/include"
     "/usr/lib"
     "/usr/lib64"
     "/usr/local/lib"
@@ -147,7 +148,7 @@ endif()
 message(STATUS "Finding MySQL Connector C++: ${MYSQL_CPPCONN_LIB_NAME}")
 
 find_path(MYSQL_CPPCONN_PATH
-    NAME include
+    NAMES cppconn
     PATHS
         ${MYSQL_CPPCONN_POSSIBLE_PATH}
     ENV 
@@ -155,6 +156,8 @@ find_path(MYSQL_CPPCONN_PATH
     NO_DEFAULT_PATH
     NO_CACHE
 )   
+
+message(${MYSQL_CPPCONN_PATH})
 
 if (NOT MYSQL_CPPCONN_PATH)
     message(FATAL_ERROR "Could NOT find MySQL Connector C++ path")

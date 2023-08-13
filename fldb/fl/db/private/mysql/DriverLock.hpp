@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jdbc/mysql_driver.h>
+#include "fl/db/Core.hpp"
 
 namespace Forward::MySQL {
 
