@@ -1,17 +1,19 @@
 #pragma once
 
-#include "fl/db/private/mysql/DriverLock.hpp"
-
 #include "fl/db/Query.hpp"
 #include "fl/db/PreparedQuery.hpp"
 
 #include "fl/db/Result.hpp"
 
-#include "fl/utils/Log.hpp"
-
-#include <future>
+namespace sql {
+	class Driver;
+}
 
 namespace Forward {
+
+	namespace MySQL {
+		class DriverLock;
+	}
 
 	/**
 	 * Represents database connection
@@ -198,7 +200,7 @@ namespace Forward {
 			}
 
 			DBTypes::Result result;
-			MySQL::DriverLock d_lock(driver_);
+			//MySQL::DriverLock d_lock(driver_);
 
 			{
 				std::lock_guard lock(conn_mtx_);

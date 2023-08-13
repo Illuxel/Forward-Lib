@@ -2,8 +2,6 @@
 
 #include "fl/db/Query.hpp"
 
-#include <jdbc/cppconn/prepared_statement.h>
-
 namespace Forward::DBTypes {
 
 	template<class Type>

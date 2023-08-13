@@ -1,10 +1,6 @@
 #pragma once
 
-#include "fl/utils/Memory.hpp"
-#include "fl/utils/Exception.hpp"
-#include "fl/utils/DateTime.hpp"
-
-#include <jdbc/cppconn/resultset.h>
+#include "fl/db/Core.hpp"
 
 namespace Forward::DBTypes {
 	

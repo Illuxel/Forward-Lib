@@ -2,7 +2,6 @@
 #--------------< MySQL Sufixes >--------------#
 
 if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
-
     if (WIN32)
         set(MYSQL_LIB_PATH_SUFFIXES
             "lib/debug"
@@ -16,9 +15,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
             "lib/debug"
         )
     endif()
-
 elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
-
     if (WIN32)
         set(MYSQL_LIB_PATH_SUFFIXES
             "lib"
@@ -31,7 +28,6 @@ elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
             "lib"
         )
     endif()
-
 else()
     message(FATAL_ERROR "Unknown build type: ${CMAKE_BUILD_TYPE}")
 endif()
@@ -39,12 +35,7 @@ endif()
 #--------------< MySQL C API Search >--------------#
 
 set(MYSQL_LIB_NAME mysql)
-
-set(MYSQL_ENV
-    MYSQL_DIR
-    MYSQL_ROOT
-)
-
+set(MYSQL_ENV MYSQL_DIR MYSQL_ROOT)
 set(MYSQL_POSSIBLE_PATH
     "C:/Program Files/MySQL/Connector C"
     "/usr/lib"
@@ -52,7 +43,6 @@ set(MYSQL_POSSIBLE_PATH
 )
 
 if (WIN32)
-
     if (NOT FL_BUILD_STATIC)
         string(PREPEND MYSQL_LIB_NAME "lib")
         string(APPEND MYSQL_LIB_NAME ".dll")
@@ -60,9 +50,7 @@ if (WIN32)
         string(APPEND MYSQL_LIB_NAME "client")
         string(APPEND MYSQL_LIB_NAME ".lib")
     endif()
-
 elseif(UNIX)
-
     string(PREPEND MYSQL_LIB_NAME "lib")
 
     if (NOT FL_BUILD_STATIC)
@@ -71,10 +59,9 @@ elseif(UNIX)
         string(APPEND MYSQL_LIB_NAME "client")
         string(APPEND MYSQL_LIB_NAME ".a")
     endif()
-
 endif()
 
-message(STATUS "Finding MySQL C API")
+message(STATUS "Finding MySQL C API: ${MYSQL_LIB_NAME}")
 
 find_library(MYSQL_LIB
     NAME ${MYSQL_LIB_NAME}
@@ -145,7 +132,7 @@ endif()
 
 message(STATUS "Finding MySQL Connector C++: ${MYSQL_CPPCONN_LIB_NAME}")
 
-find_path(MYSQL_CPPCONN_PATH
+find_path(MYSQL_CPPCONN_INCLUDE
     NAMES cppconn
     PATHS
         ${MYSQL_CPPCONN_POSSIBLE_PATH}
@@ -157,16 +144,14 @@ find_path(MYSQL_CPPCONN_PATH
     NO_CACHE
 )   
 
-if (NOT MYSQL_CPPCONN_PATH)
+if (NOT MYSQL_CPPCONN_INCLUDE)
     message(FATAL_ERROR "Could NOT find MySQL Connector C++ path")
 endif()
-
-set(MYSQL_CPPCONN_INCLUDE ${MYSQL_CPPCONN_PATH}/include)
 
 find_library(MYSQL_CPPCONN_LIB
     NAME ${MYSQL_CPPCONN_LIB_NAME}
     PATHS 
-        ${MYSQL_CPPCONN_PATH}
+        # ${MYSQL_CPPCONN_INCLUDE}
     ENV
         ${MYSQL_CPPCONN_ENV}
     PATH_SUFFIXES 

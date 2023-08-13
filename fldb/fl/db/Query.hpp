@@ -2,8 +2,6 @@
 
 #include "fl/db/Result.hpp"
 
-#include <jdbc/cppconn/statement.h>
-
 namespace Forward::DBTypes {
 
 	class Query

@@ -38,6 +38,8 @@ set(MYSQL_PRIVATE_SOURCE
 set(FLDB_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/db)
 set(FLDB_INCLUDE 
 
+    fl/db/Core.hpp
+
     fl/db/Query.hpp
     fl/db/PreparedQuery.hpp
     fl/db/Result.hpp

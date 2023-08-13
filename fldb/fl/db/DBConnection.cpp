@@ -1,5 +1,7 @@
 #include "fl/db/DBConnection.hpp"
 
+#include "fl/db/private/mysql/DriverLock.hpp"
+
 namespace Forward {
 
     /**
