@@ -78,6 +78,7 @@ find_library(MYSQL_LIB
 )
 
 if (NOT MYSQL_LIB)
+    set(MYSQL_LIB "")
     message("Could NOT find MySQL C API file: ${MYSQL_LIB_NAME} build type: ${CMAKE_BUILD_TYPE}")
 else()
     message(STATUS "Found MySQL C API: ${MYSQL_LIB}")
