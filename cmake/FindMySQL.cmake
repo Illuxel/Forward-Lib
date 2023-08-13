@@ -13,6 +13,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
         set(MYSQL_LIB_PATH_SUFFIXES
             "lib"
             "lib64"
+            "lib/x86_64-linux-gnu" # for debian
         )
     endif()
 elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
@@ -26,8 +27,8 @@ elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
     else()
         set(MYSQL_LIB_PATH_SUFFIXES
             "lib"
-            "lib/x86_64-linux-gnu" # for debian
             "lib64"
+            "lib/x86_64-linux-gnu" # for debian
         )
     endif()
 else()
