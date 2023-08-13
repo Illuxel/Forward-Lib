@@ -6,11 +6,12 @@ project(ForwardLib
     DESCRIPTION "Set of tools to develope Forward Applications"
 )
 
+option(FL_BUILD_STATIC "Build library statically" ON)
+
 option(FL_ENABLE_TESTING "Enabling testing, will add google test feautures in C++" OFF)
 option(FL_ENABLE_EXAMPLES "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
 option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
 
-option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 if (NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
     set(CMAKE_INSTALL_INCLUDEDIR "include")
@@ -38,7 +39,7 @@ if(NOT TARGET Boost)
         list(APPEND CMAKE_PREFIX_PATH $ENV{BOOST_DIR})
     endif()
 
-    if (NOT BUILD_SHARED_LIBS)
+    if (FL_BUILD_STATIC)
         set(Boost_USE_STATIC_LIBS ON)
     endif()
 
