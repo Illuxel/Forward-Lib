@@ -6,11 +6,11 @@ project(ForwardLib
     DESCRIPTION "Set of tools to develope Forward Applications"
 )
 
-option(FL_ENABLE_TESTING "Enabling testing, will add google test feautures in C++" ON)
-option(FL_ENABLE_EXAMPLES "Enabling benchmarking, will add google benchmark feautures in C++" ON)
-option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" ON)
+option(FL_ENABLE_TESTING "Enabling testing, will add google test feautures in C++" OFF)
+option(FL_ENABLE_EXAMPLES "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
+option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
 
-# option(BUILD_SHARED_LIBS "Build using shared libraries" OFF)
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 if (NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
     set(CMAKE_INSTALL_INCLUDEDIR "include")
