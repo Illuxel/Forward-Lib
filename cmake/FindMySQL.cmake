@@ -12,7 +12,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
     else()
         set(MYSQL_LIB_PATH_SUFFIXES
             "lib"
-            "lib/debug"
+            "lib64"
         )
     endif()
 elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
@@ -26,6 +26,8 @@ elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
     else()
         set(MYSQL_LIB_PATH_SUFFIXES
             "lib"
+            "lib/x86_64-linux-gnu" # for debian
+            "lib64"
         )
     endif()
 else()
@@ -38,8 +40,7 @@ set(MYSQL_LIB_NAME mysql)
 set(MYSQL_ENV MYSQL_DIR MYSQL_ROOT)
 set(MYSQL_POSSIBLE_PATH
     "C:/Program Files/MySQL/Connector C"
-    "/usr/lib"
-    "/usr/local/lib"
+    "/usr"
 )
 
 if (WIN32)
@@ -88,9 +89,7 @@ set(MYSQL_CPPCONN_LIB_NAME mysqlcppconn)
 set(MYSQL_CPPCONN_POSSIBLE_PATH
     "C:/Program Files/MySQL/Connector C++"
     "C:/Program Files/MySQL/Connector C++ 8.0"
-    "/usr/include"
-    "/usr/lib"
-    "lib/x86_64-linux-gnu" # for debian
+    "/usr"
 )
 
 set(MYSQL_CPPCONN_ENV
@@ -152,7 +151,7 @@ endif()
 find_library(MYSQL_CPPCONN_LIB
     NAME ${MYSQL_CPPCONN_LIB_NAME}
     PATHS 
-        # ${MYSQL_CPPCONN_INCLUDE}
+        ${MYSQL_CPPCONN_POSSIBLE_PATH}
     ENV
         ${MYSQL_CPPCONN_ENV}
     PATH_SUFFIXES 
