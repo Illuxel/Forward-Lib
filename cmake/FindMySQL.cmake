@@ -132,6 +132,8 @@ if (WIN32)
 
 elseif(UNIX)
 
+    string(PREPEND MYSQL_CPPCONN_LIB_NAME "lib")
+
     if (BUILD_SHARED_LIBS)
         string(APPEND MYSQL_CPPCONN_LIB_NAME ".so")
     else()
