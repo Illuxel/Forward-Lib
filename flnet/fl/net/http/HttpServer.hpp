@@ -25,16 +25,16 @@ namespace Forward::Web {
         template<typename ...Args>
         constexpr void Route(Args&& ...args) 
         {
-            HttpResponder::RouteHandler handler {std::forward<Args>(args)...};
+            HttpResponder::RouteData route {std::forward<Args>(args)...};
 
-            if (!handler.Target.empty())
+            if (!route.Target.empty())
                 if (router_)
-                    router_->RegisterRoute(handler.Target);
+                    router_->RegisterTarget(route.Target);
 
-            if (!handler.Target.empty()
-                || handler.Method.has_value()
-                && handler.Callback.has_value())
-                responder_->AddRouteHandler(handler);
+            if (!route.Target.empty()
+                || route.Method.has_value()
+                && route.Callback.has_value())
+                responder_->AddRouteHandler(route);
         }
 
     protected:

@@ -41,14 +41,14 @@ namespace Forward::Web {
 
         void Clear() 
         {
-            request_ = {};
+            response_ = {};
         }
 
         static HttpResponseWrapper<Http::string_body> Message(
             Http::response<Http::string_body>&& res,
             std::string const& msg) 
         {
-            res.set(http::field::content_type, MimeType::FromString("txt").GetMimeName());
+            res.set(Http::field::content_type, MimeType::FromString("txt").GetMimeName());
             res.body() = std::move(msg);
             return std::move(res);
         } 
@@ -56,7 +56,7 @@ namespace Forward::Web {
             Http::response<Http::string_body>&& res,
             boost::json::value const& msg) 
         {
-            res.set(http::field::content_type, MimeType::FromString("json").GetMimeName());
+            res.set(Http::field::content_type, MimeType::FromString("json").GetMimeName());
             res.body() = std::move(boost::json::serialize(msg));
             return std::move(res);
         } 
