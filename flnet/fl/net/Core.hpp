@@ -11,6 +11,8 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl.hpp>
 
+#include <thread>
+
 #include "fl/utils/Memory.hpp"
 
 namespace Forward::Net {
