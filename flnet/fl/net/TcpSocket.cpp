@@ -1,10 +1,3 @@
-<<<<<<< Updated upstream
-#include "fl/net/TcpSocket.hpp"
-
-namespace Forward::Net {
-
-
-=======
 #include "fl/net/TcpSocket.hpp"
 
 namespace Forward::Net {
@@ -22,5 +15,4 @@ namespace Forward::Net {
 	{
 
 	}
->>>>>>> Stashed changes
 }

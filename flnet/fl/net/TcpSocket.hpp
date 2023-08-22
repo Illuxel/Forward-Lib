@@ -1,18 +1,3 @@
-<<<<<<< Updated upstream
-#pragma once
-
-#include "fl/net/Core.hpp"
-
-namespace Forward::Net {
-
-	class TcpSocket 
-	{
-	private:
-
-	public:
-
-	};
-=======
 #pragma once
 
 #include "fl/net/Endpoint.hpp"
@@ -44,5 +29,4 @@ namespace Forward::Net {
 		virtual void OnReadData(Core::mutable_buffer const&);
 
 	};
->>>>>>> Stashed changes
 }

@@ -1,18 +1,3 @@
-<<<<<<< Updated upstream
-#pragma once
-
-namespace Forward::Net {
-
-	class SslSocket
-	{
-	private:
-
-
-	public:
-
-
-	};
-=======
 #pragma once
 
 namespace Forward::Net {
@@ -26,5 +11,4 @@ namespace Forward::Net {
 
 
 	};
->>>>>>> Stashed changes
 }
