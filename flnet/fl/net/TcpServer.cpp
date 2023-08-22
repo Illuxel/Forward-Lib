@@ -18,15 +18,21 @@ namespace Forward::Net {
     
     }
 
-    void TcpServer::SetErrorCallback(OnError const& callback) 
+    void TcpServer::SetErrorCallback(OnErrorCallFunc const& callback)
     {
         on_error_ = callback;
         is_onerror = true;
     }
-    void TcpServer::SetAcceptCallback(OnSocket const& callback)
+    void TcpServer::SetAcceptCallback(OnSocketCallFunc const& callback)
     {
         on_socket_ = callback;
         is_onsocket = true;
+    }
+
+    void TcpServer::SetSocketDataCallback(OnSocketDataCallFunc const& callback) 
+    {
+        on_socket_data_ = callback;
+        is_onsocketdata = true;
     }
 
     void TcpServer::Listen()
@@ -59,13 +65,13 @@ namespace Forward::Net {
             return;
 
         // Allow address reuse
-        acceptor_.set_option(Core::Asio::socket_base::reuse_address(true));
+        acceptor_.set_option(Core::socket_base::reuse_address(true));
         acceptor_.bind(endpoint, ec);
 
         if (ec) 
             return;
 
-        acceptor_.listen(Core::Asio::socket_base::max_listen_connections, ec);
+        acceptor_.listen(Core::socket_base::max_listen_connections, ec);
 
         if(ec)
             return;
@@ -90,9 +96,14 @@ namespace Forward::Net {
         
     }
 
+    void TcpServer::OnSocketData(Core::Tcp::socket& socket, Core::mutable_buffer buffer)
+    {
+    
+    }
+
     void TcpServer::StartIOContext() 
     {
-        for (uint64_t i = 0; i < io_count_; ++i)
+        for (uint32_t i = 0; i < io_count_; ++i)
         {
             io_sessions_.emplace_back(
             [this]
@@ -106,10 +117,9 @@ namespace Forward::Net {
     void TcpServer::AcceptNextSocket()
     {
         acceptor_.async_accept(
-            Core::Asio::make_strand(io_context_),
+            Core::make_strand(io_context_),
             boost::beast::bind_front_handler(
-                &TcpServer::HandleSocket,
-                this));
+                &TcpServer::HandleSocket, this));
     }
     void TcpServer::HandleSocket(Core::Error ec, Core::Tcp::socket socket)
     {

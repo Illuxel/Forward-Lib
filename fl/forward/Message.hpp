@@ -9,7 +9,7 @@ namespace Forward::types {
 		enum Type {};
 
 		//QByteArray* GetCryptedContent() const;
-		//QSslCertificate* GetPublicKey() const;
+		//QSSLCertificate* GetPublicKey() const;
 
 		//Type GetMessageType() const;
 		//QDateTime* GetSendTime() const;
@@ -17,7 +17,7 @@ namespace Forward::types {
 	private:
 		// message and key
 		//QByteArray* m_EncMsg;
-		//QSslCertificate* m_Key;
+		//QSSLCertificate* m_Key;
 
 		// meta data
 		//Type m_MsgType;

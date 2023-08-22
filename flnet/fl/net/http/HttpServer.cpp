@@ -4,7 +4,7 @@
 namespace Forward::Web {
 
     HttpServer::HttpServer(
-        Core::Ssl::context::method method, 
+        Core::SSL::context::method method, 
         uint32_t io_count)
         : SslServer(method, io_count)
     {
@@ -13,12 +13,16 @@ namespace Forward::Web {
 
     HttpServer::HttpServer(
         std::string_view web_dir,
-        Core::Ssl::context::method method, 
+        Core::SSL::context::method method, 
         uint32_t io_count)
         : SslServer(method, io_count)
     {
         router_ = MakeRef<HttpRouter>(web_dir);
         responder_ = MakeRef<HttpResponder>(router_);
+    }
+
+    HttpServer::~HttpServer()
+    {
     }
 
     void HttpServer::SetBadRequest(HttpResponder::BadRequest const& handler)
@@ -32,14 +36,5 @@ namespace Forward::Web {
 
         for (std::string_view folder : folders)
             router_->RegisterContent(folder);
-    }
-
-    void HttpServer::OnSocketError(Core::Error ec)
-    {
-
-    }
-    void HttpServer::OnSocketAccept(Core::Tcp::socket socket)
-    {
-
     }
 }

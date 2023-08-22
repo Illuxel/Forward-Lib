@@ -18,7 +18,7 @@ namespace Forward::Web {
         Http::request<Http::string_body> req_;
 
     public:
-        explicit HttpSession(Core::Tcp::socket socket, Core::Ssl::context& context);
+        explicit HttpSession(Core::Tcp::socket socket, Core::SSL::context& context);
         virtual ~HttpSession();
 
         void SetRunExpire(ExpireTime exp_time);

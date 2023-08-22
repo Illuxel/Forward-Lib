@@ -3,7 +3,7 @@
 
 namespace Forward::Web {
 
-    HttpSession::HttpSession(Core::Tcp::socket socket, Core::Ssl::context& context)
+    HttpSession::HttpSession(Core::Tcp::socket socket, Core::SSL::context& context)
         : stream_(std::move(socket), context) 
     {
         SetRunExpire(std::chrono::seconds(30));
@@ -27,7 +27,7 @@ namespace Forward::Web {
 
     void HttpSession::Run()
     {
-        Core::Asio::dispatch(
+        Core::dispatch(
             stream_.get_executor(),
             Core::Beast::bind_front_handler(
                 &HttpSession::OnRun, this));
@@ -37,7 +37,7 @@ namespace Forward::Web {
         Core::Beast::get_lowest_layer(stream_).expires_after(exp_run_);
 
         stream_.async_handshake(
-            Core::Asio::ssl::stream_base::server,
+            Core::SSL::stream_base::server,
             Core::Beast::bind_front_handler(
                 &HttpSession::OnHandshake, this));
     }

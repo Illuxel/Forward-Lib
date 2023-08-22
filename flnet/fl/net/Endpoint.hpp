@@ -22,7 +22,12 @@ namespace Forward::Net {
 
         bool IsValid() const { return is_valid; }
 
-        operator Core::Tcp::endpoint const&() const&;
+        static Endpoint MakeAdress(std::string_view address);
+
+        operator Core::Tcp::endpoint const& () const&
+        {
+            return endpoint_;
+        }
     };
     
 } // namespace Forward

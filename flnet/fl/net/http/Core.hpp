@@ -27,9 +27,10 @@ namespace Forward::Web {
 
 		using namespace Forward::Net::Core; // To use all core feautures of Net in Web 
 
-		namespace Beast = boost::beast;
+		namespace Http {
+			
+			using Method = boost::beast::http::verb;
+		}
+	} 
 
-	}
-
-	namespace Http = Core::Beast::http;
 }

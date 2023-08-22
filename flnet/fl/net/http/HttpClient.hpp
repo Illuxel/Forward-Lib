@@ -16,18 +16,18 @@ namespace Forward::Web {
         Http::response<Http::string_body> res_;
 
     public:
-        HttpClient(Core::Asio::any_io_executor ex, Core::Ssl::context& ctx);
+        HttpClient(Core::any_io_executor ex, Core::SSL::context& ctx);
 
         // Start the asynchronous operation
         void Run(std::string_view host, std::string_view port, std::string_view target);
 
-        void OnResolve(Core::Error ec, Core::Tcp::resolver::results_type results);
-        void OnConnect(Core::Error ec, Core::Tcp::resolver::results_type::endpoint_type);
-        void OnHandshake(Core::Error ec);
+        void OnResolve(Core::ErrorCode ec, Core::Tcp::resolver::results_type results);
+        void OnConnect(Core::ErrorCode ec, Core::Tcp::resolver::results_type::endpoint_type);
+        void OnHandshake(Core::ErrorCode ec);
 
-        void OnWrite(Core::Error ec, std::size_t bytes_transferred);
-        void OnRead(Core::Error ec, std::size_t bytes_transferred);
+        void OnWrite(Core::ErrorCode ec, std::size_t bytes_transferred);
+        void OnRead(Core::ErrorCode ec, std::size_t bytes_transferred);
         
-        void OnShutdown(Core::Error ec);
+        void OnShutdown(Core::ErrorCode ec);
     };
 }

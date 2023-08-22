@@ -5,7 +5,7 @@ namespace Forward::Net {
     
     Endpoint::Endpoint() 
     {
-        endpoint_ = { Core::Ip::address_v4(), 8080 };
+        endpoint_ = { Core::IP::address_v4(), 8080 };
         is_valid = true;
     }
     Endpoint::Endpoint(std::string_view str) 
@@ -20,12 +20,12 @@ namespace Forward::Net {
 
         uint16_t port = static_cast<uint16_t>(std::atoi(port_str.data()));
 
-        endpoint_ = { Core::Ip::make_address(ip), port };
+        endpoint_ = { Core::IP::make_address(ip), port };
         is_valid = true;
     }
     Endpoint::Endpoint(std::string_view ip, uint16_t port)
     {
-        endpoint_ = { Core::Ip::make_address(ip), port };
+        endpoint_ = { Core::IP::make_address(ip), port };
         is_valid = true;
     }
 
@@ -41,11 +41,6 @@ namespace Forward::Net {
     Core::Tcp Endpoint::Protocol() const
     {
         return endpoint_.protocol();
-    }
-
-    Endpoint::operator Core::Tcp::endpoint const&() const&
-    {
-        return endpoint_;
     }
 } // namespace
 

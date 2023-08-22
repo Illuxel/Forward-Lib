@@ -5,8 +5,8 @@
 namespace Forward::Web {
 
     HttpClient::HttpClient(
-        Core::Asio::any_io_executor ex, 
-        Core::Ssl::context& ctx)
+        Core::any_io_executor ex, 
+        Core::SSL::context& ctx)
         : resolver_(ex)
         , stream_(ex, ctx)
     {
@@ -21,13 +21,13 @@ namespace Forward::Web {
         // Set SNI Hostname (many hosts need this to handshake successfully)
         if(! SSL_set_tlsext_host_name(stream_.native_handle(), host.data()))
         {
-            Core::Error ec{static_cast<int>(::ERR_get_error()), Core::Asio::error::get_ssl_category()};
+            Core::ErrorCode ec{static_cast<int>(::ERR_get_error()), Core::Error::get_ssl_category()};
             return FL_LOG("HttpClient", ec);
         }
 
         // Set up an HTTP GET request message
         req_.version(11);
-        req_.method(Http::verb::get);
+        req_.method(Http::Method::get);
         req_.target(target);
         req_.set(Http::field::host, host);
         req_.set(Http::field::user_agent, BOOST_BEAST_VERSION_STRING);
@@ -41,7 +41,7 @@ namespace Forward::Web {
     }
 
     void HttpClient::OnResolve(
-        Core::Error ec, 
+        Core::ErrorCode ec, 
         Core::Tcp::resolver::results_type results)
     {
         if(ec)
@@ -58,7 +58,7 @@ namespace Forward::Web {
     }
 
     void HttpClient::OnConnect(
-        Core::Error ec, 
+        Core::ErrorCode ec,
         Core::Tcp::resolver::results_type::endpoint_type)
     {
         if(ec)
@@ -66,13 +66,13 @@ namespace Forward::Web {
 
         // Perform the SSL handshake
         stream_.async_handshake(
-            Core::Ssl::stream_base::client,
+            Core::SSL::stream_base::client,
             Core::Beast::bind_front_handler(
                 &HttpClient::OnHandshake,
                 this));
     }
 
-    void HttpClient::OnHandshake(Core::Error ec)
+    void HttpClient::OnHandshake(Core::ErrorCode ec)
     {
         if(ec)
             return FL_LOG("handshake", ec);
@@ -86,7 +86,7 @@ namespace Forward::Web {
                 &HttpClient::OnWrite, this));
     }
 
-    void HttpClient::OnWrite(Core::Error ec, std::size_t bytes_transferred)
+    void HttpClient::OnWrite(Core::ErrorCode ec, std::size_t bytes_transferred)
     {
         boost::ignore_unused(bytes_transferred);
 
@@ -99,7 +99,7 @@ namespace Forward::Web {
                 &HttpClient::OnRead, this));
     }
 
-    void HttpClient::OnRead(Core::Error ec, std::size_t bytes_transferred)
+    void HttpClient::OnRead(Core::ErrorCode ec, std::size_t bytes_transferred)
     {
         boost::ignore_unused(bytes_transferred);
 
@@ -118,9 +118,9 @@ namespace Forward::Web {
                 &HttpClient::OnShutdown, this));
     }
 
-    void HttpClient::OnShutdown(Core::Error ec)
+    void HttpClient::OnShutdown(Core::ErrorCode ec)
     {
-        if(ec == Core::Asio::error::eof)
+        if(ec == Core::error::eof)
         {
             // Rationale:
             // http://stackoverflow.com/questions/25587403/boost-asio-ssl-async-shutdown-always-finishes-with-an-error
