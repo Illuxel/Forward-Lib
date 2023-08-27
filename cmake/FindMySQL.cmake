@@ -1,38 +1,31 @@
 
-#--------------< MySQL Sufixes >--------------#
+#--------------< MySQL Suffixes >--------------#
 
-if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
-    if (WIN32)
-        set(MYSQL_LIB_PATH_SUFFIXES
-            "lib/debug"
-            "lib/vs14/debug"
-            "lib64/debug"
-            "lib64/vs14/debug"
-        )
-    else()
-        set(MYSQL_LIB_PATH_SUFFIXES
-            "lib"
-            "lib64"
-            "lib/x86_64-linux-gnu" # for debian
-        )
+if (WIN32)
+    set(MYSQL_LIB_PATH_SUFFIXES
+        "lib"
+        "lib/vs14"
+        "lib64"
+        "lib64/vs14"
+    )
+
+    if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+
+        foreach(PREFFIX IN LISTS MYSQL_LIB_PATH_SUFFIXES)
+            string(APPEND PREFFIX "/debug")
+        endforeach()
+
     endif()
-elseif(CMAKE_BUILD_TYPE MATCHES Release OR CMAKE_BUILD_TYPE MATCHES MinSizeRel)
-    if (WIN32)
-        set(MYSQL_LIB_PATH_SUFFIXES
-            "lib"
-            "lib/vs14"
-            "lib64"
-            "lib64/vs14"
-        )
-    else()
-        set(MYSQL_LIB_PATH_SUFFIXES
-            "lib"
-            "lib64"
-            "lib/x86_64-linux-gnu" # for debian
-        )
-    endif()
+
 else()
-    message(FATAL_ERROR "Unknown build type: ${CMAKE_BUILD_TYPE}")
+    set(MYSQL_LIB_PATH_SUFFIXES
+        "lib"
+        "lib64"
+        "usr/lib"
+        "usr/lib64"
+        "lib/x86_64-linux-gnu" # for debian
+        "lib64/x86_64-linux-gnu" # for debian
+    )    
 endif()
 
 #--------------< MySQL C API Search >--------------#
