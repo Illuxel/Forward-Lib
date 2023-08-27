@@ -26,6 +26,11 @@ elseif(APPLE)
 elseif(UNIX)
 endif()
 
+if (NOT DEFINED CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug")
+    message(FATAL_ERROR "Unknown build type. Setting default build type: ${CMAKE_BUILD_TYPE}")
+endif()
+
 #--------------< Packages >--------------#
 
 if(NOT TARGET OPENSSL)
