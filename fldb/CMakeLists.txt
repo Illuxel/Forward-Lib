@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
-
 if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
     set(CMAKE_INSTALL_LIBDIR "lib")
 endif()

@@ -1,20 +1,19 @@
-cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
-
-set(TEST_SOURCE
-    test_main.cpp
-    test_client.cpp
-)
-
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
 enable_testing()
 
-add_executable(TestClient ${TEST_SOURCE})
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
-target_link_libraries(TestClient   
-    GTest::gtest_main
+add_executable(TestClient test_client.cpp)
+
+target_link_libraries(TestClient
     Fl::client
+    GTest::gtest_main
 )
 
 include(GoogleTest)

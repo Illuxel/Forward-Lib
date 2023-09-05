@@ -10,11 +10,10 @@ if (WIN32)
     )
 
     if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
-
-        foreach(PREFFIX IN LISTS MYSQL_LIB_PATH_SUFFIXES)
-            string(APPEND PREFFIX "/debug")
+        foreach(PREFIX ${MYSQL_LIB_PATH_SUFFIXES})
+            list(APPEND TEMP_PREFIXES ${PREFIX}/debug)
         endforeach()
-
+        set(MYSQL_LIB_PATH_SUFFIXES ${TEMP_PREFIXES})
     endif()
 
 else()

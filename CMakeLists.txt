@@ -33,26 +33,25 @@ endif()
 
 #--------------< Packages >--------------#
 
+if (NOT TARGET benchmark)
+    find_package(benchmark REQUIRED)
+endif()
+
 if(NOT TARGET OPENSSL)
-    find_package(OpenSSL 1.1.1 REQUIRED)
+    find_package(OpenSSL REQUIRED)
 endif()
 
 if(NOT TARGET Boost)
-
-    if (WIN32)
-        list(APPEND CMAKE_PREFIX_PATH $ENV{BOOST_DIR})
-    endif()
-
-    if (FL_BUILD_STATIC)
-        set(Boost_USE_STATIC_LIBS ON)
-    endif()
-
-    find_package(Boost 1.81 REQUIRED system json COMPONENTS)
-
+    find_package(Boost REQUIRED system json COMPONENTS)
 endif()
+
+
+#--------------< Includes >--------------#
 
 include(cmake/cxx-common.cmake)
 include(GNUInstallDirs)
+
+#--------------< Variables >--------------#
 
 set(namespace Fl)
 
