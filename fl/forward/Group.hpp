@@ -2,5 +2,5 @@
 
 namespace Forward::Data {
 
-	class Chat {};
+	class Group {};
 }
