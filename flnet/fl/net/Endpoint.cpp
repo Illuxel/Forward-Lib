@@ -5,28 +5,32 @@ namespace Forward::Net {
     
     Endpoint::Endpoint() 
     {
-        endpoint_ = { Core::IP::address_v4(), 8080 };
+        endpoint_ = { Core::IpAddressV4(), 8080 };
         is_valid = true;
     }
     Endpoint::Endpoint(std::string_view str) 
     {
-        uint64_t delim = str.find(':');
+        auto delim = str.find(':');
 
-        if (delim == std::string::npos)
+        if (delim == std::string::npos || delim == str.size())
             return;
 
-        std::string_view ip = str.substr(0, delim);
-        std::string_view port_str = str.substr(delim + 1, str.size());
+        auto ip = str.substr(0, delim);
+        auto port_str = str.substr(delim + 1, str.size());
 
-        uint16_t port = static_cast<uint16_t>(std::atoi(port_str.data()));
+        auto port = static_cast<uint16_t>(std::atoi(port_str.data()));
 
-        endpoint_ = { Core::IP::make_address(ip), port };
-        is_valid = true;
+        Core::ErrorCode ec;
+
+        endpoint_ = { Core::MakeAddress(ip, ec), port };
+        is_valid = (bool)ec;
     }
     Endpoint::Endpoint(std::string_view ip, uint16_t port)
     {
-        endpoint_ = { Core::IP::make_address(ip), port };
-        is_valid = true;
+        Core::ErrorCode ec;
+
+        endpoint_ = { Core::MakeAddress(ip, ec), port };
+        is_valid = (bool)ec;
     }
 
     std::string Endpoint::Address() const 

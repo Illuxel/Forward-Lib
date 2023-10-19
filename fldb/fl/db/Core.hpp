@@ -14,15 +14,15 @@
 
 // MySQL
 
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
+#include <jdbc/cppconn/resultset.h>
+#include <jdbc/cppconn/statement.h>
+#include <jdbc/cppconn/prepared_statement.h>
 
-#include <cppconn/connection.h>
+#include <jdbc/cppconn/connection.h>
 
-#include <mysql_error.h>
-#include <mysql_driver.h>
-#include <mysql_connection.h>
+#include <jdbc/mysql_error.h>
+#include <jdbc/mysql_driver.h>
+#include <jdbc/mysql_connection.h>
 
 namespace Forward::DB {
 
