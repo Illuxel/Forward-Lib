@@ -12,8 +12,8 @@ FetchContent_MakeAvailable(googletest)
 add_executable(TestClient test_client.cpp)
 
 target_link_libraries(TestClient
-    Fl::client
     GTest::gtest_main
+    Forward::Client
 )
 
 include(GoogleTest)

@@ -8,5 +8,5 @@ add_executable(BenchClient ${BENCH_SOURCE})
 
 target_link_libraries(BenchClient
     benchmark::benchmark
-    Fl::client
+    Forward::Client
 )

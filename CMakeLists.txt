@@ -5,10 +5,10 @@ cmake_policy(SET CMP0135 NEW)
 project(ForwardLib 
     VERSION 0.5.0
     LANGUAGES CXX C
-    DESCRIPTION "Set of tools to develope Forward Applications"
+    DESCRIPTION "Set of tools for developing Forward Applications"
 )
 
-option(FL_BUILD_STATIC "Build library statically" ON)
+# option(BUILD_STATIC "Build library statically" OFF)
 
 option(FL_ENABLE_TESTING "Enabling testing, will add google test feautures in C++" OFF)
 option(FL_ENABLE_EXAMPLES "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
@@ -30,7 +30,6 @@ endif()
 
 if (NOT DEFINED CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
-    message(FATAL_ERROR "Unknown build type. Setting default build type: ${CMAKE_BUILD_TYPE}")
 endif()
 
 #--------------< Packages >--------------#
@@ -44,7 +43,7 @@ if(NOT TARGET OPENSSL)
 endif()
 
 if(NOT TARGET Boost)
-    find_package(Boost REQUIRED system json COMPONENTS)
+    find_package(Boost 1.81 REQUIRED system json COMPONENTS)
 endif()
 
 
@@ -54,8 +53,6 @@ include(cmake/cxx-common.cmake)
 include(GNUInstallDirs)
 
 #--------------< Variables >--------------#
-
-set(namespace Fl)
 
 set(FL_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR}/cmake/fl)
 
@@ -107,46 +104,50 @@ endif()
 
 add_subdirectory(flutils)
 add_subdirectory(flnet)
+add_subdirectory(flweb)
 add_subdirectory(fldb)
 
-add_library(${namespace}::utils ALIAS utils)
-add_library(${namespace}::net ALIAS net)
-add_library(${namespace}::db ALIAS db)
+add_library(Forward::Utils ALIAS Forward.Utils)
+add_library(Forward::Net ALIAS Forward.Net)
+add_library(Forward::Web ALIAS Forward.Web)
+add_library(Forward::Database ALIAS Forward.Database)
 
 #--------------< API >--------------#
 
-add_library(flapi SHARED ${FL_SOURCE})
-add_library(${namespace}::flapi ALIAS flapi)
+add_library(Forward.API SHARED ${FL_SOURCE})
+add_library(Forward::API ALIAS Forward.API)
 
-target_include_directories(flapi
+target_include_directories(Forward.API
 PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_link_libraries(flapi
+target_link_libraries(Forward.API
 PUBLIC
-    ${namespace}::utils
-    ${namespace}::net
-    ${namespace}::db
+    Forward::Utils
+    Forward::Net
+    Forward::Web
+    Forward::Database
 )
 
-add_library(client SHARED ${FLCLIENT_SOURCE})
-add_library(${namespace}::client ALIAS client)
+add_library(Forward.Client SHARED ${FLCLIENT_SOURCE})
+add_library(Forward::Client ALIAS Forward.Client)
 
-target_include_directories(client
+target_include_directories(Forward.Client
 PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_link_libraries(client PUBLIC ${namespace}::flapi)
+target_link_libraries(Forward.Client PUBLIC Forward::API)
 
+#--------------< API versions >--------------#
 
-set_target_properties(flapi 
+set_target_properties(Forward.API 
 PROPERTIES
     VERSION ${ForwardLib_VERSION} 
     SOVERSION ${ForwardLib_VERSION}
 )
-set_target_properties(client 
+set_target_properties(Forward.Client 
 PROPERTIES 
     VERSION ${ForwardLib_VERSION}
     SOVERSION ${ForwardLib_VERSION}
@@ -156,7 +157,7 @@ PROPERTIES
 
 install(FILES ${FL_INCLUDE} ${FLCLIENT_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/forward)
 
-install(TARGETS flapi client
+install(TARGETS Forward.API Forward.Client
     EXPORT fl-targets
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}

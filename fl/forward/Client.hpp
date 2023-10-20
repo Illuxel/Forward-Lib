@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fl/net/http/HttpClient.hpp"
+#include "fl/web/HttpClient.hpp"
 
 #include "fl/forward/Account.hpp"
 

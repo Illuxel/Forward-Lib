@@ -1,2 +1,2 @@
 add_executable(ClientAPIExample UseClientAPI.cpp)
-target_link_libraries(ClientAPIExample Fl::client)
+target_link_libraries(ClientAPIExample Forward::Client)

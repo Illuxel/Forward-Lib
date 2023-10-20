@@ -1,13 +1,31 @@
-
-#--------------< MySQL Suffixes >--------------#
+#--------------< MySQL Path/Suffixes >--------------#
 
 if (WIN32)
-    set(MYSQL_LIB_PATH_SUFFIXES
-        "lib"
-        "lib/vs14"
-        "lib64"
-        "lib64/vs14"
+
+    set(MYSQL_CPPCONN_ENV
+        MYSQL_CPPCONN_DIR
+        MYSQL_CPPCONN_ROOT
+        MYSQL_CONNECTOR_DIR
+        MYSQL_CONNECTOR_ROOT
+        MYSQL_CONNECTOR_CPP_DIR
+        MYSQL_CONNECTOR_CPP_ROOT
     )
+    set(MYSQL_CPPCONN_POSSIBLE_PATHS
+        "C:/Program Files/MySQL/*/include"
+        "C:/Program Files/MySQL/Connector C++ 8.0"
+    )
+
+    if (MSVC)
+        set(MYSQL_LIB_PATH_SUFFIXES
+            "lib/vs14"
+            "lib64/vs14"
+        )
+    else()
+        set(MYSQL_LIB_PATH_SUFFIXES
+            "lib"
+            "lib64"
+        )
+    endif()
 
     if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
         foreach(PREFIX ${MYSQL_LIB_PATH_SUFFIXES})
@@ -17,6 +35,11 @@ if (WIN32)
     endif()
 
 else()
+
+    set(MYSQL_CPPCONN_POSSIBLE_PATHS
+        "/usr"
+    )
+
     set(MYSQL_LIB_PATH_SUFFIXES
         "lib"
         "lib64"
@@ -27,135 +50,82 @@ else()
     )    
 endif()
 
-#--------------< MySQL C API Search >--------------#
-
-set(MYSQL_LIB_NAME mysql)
-set(MYSQL_ENV MYSQL_DIR MYSQL_ROOT)
-set(MYSQL_POSSIBLE_PATH
-    "C:/Program Files/MySQL/Connector C"
-    "/usr"
-)
-
-if (WIN32)
-    if (NOT FL_BUILD_STATIC)
-        string(PREPEND MYSQL_LIB_NAME "lib")
-        string(APPEND MYSQL_LIB_NAME ".dll")
-    else()
-        string(APPEND MYSQL_LIB_NAME "client")
-        string(APPEND MYSQL_LIB_NAME ".lib")
-    endif()
-elseif(UNIX)
-    string(PREPEND MYSQL_LIB_NAME "lib")
-
-    if (NOT FL_BUILD_STATIC)
-        string(APPEND MYSQL_LIB_NAME ".so")
-    else()
-        string(APPEND MYSQL_LIB_NAME "client")
-        string(APPEND MYSQL_LIB_NAME ".a")
-    endif()
-endif()
-
-message(STATUS "Finding MySQL C API: ${MYSQL_LIB_NAME}")
-
-find_library(MYSQL_LIB
-    NAME ${MYSQL_LIB_NAME}
-    PATHS 
-        ${MYSQL_POSSIBLE_PATH}
-    ENV
-        ${MYSQL_ENV}
-    PATH_SUFFIXES 
-        ${MYSQL_LIB_PATH_SUFFIXES}
-    NO_DEFAULT_PATH
-    NO_CACHE
-)
-
-if (NOT MYSQL_LIB)
-    set(MYSQL_LIB "")
-    message("Could NOT find MySQL C API file: ${MYSQL_LIB_NAME} build type: ${CMAKE_BUILD_TYPE}")
-else()
-    message(STATUS "Found MySQL C API: ${MYSQL_LIB}")
-endif()
-
 #--------------< MySQL Connector C++ Search >--------------#
 
-set(MYSQL_CPPCONN_LIB_NAME mysqlcppconn)  
-
-set(MYSQL_CPPCONN_POSSIBLE_PATH
-    "C:/Program Files/MySQL/Connector C++"
-    "C:/Program Files/MySQL/Connector C++ 8.0"
-    "/usr"
-)
-
-set(MYSQL_CPPCONN_ENV
-    MYSQL_CPPCONN_DIR
-    MYSQL_CPPCONN_ROOT
-    MYSQL_CONNECTOR_DIR
-    MYSQL_CONNECTOR_ROOT
-    MYSQL_CONNECTOR_CPP_DIR
-    MYSQL_CONNECTOR_CPP_ROOT
-)
-
-if (FL_BUILD_STATIC)
-    # To statically build MySQL Connector C++
-    add_compile_definitions(
-        CPPCONN_PUBLIC_FUNC=
-    ) 
-endif()
-
-if (WIN32)
-
-    if (NOT FL_BUILD_STATIC)
-        string(APPEND MYSQL_CPPCONN_LIB_NAME ".dll")
-    else()
-        string(APPEND MYSQL_CPPCONN_LIB_NAME "-static")
-        string(APPEND MYSQL_CPPCONN_LIB_NAME ".lib")
-    endif()
-
-elseif(UNIX)
-
-    string(PREPEND MYSQL_CPPCONN_LIB_NAME "lib")
-
-    if (NOT FL_BUILD_STATIC)
-        string(APPEND MYSQL_CPPCONN_LIB_NAME ".so")
-    else()
-        string(APPEND MYSQL_CPPCONN_LIB_NAME "-static")
-        string(APPEND MYSQL_CPPCONN_LIB_NAME ".a")
-    endif()
-
-endif()
-
-message(STATUS "Finding MySQL Connector C++: ${MYSQL_CPPCONN_LIB_NAME}")
+message(STATUS "Finding MySQL Connector C++")
 
 find_path(MYSQL_CPPCONN_INCLUDE
-    NAMES cppconn
+    NAMES jdbc cppconn
     PATHS
-        ${MYSQL_CPPCONN_POSSIBLE_PATH}
+        ${MYSQL_CPPCONN_POSSIBLE_PATHS}
     ENV 
         ${MYSQL_CPPCONN_ENV}
-    PATH_SUFFIXES
-        include
     NO_DEFAULT_PATH
     NO_CACHE
 )   
 
 if (NOT MYSQL_CPPCONN_INCLUDE)
-    message(FATAL_ERROR "Could NOT find MySQL Connector C++ path")
+    message(FATAL_ERROR "Could NOT find MySQL Connector C++: Include Path")
 endif()
 
-find_library(MYSQL_CPPCONN_LIB
-    NAME ${MYSQL_CPPCONN_LIB_NAME}
-    PATHS 
-        ${MYSQL_CPPCONN_POSSIBLE_PATH}
-    ENV
-        ${MYSQL_CPPCONN_ENV}
-    PATH_SUFFIXES 
-        ${MYSQL_LIB_PATH_SUFFIXES}
-    NO_DEFAULT_PATH
-    NO_CACHE
-)
+if (NOT BUILD_STATIC OR NOT BUILD_SHARED_LIBS)
 
-if (NOT MYSQL_CPPCONN_LIB)
-    message(FATAL_ERROR "Could NOT find MySQL Connector C++ ${CMAKE_BUILD_TYPE}")
-else()
-    message(STATUS "Found MySQL Connector C++: ${MYSQL_CPPCONN_LIB}")
+    #--------------< Try find dynamic lib >--------------#
+
+    if (WIN32)
+        set(MYSQL_CPPCONN_LIB_NAME "mysqlcppconn.lib") 
+    elseif(UNIX)
+        set(MYSQL_CPPCONN_LIB_NAME "libmysqlcppconn.so")
+    endif()
+
+    find_library(MYSQL_CPPCONN_LIB
+        NAME ${MYSQL_CPPCONN_LIB_NAME}
+        PATHS 
+            ${MYSQL_CPPCONN_POSSIBLE_PATHS}
+        ENV
+            ${MYSQL_CPPCONN_ENV}
+        PATH_SUFFIXES 
+            ${MYSQL_LIB_PATH_SUFFIXES}
+        NO_DEFAULT_PATH
+        NO_CACHE
+    )
+
+    if (MYSQL_CPPCONN_LIB)
+        message(STATUS "Found MySQL Connector C++: Dynamic Lib")
+    else()
+
+        message(STATUS "Could NOT find MySQL Connector C++: Dynamic Lib")
+
+        if (WIN32)
+            set(MYSQL_CPPCONN_LIB_NAME "mysqlcppconn-static.lib") 
+        elseif(UNIX)
+            set(MYSQL_CPPCONN_LIB_NAME "libmysqlcppconn-static.a")
+        endif()
+
+        #--------------< Try find static lib >--------------#
+
+        find_library(MYSQL_CPPCONN_LIB
+            NAME ${MYSQL_CPPCONN_LIB_NAME}
+            PATHS 
+                ${MYSQL_CPPCONN_POSSIBLE_PATHS}
+            ENV
+                ${MYSQL_CPPCONN_ENV}
+            PATH_SUFFIXES 
+                ${MYSQL_LIB_PATH_SUFFIXES}
+            NO_DEFAULT_PATH
+            NO_CACHE
+        )
+
+        if (NOT MYSQL_CPPCONN_LIB)
+            message(FATAL_ERROR "Could NOT find MySQL Connector C++: Static Lib")
+        endif()
+
+        message(STATUS "Found MySQL Connector C++: Static Lib")
+
+        # To statically build MySQL Connector C++
+        add_compile_definitions(
+            CPPCONN_PUBLIC_FUNC=
+        )
+
+    endif()
 endif()
