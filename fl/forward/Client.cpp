@@ -5,6 +5,9 @@ namespace Forward::API {
     Client::Client()
     {
     }
+    Client::~Client()
+    {
+    }
 
     bool Client::Login(std::string_view email, std::string_view password) 
     {
@@ -14,22 +17,23 @@ namespace Forward::API {
     {
         return true;
     }
-    std::vector<Chat> Client::GetAccount() const
+    std::vector<Data::Account> Client::GetAccount() const
     {
-        return std::vector<Chat>();
+        return std::vector<Data::Account>();
     }
-    std::vector<Chat> Client::GetChats() const
+    std::vector<Data::Chat> Client::GetChats() const
     {
-        return std::vector<Chat>();
+        return std::vector<Data::Chat>();
     }
     void Client::CreateGroup(std::string_view name) const
     {
     }
-    bool Client::SendMessage(json::value json) const
+
+    bool Client::SendMessage(Data::Message msg)
     {
         return false;
     }
-    bool Client::SendMessage(std::string_view str) const
+    bool Client::SendMessage(std::string_view str)
     {
         return false;
     }

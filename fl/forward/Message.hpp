@@ -1,7 +1,6 @@
 #pragma once
 
-
-namespace Forward::types {
+namespace Forward::Data {
 
 	class Message
 	{

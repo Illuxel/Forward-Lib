@@ -1,6 +1,6 @@
 #include "fl/forward/Message.hpp"
 
-namespace Forward::types {
+namespace Forward::Data {
 
     
 }
