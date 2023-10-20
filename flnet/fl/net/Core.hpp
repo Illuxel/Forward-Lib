@@ -1,48 +1,64 @@
 #pragma once
 
+#include "fl/utils/Memory.hpp"
+
+#include <thread>
+
 #ifdef _WIN32
 	#include <SDKDDKVer.h>
 #endif
 
-#include "fl/utils/Memory.hpp"
-
 #include <boost/system/error_code.hpp>
 
 #include <boost/asio/strand.hpp>
-#include <boost/asio/io_context.hpp>
-
 #include <boost/asio/ip/udp.hpp>
 #include <boost/asio/ip/tcp.hpp>
-
 #include <boost/asio/ssl.hpp>
-
-#include <thread>
+#include <boost/asio/version.hpp>
 
 namespace Forward::Net {
-		
-	// Boost core
+
 	namespace Core { 
 
 		using ErrorCode = boost::system::error_code;
 
 		namespace Error = boost::asio::error;
 
-		namespace IP {
-			
-			template<class T>
-			using BaseEndpoint = boost::asio::ip::basic_endpoint<T>;
+		using IOContext = boost::asio::io_context;
 
-			using UDP = boost::asio::ip::udp;
-			using UDPSocketBase = UDP::socket;
+		using MutableBuffer = boost::asio::mutable_buffer;
 
-			using TCP = boost::asio::ip::tcp;
-			using TCPSocketBase = TCP::socket;
+		using IpAddress = boost::asio::ip::address;
+		using IpAddressV4 = boost::asio::ip::address_v4;
+		using IpAddressV6 = boost::asio::ip::address_v6;
+
+		using Udp = boost::asio::ip::udp;
+		using UdpSocketBase = Udp::socket;
+		using UdpResolver = Udp::resolver;	
+
+		using Tcp = boost::asio::ip::tcp;
+		using TcpSocketBase = Tcp::socket;
+		using TcpResolver = Tcp::resolver;
+		using TcpAcceptor = Tcp::acceptor;
+
+		static IpAddress MakeAddress(std::string_view str, ErrorCode& ec) 
+		{
+			return boost::asio::ip::make_address(str, ec);
 		}
 
 		namespace SSL {
-			
+
+			using Context = boost::asio::ssl::context;
+
+			using StreamBase = boost::asio::ssl::stream_base;
+
 			using Method = boost::asio::ssl::context::method;
 			using FileFormat = boost::asio::ssl::context::file_format;
+		}
+
+		namespace Asio {
+
+			using namespace boost::asio;
 		}
 	}
 }
