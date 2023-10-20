@@ -1,6 +1,4 @@
-set(BENCH_SOURCE
-    bench_url.cpp
-)
+set(BENCH_SOURCE bench_main.cpp)
 
 add_executable(BenchNet ${BENCH_SOURCE})
 
