@@ -6,5 +6,5 @@ add_executable(BenchUtils ${BENCH_SOURCE})
 
 target_link_libraries(BenchUtils
     benchmark::benchmark
-    Fl::utils
+    Forward::Utils
 )
