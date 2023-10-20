@@ -10,6 +10,11 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_executable(TestWeb 
+    test_query.cpp
+    test_url.cpp
+    test_wfs.cpp
+    test_responder.cpp
+    test_reqsponse.cpp
 )
 
 target_link_libraries(TestWeb
