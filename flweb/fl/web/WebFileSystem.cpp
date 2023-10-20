@@ -1,4 +1,4 @@
-#include "fl/net/http/WebFileSystem.hpp"
+#include "fl/web/WebFileSystem.hpp"
 #include "fl/utils/Log.hpp"
 
 #include <algorithm>

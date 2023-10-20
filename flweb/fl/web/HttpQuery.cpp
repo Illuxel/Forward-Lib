@@ -1,4 +1,4 @@
-#include "fl/net/http/HttpQuery.hpp"
+#include "fl/web/HttpQuery.hpp"
 
 #include "fl/utils/StringArg.hpp"
 #include "fl/utils/StringArgParser.hpp"
@@ -12,61 +12,64 @@
 
 namespace Forward::Web {
 
-    std::string UrlEncodeUtf8(std::string_view input)
-    {
-        std::ostringstream encoded;
+    namespace Coding {
 
-        encoded << std::hex << std::uppercase << std::setfill('0');
-
-        for (unsigned char c : input)
+        std::string UrlEncodeUtf8(std::string_view input)
         {
-            if (c > 127)
+            std::ostringstream encoded;
+
+            encoded << std::hex << std::uppercase << std::setfill('0');
+
+            for (unsigned char c : input)
             {
-                encoded << '%' << std::setw(2) << static_cast<unsigned int>(c);
-                continue;
+                if (c > 127)
+                {
+                    encoded << '%' << std::setw(2) << static_cast<unsigned int>(c);
+                    continue;
+                }
+
+                if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
+                {
+                    encoded << c;
+                }
+                //else if (c == ' ') 
+                //{
+                //    encoded << '+';
+                //}
+                else
+                {
+                    encoded << '%' << std::setw(2) << static_cast<unsigned int>(c);
+                }
             }
 
-            if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') 
-            {
-                encoded << c;
-            }
-            //else if (c == ' ') 
-            //{
-            //    encoded << '+';
-            //}
-            else 
-            {
-                encoded << '%' << std::setw(2) << static_cast<unsigned int>(c);
-            }
+            return encoded.str();
         }
-
-        return encoded.str();
-    }
-    std::string UrlDecodeUtf8(std::string_view input)
-    {
-        std::ostringstream decoded;
-
-        for (uint64_t i = 0; i < input.size(); ++i) 
+        std::string UrlDecodeUtf8(std::string_view input)
         {
-            if (input[i] == '%') 
-            {
-                std::string_view hex = input.substr(i + 1, 2);
-                unsigned char decode_char = std::stoi(hex.data(), nullptr, 16);
+            std::ostringstream decoded;
 
-                decoded << decode_char;
-                i += 2; // Skip the two hexadecimal characters
-            } 
-            else if (input[i] == '+') 
+            for (uint64_t i = 0; i < input.size(); ++i)
             {
-                decoded << ' '; // Replace '+' with space
-            } 
-            else 
-            {
-                decoded << input[i];
+                if (input[i] == '%')
+                {
+                    std::string_view hex = input.substr(i + 1, 2);
+                    unsigned char decode_char = std::stoi(hex.data(), nullptr, 16);
+
+                    decoded << decode_char;
+                    i += 2; // Skip the two hexadecimal characters
+                }
+                else if (input[i] == '+')
+                {
+                    decoded << ' '; // Replace '+' with space
+                }
+                else
+                {
+                    decoded << input[i];
+                }
             }
-        }
 
-        return decoded.str();
+            return decoded.str();
+        }
     }
 
     HttpQuery::HttpQuery() {}
@@ -75,11 +78,12 @@ namespace Forward::Web {
         if (query.empty())
             return;
 
-        std::string decoded = UrlDecodeUtf8(query);
+        std::string_view view = query;
 
-        if (decoded.front() == '?')
-            decoded.erase(0, 1);
+        if (query.front() == '?')
+            view = query.substr(0, 1);
 
+        std::string decoded = Coding::UrlDecodeUtf8(view);
         SetQuery(decoded);
     }
 

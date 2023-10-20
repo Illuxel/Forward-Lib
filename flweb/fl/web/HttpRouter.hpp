@@ -2,7 +2,7 @@
 
 #include "fl/utils/Memory.hpp"
 
-#include "fl/net/http/WebFileSystem.hpp"
+#include "fl/web/WebFileSystem.hpp"
 
 namespace Forward::Web {
 
@@ -13,8 +13,6 @@ namespace Forward::Web {
             return false;
         }
     };
-
-
 
     class HttpRouter
     {

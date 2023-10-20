@@ -10,9 +10,6 @@ if (FL_ENABLE_TESTING)
     add_subdirectory(test)
 endif()
 
-# Networking
-
-set(NET_INTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/net)
 set(NET_INCLUDE
     fl/net/Core.hpp
 
@@ -36,61 +33,25 @@ set(NET_SOURCE
     fl/net/SslSocket.cpp
 )
 
-# HTTP
+add_library(Forward.Net STATIC ${NET_SOURCE})
 
-set(HTTP_INTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/net/http)
-set(HTTP_INCLUDE
-    fl/net/http/Core.hpp
-
-    fl/net/http/HttpQuery.hpp
-    fl/net/http/HttpUrl.hpp
-
-    fl/net/http/HttpRequest.hpp
-    fl/net/http/HttpResponse.hpp
-
-    fl/net/http/WebFileSystem.hpp
-    fl/net/http/HttpRouter.hpp
-    fl/net/http/HttpResponder.hpp
-    fl/net/http/HttpSession.hpp
-    fl/net/http/HttpServer.hpp
-
-    fl/net/http/HttpClient.hpp
-)
-set(HTTP_SOURCE
-    ${HTTP_INCLUDE}   
-
-    fl/net/http/HttpQuery.cpp
-    fl/net/http/HttpUrl.cpp
-
-    fl/net/http/WebFileSystem.cpp
-    fl/net/http/HttpRouter.cpp
-    fl/net/http/HttpResponder.cpp
-    fl/net/http/HttpSession.cpp
-    fl/net/http/HttpServer.cpp
-
-    fl/net/http/HttpClient.cpp
-)
-
-add_library(net STATIC ${HTTP_SOURCE} ${NET_SOURCE})
-
-target_include_directories(net 
+target_include_directories(Forward.Net 
 PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_link_libraries(net
+target_link_libraries(Forward.Net
 PUBLIC    
     OpenSSL::Crypto
     OpenSSL::SSL
     Boost::system 
     Boost::json
-    Fl::utils
+    Forward::Utils
 )
 
-install(FILES ${NET_INCLUDE}  DESTINATION ${NET_INTALL_DIR})
-install(FILES ${HTTP_INCLUDE} DESTINATION ${HTTP_INTALL_DIR})
+install(FILES ${NET_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/net)
 
-install(TARGETS net jwt-cpp
+install(TARGETS Forward.Net
     EXPORT fl-targets
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}

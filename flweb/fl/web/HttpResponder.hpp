@@ -1,22 +1,22 @@
 #pragma once
 
-#include "fl/net/http/HttpRequest.hpp"
-#include "fl/net/http/HttpResponse.hpp"
+#include "fl/web/HttpRequest.hpp"
+#include "fl/web/HttpResponse.hpp"
 
-#include "fl/net/http/HttpRouter.hpp"
+#include "fl/web/HttpRouter.hpp"
 
 namespace Forward::Web {
 
     class HttpResponder
     {
     public:
-        using Callback = std::function<HttpResponse(HttpRequest const&, HttpResponse&&)>;
-        using BadRequest = std::function<HttpResponse(HttpRequest const&, Http::status)>;
+        using Callback = std::function<HttpResponseString(HttpRequestString const&, HttpResponseString&&)>;
+        using BadRequest = std::function<HttpResponseString(HttpRequestString const&, HttpStatus)>;
 
         struct RouteData
         {
             std::string Target;
-            std::optional<Http::verb> Method;
+            std::optional<HttpMethod> Method;
             std::optional<HttpResponder::Callback> Handler;
         };
 
@@ -38,22 +38,28 @@ namespace Forward::Web {
         HttpResponder(Ref<HttpRouter const> const& router);
 
         /**
-         *  @param data handler data
-         *  
-         *  
-         */
-        void AddRouteHandler(HttpResponder::RouteData const& route);
-        /**
          *  @param method 
          * 
          *  sets callback when issue appear
          */
         void SetBadHandler(BadRequest const& method);
         /**
+         *  @param data handler data
+         *  
+         *  
+         */
+        void AddRouteHandler(HttpResponder::RouteData const& route);
+
+        /**
          *   @param req incoming request
          *  
          *   accepts incoming request
          */
-        Http::message_generator HandleRequest(HttpRequest&& req) const;
+        Core::MessageGenerator HandleRequest(HttpRequestString&& req);
+
+    private:
+        Core::MessageGenerator HandleWithRouter(HttpRequestString&& req);
+        Core::MessageGenerator HandleWithoutRouter(HttpRequestString&& req);
+
     };
 }

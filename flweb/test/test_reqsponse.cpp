@@ -1,5 +1,5 @@
-#include "fl/net/http/HttpRequest.hpp"
-#include "fl/net/http/HttpResponse.hpp"
+#include "fl/web/HttpRequest.hpp"
+#include "fl/web/HttpResponse.hpp"
 using namespace Forward;
 
 #include <gtest/gtest.h>

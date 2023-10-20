@@ -1,4 +1,4 @@
-#include "fl/net/http/HttpUrl.hpp"
+#include "fl/web/HttpUrl.hpp"
 
 #include <regex>
 
@@ -7,10 +7,7 @@ namespace Forward::Web {
     HttpUrl::HttpUrl() {}
     HttpUrl::HttpUrl(std::string_view url)
     {
-        if (url.empty())
-            return;
-
-        std::string decoded = UrlDecodeUtf8(url);
+        auto decoded = Coding::UrlDecodeUtf8(url);
         SetUrl(decoded);
     }
 
@@ -19,6 +16,7 @@ namespace Forward::Web {
         std::smatch match;
 
         std::string copy(url.data());
+        //^(https?)://([^/?#]+)([^?#]*)(?:\\?([^#]*))?(?:#(.*))?$
         std::regex urlRegex("^(?:(https?):\\/\\/)?(?:([^\\/\\?#]+))?([^\\?#]*)(?:\\?([^#]*))?(?:#(.*))?$");
 
         is_valid = std::regex_match(copy, match, urlRegex);

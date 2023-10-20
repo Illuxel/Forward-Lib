@@ -9,14 +9,18 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-set(TEST_SOURCE test_main.cpp)
+add_executable(TestWeb 
+    test_query.cpp
+    test_url.cpp
+    test_wfs.cpp
+    test_responder.cpp
+    test_reqsponse.cpp
+)
 
-add_executable(TestNet ${TEST_SOURCE})
-
-target_link_libraries(TestNet
+target_link_libraries(TestWeb
+    Forward::Web
     GTest::gtest_main
-    Forward::Net
 )
 
 include(GoogleTest)
-gtest_discover_tests(TestNet)
+gtest_discover_tests(TestWeb)

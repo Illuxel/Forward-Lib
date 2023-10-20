@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fl/net/http/HttpQuery.hpp"
+#include "fl/web/HttpQuery.hpp"
 
 namespace Forward::Web {
     

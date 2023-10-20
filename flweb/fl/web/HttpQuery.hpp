@@ -1,11 +1,14 @@
 #pragma once
 
-#include "fl/net/http/Core.hpp"
+#include "fl/web/Core.hpp"
 
 namespace Forward::Web {
 
-    std::string UrlEncodeUtf8(std::string_view input);
-    std::string UrlDecodeUtf8(std::string_view input);
+    namespace Coding {
+
+        std::string UrlEncodeUtf8(std::string_view input);
+        std::string UrlDecodeUtf8(std::string_view input);
+    }
 
     class HttpQuery
     {

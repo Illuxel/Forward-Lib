@@ -2,8 +2,8 @@
 
 #include "fl/net/SSLServer.hpp"
 
-#include "fl/net/http/HttpResponder.hpp"
-#include "fl/net/http/HttpSession.hpp"
+#include "fl/web/HttpResponder.hpp"
+#include "fl/web/HttpSession.hpp"
 
 namespace Forward::Web {
 
@@ -17,8 +17,8 @@ namespace Forward::Web {
 
     public:
         HttpServer(uint32_t io_count);
-        HttpServer(Core::SSL::context::method method, uint32_t io_count);
-        HttpServer(std::string_view web_dir, Core::SSL::context::method method, uint32_t io_count);
+        HttpServer(Core::SSL::Method method, uint32_t io_count);
+        HttpServer(std::string_view web_dir, Core::SSL::Method method, uint32_t io_count = 1);
 
         virtual ~HttpServer() override;
 

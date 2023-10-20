@@ -1,10 +1,13 @@
-#include "fl/net/http/HttpServer.hpp"
+#include "fl/web/HttpServer.hpp"
 #include "fl/utils/Log.hpp"
 
 namespace Forward::Web {
 
-    HttpSession::HttpSession(Core::Tcp::socket socket, Core::SSL::context& context)
-        : stream_(std::move(socket), context) 
+    HttpSession::HttpSession(
+        Core::Tcp::socket socket, 
+        Core::SSL::Context& context
+    )
+        : ssl_stream_(std::move(socket), context)
     {
         SetRunExpire(std::chrono::seconds(30));
         SetReadExpire(std::chrono::seconds(300));
@@ -27,21 +30,21 @@ namespace Forward::Web {
 
     void HttpSession::Run()
     {
-        Core::dispatch(
-            stream_.get_executor(),
+        Core::Asio::dispatch(
+            ssl_stream_.get_executor(),
             Core::Beast::bind_front_handler(
                 &HttpSession::OnRun, this));
     }
     void HttpSession::OnRun()
     {
-        Core::Beast::get_lowest_layer(stream_).expires_after(exp_run_);
+        Core::Beast::get_lowest_layer(ssl_stream_).expires_after(exp_run_);
 
-        stream_.async_handshake(
-            Core::SSL::stream_base::server,
+        ssl_stream_.async_handshake(
+            Core::SSL::StreamBase::server,
             Core::Beast::bind_front_handler(
                 &HttpSession::OnHandshake, this));
     }
-    void HttpSession::OnHandshake(Core::Error ec)
+    void HttpSession::OnHandshake(Core::ErrorCode ec)
     {
         if(ec)
             return FL_LOG("handshake", ec.message());
@@ -53,20 +56,19 @@ namespace Forward::Web {
     {
         req_ = {};
 
-        Core::Beast::get_lowest_layer(stream_).expires_after(exp_read_);
-
-        Http::async_read(stream_, buffer_, req_,
+        Core::Beast::get_lowest_layer(ssl_stream_).expires_after(exp_read_);
+        Core::Beast::async_read(ssl_stream_, buffer_, req_.Base(),
             Core::Beast::bind_front_handler(
                 &HttpSession::OnRead, this));
     }
 
-    void HttpSession::Write(Http::message_generator&& msg)
+    void HttpSession::Write(Core::MessageGenerator&& msg)
     {
         bool keep_alive = msg.keep_alive();
 
         // Write the response
         Core::Beast::async_write(
-            stream_,
+            ssl_stream_,
             std::move(msg),
             Core::Beast::bind_front_handler(
                 &HttpSession::OnWrite,
@@ -74,7 +76,7 @@ namespace Forward::Web {
                 keep_alive
             ));
     }
-    void HttpSession::OnWrite(bool keep_alive, Core::Error ec, std::size_t bytes_transferred)
+    void HttpSession::OnWrite(bool keep_alive, Core::ErrorCode ec, std::size_t bytes_transferred)
     {
         boost::ignore_unused(bytes_transferred);
 
@@ -90,14 +92,14 @@ namespace Forward::Web {
     void HttpSession::Close()
     {
         // Set the timeout.
-        Core::Beast::get_lowest_layer(stream_).expires_after(exp_close_);
+        Core::Beast::get_lowest_layer(ssl_stream_).expires_after(exp_close_);
 
         // Perform the SSL shutdown
-        stream_.async_shutdown(
+        ssl_stream_.async_shutdown(
             Core::Beast::bind_front_handler(
                 &HttpSession::OnClose, this));
     }
-    void HttpSession::OnClose(Core::Error ec)
+    void HttpSession::OnClose(Core::ErrorCode ec)
     {
         if(ec)
             return FL_LOG("OnClose", ec);

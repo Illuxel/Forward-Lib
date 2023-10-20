@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fl/net/http/Core.hpp"
+#include "fl/web/HttpRequest.hpp"
 
 namespace Forward::Web {
 
@@ -9,16 +9,16 @@ namespace Forward::Web {
     private:
         using ExpireTime = std::chrono::steady_clock::duration;
 
-        Core::Beast::ssl_stream<Core::Beast::tcp_stream> stream_;
+        Core::SSL::SslStream<Core::TcpStream> ssl_stream_;
         ExpireTime exp_run_, exp_read_, exp_close_;
         
-        Core::Beast::flat_buffer buffer_;
+        Core::FlatBuffer buffer_;
 
     protected:
-        Http::request<Http::string_body> req_;
+        HttpRequestString req_;
 
     public:
-        explicit HttpSession(Core::Tcp::socket socket, Core::SSL::context& context);
+        explicit HttpSession(Core::Tcp::socket socket, Core::SSL::Context& context);
         virtual ~HttpSession();
 
         void SetRunExpire(ExpireTime exp_time);
@@ -28,7 +28,7 @@ namespace Forward::Web {
         // Start the session
         void Run();
         // Sends message to client
-        void Write(Http::message_generator&& msg);
+        void Write(Core::MessageGenerator&& msg);
         // Closes connection
         void Close();
 
@@ -48,15 +48,15 @@ namespace Forward::Web {
          *     ... Your code
          *  
          *  }*/
-        virtual void OnRead(Core::Error ec, std::size_t bytes_transferred) = 0;
+        virtual void OnRead(Core::ErrorCode ec, std::size_t bytes_transferred) = 0;
 
     private:
         void OnRun();
-        void OnHandshake(Core::Error ec);
+        void OnHandshake(Core::ErrorCode ec);
 
         void Read();
 
-        void OnWrite(bool keep_alive, Core::Error ec, std::size_t bytes_transferred);
-        void OnClose(Core::Error ec);
+        void OnWrite(bool keep_alive, Core::ErrorCode ec, std::size_t bytes_transferred);
+        void OnClose(Core::ErrorCode ec);
     };
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fl/net/http/Core.hpp"
+#include "fl/web/Core.hpp"
 
 namespace Forward::Web {
 
