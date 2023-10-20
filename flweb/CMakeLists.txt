@@ -11,9 +11,35 @@ if (FL_ENABLE_TESTING)
 endif()
 
 set(WEB_INCLUDE
+    fl/web/Core.hpp
+
+    fl/web/HttpQuery.hpp
+    fl/web/HttpUrl.hpp
+
+    fl/web/HttpRequest.hpp
+    fl/web/HttpResponse.hpp
+
+    fl/web/WebFileSystem.hpp
+    fl/web/HttpRouter.hpp
+    fl/web/HttpResponder.hpp
+    fl/web/HttpSession.hpp
+    fl/web/HttpServer.hpp
+
+    fl/web/HttpClient.hpp
 )
 set(WEB_SOURCE
     ${WEB_INCLUDE}   
+
+    fl/web/HttpQuery.cpp
+    fl/web/HttpUrl.cpp
+
+    fl/web/WebFileSystem.cpp
+    fl/web/HttpRouter.cpp
+    fl/web/HttpResponder.cpp
+    fl/web/HttpSession.cpp
+    fl/web/HttpServer.cpp
+
+    fl/web/HttpClient.cpp
 )
 
 add_library(Forward.Web STATIC ${WEB_SOURCE})
