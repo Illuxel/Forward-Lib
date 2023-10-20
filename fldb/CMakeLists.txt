@@ -56,13 +56,13 @@ set(FLDB_SOURCE
     fl/db/Database.cpp
 )
 
-add_library(db STATIC 
+add_library(Forward.Database STATIC 
     ${FLDB_SOURCE} 
     ${MYSQL_PRIVATE_SOURCE}
     ${SQLITE3_PRIVATE_SOURCE}
 )
 
-target_include_directories(db
+target_include_directories(Forward.Database
 PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
@@ -72,22 +72,22 @@ PRIVATE
     ${MYSQL_PRIVATE_INCLUDE}
     ${SQLITE3_PRIVATE_INCLUDE}
 )
-target_link_libraries(db
+target_link_libraries(Forward.Database
 PRIVATE
     OpenSSL::Crypto
-    OpenSSL::SSL    
+    OpenSSL::SSL
 
     ${MYSQL_LIB}
     ${MYSQL_CPPCONN_LIB}
 PUBLIC
     SQLite::SQLite
-    Fl::utils
+    Forward::Utils
 )
 
 install(FILES ${FLDB_INCLUDE} DESTINATION ${FLDB_INSTALL_DIR})
 install(DIRECTORY ${MYSQL_CPPCONN_INCLUDE} DESTINATION .)
 
-install(TARGETS db SQLite EXPORT fl-targets
+install(TARGETS Forward.Database SQLite EXPORT fl-targets
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}

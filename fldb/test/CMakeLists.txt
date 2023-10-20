@@ -10,15 +10,15 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(TestDb     
+add_executable(TestDatabase     
     test_mysql.cpp
     test_sqlite.cpp
 )
 
-target_link_libraries(TestDb
-    Fl::db
+target_link_libraries(TestDatabase
     GTest::gtest_main
+    Forward::Database
 )
 
 include(GoogleTest)
-gtest_discover_tests(TestDb)
+gtest_discover_tests(TestDatabase)
