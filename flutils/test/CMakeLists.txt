@@ -19,8 +19,8 @@ add_executable(TestUtils
 )
 
 target_link_libraries(TestUtils   
-    Fl::utils
     GTest::gtest_main
+    Forward::Utils
 )
 
 include(GoogleTest)

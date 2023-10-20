@@ -10,8 +10,6 @@ if (FL_ENABLE_TESTING)
     add_subdirectory(test)
 endif()
 
-set(FLUTILS_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/utils)
-
 set(FLUTILS_INCLUDE
     fl/utils/Exception.hpp
     fl/utils/Memory.hpp
@@ -48,16 +46,16 @@ set(FLUTILS_SOURCE
     fl/utils/Log.cpp
 )
 
-add_library(utils STATIC ${FLUTILS_SOURCE})
+add_library(Forward.Utils STATIC ${FLUTILS_SOURCE})
 
-target_include_directories(utils 
+target_include_directories(Forward.Utils 
 PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-install(FILES ${FLUTILS_INCLUDE} DESTINATION ${FLUTILS_INSTALL_DIR})
-install(TARGETS utils EXPORT fl-targets
+install(FILES ${FLUTILS_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/utils)
+install(TARGETS Forward.Utils EXPORT fl-targets
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
