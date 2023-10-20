@@ -37,20 +37,20 @@ namespace Forward::Net {
 
     void TcpServer::Listen()
     {
-        Core::Error ec;
+        Core::ErrorCode ec;
         Listen(ec);
     }
-    void TcpServer::Listen(Core::Error& ec)
+    void TcpServer::Listen(Core::ErrorCode& ec)
     {
         Listen(Endpoint(), ec);
     }
 
     void TcpServer::Listen(Endpoint const& endpoint)
     {
-        Core::Error ec;
+        Core::ErrorCode ec;
         Listen(endpoint, ec);
     }
-    void TcpServer::Listen(Endpoint const& endpoint, Core::Error& ec)
+    void TcpServer::Listen(Endpoint const& endpoint, Core::ErrorCode& ec)
     {
         if (IsListening())
         {
@@ -65,13 +65,13 @@ namespace Forward::Net {
             return;
 
         // Allow address reuse
-        acceptor_.set_option(Core::socket_base::reuse_address(true));
+        acceptor_.set_option(Core::TcpSocketBase::reuse_address(true));
         acceptor_.bind(endpoint, ec);
 
         if (ec) 
             return;
 
-        acceptor_.listen(Core::socket_base::max_listen_connections, ec);
+        acceptor_.listen(Core::TcpSocketBase::max_listen_connections, ec);
 
         if(ec)
             return;
@@ -87,16 +87,16 @@ namespace Forward::Net {
         return is_listening;
     }
 
-    void TcpServer::OnSocketError(Core::Error ec)
+    void TcpServer::OnSocketError(Core::ErrorCode ec)
     {
         FL_LOG("TcpServer", ec);
     }
-    void TcpServer::OnSocketAccept(Core::Tcp::socket socket)
+    void TcpServer::OnSocketAccept(Core::TcpSocketBase socket)
     {
         
     }
 
-    void TcpServer::OnSocketData(Core::Tcp::socket& socket, Core::mutable_buffer buffer)
+    void TcpServer::OnSocketData(Core::TcpSocketBase& socket, Core::MutableBuffer buffer)
     {
     
     }
@@ -117,11 +117,11 @@ namespace Forward::Net {
     void TcpServer::AcceptNextSocket()
     {
         acceptor_.async_accept(
-            Core::make_strand(io_context_),
+            Core::Asio::make_strand(io_context_),
             boost::beast::bind_front_handler(
                 &TcpServer::HandleSocket, this));
     }
-    void TcpServer::HandleSocket(Core::Error ec, Core::Tcp::socket socket)
+    void TcpServer::HandleSocket(Core::ErrorCode ec, Core::TcpSocketBase socket)
     {
         if (ec)
         {
