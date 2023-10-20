@@ -5,7 +5,11 @@ namespace Forward::Net {
     
     Endpoint::Endpoint() 
     {
+<<<<<<< Updated upstream
         endpoint_ = { Core::IpAddressV4(), 8080 };
+=======
+        endpoint_ = { Core::Asio::address_v4(), 8080 };
+>>>>>>> Stashed changes
         is_valid = true;
     }
     Endpoint::Endpoint(std::string_view str) 
@@ -20,6 +24,7 @@ namespace Forward::Net {
 
         auto port = static_cast<uint16_t>(std::atoi(port_str.data()));
 
+<<<<<<< Updated upstream
         Core::ErrorCode ec;
 
         endpoint_ = { Core::MakeAddress(ip, ec), port };
@@ -31,6 +36,15 @@ namespace Forward::Net {
 
         endpoint_ = { Core::MakeAddress(ip, ec), port };
         is_valid = (bool)ec;
+=======
+        endpoint_ = { Core::Asio::make_address(ip), port };
+        is_valid = true;
+    }
+    Endpoint::Endpoint(std::string_view ip, uint16_t port)
+    {
+        endpoint_ = { Core::Asio::make_address(ip), port };
+        is_valid = true;
+>>>>>>> Stashed changes
     }
 
     std::string Endpoint::Address() const 

@@ -12,13 +12,13 @@ namespace Forward::Net {
     class TcpServer
     {
     public:
-        using OnErrorCallFunc = std::function<void(Core::Error)>;
-        using OnSocketCallFunc = std::function<void(Core::Tcp::socket)>;
-        using OnSocketDataCallFunc = std::function<void(Core::Tcp::socket&, Core::mutable_buffer const&)>;
+        using OnErrorCallFunc = std::function<void(Core::ErrorCode)>;
+        using OnSocketCallFunc = std::function<void(Core::TcpSocketBase)>;
+        using OnSocketDataCallFunc = std::function<void(Core::TcpSocketBase&, Core::MutableBuffer const&)>;
 
     private:
         uint32_t io_count_;
-        Core::io_context io_context_;
+        Core::IOContext io_context_;
         std::vector<std::thread> io_sessions_;
 
         Core::Tcp::acceptor acceptor_;
@@ -69,14 +69,14 @@ namespace Forward::Net {
 
     protected:
         virtual void OnSocketError(Core::ErrorCode ec);
-        virtual void OnSocketAccept(Core::Tcp::socket socket);
+        virtual void OnSocketAccept(Core::TcpSocketBase socket);
 
-        virtual void OnSocketData(Core::Tcp::socket& socket, Core::mutable_buffer buffer);
+        virtual void OnSocketData(Core::TcpSocketBase& socket, Core::MutableBuffer buffer);
 
     private:
         void StartIOContext();
         void AcceptNextSocket();
-        void HandleSocket(Core::ErrorCode ec, Core::Tcp::socket socket);
+        void HandleSocket(Core::ErrorCode ec, Core::TcpSocketBase socket);
 
     };
 } // namespace Forward

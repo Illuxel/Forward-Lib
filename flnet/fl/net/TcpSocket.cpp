@@ -3,13 +3,13 @@
 namespace Forward::Net {
 
 	TcpSocket::TcpSocket(Endpoint const& address)
-		: socket_(io_context_)
-		, resolver_()
+		: socket_(io_context_, address.Protocol())
+		, resolver_(io_context_)
 	{
 	}
-	TcpSocket::TcpSocket(Core::Tcp::socket&& socket)
-	{
-	}
+	//TcpSocket::TcpSocket(Core::TcpSocketBase socket)
+	//{
+	//}
 
 	TcpSocket::~TcpSocket()
 	{

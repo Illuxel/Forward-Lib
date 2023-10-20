@@ -10,11 +10,20 @@
 
 #include <boost/system/error_code.hpp>
 
+<<<<<<< Updated upstream
+=======
+#include <boost/asio/io_context.hpp>
+>>>>>>> Stashed changes
 #include <boost/asio/strand.hpp>
 #include <boost/asio/ip/udp.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl.hpp>
 #include <boost/asio/version.hpp>
+<<<<<<< Updated upstream
+=======
+
+#include <thread>
+>>>>>>> Stashed changes
 
 namespace Forward::Net {
 
@@ -28,6 +37,12 @@ namespace Forward::Net {
 
 		using MutableBuffer = boost::asio::mutable_buffer;
 
+<<<<<<< Updated upstream
+=======
+		template<class T>
+		using BaseEndpoint = boost::asio::ip::basic_endpoint<T>;
+
+>>>>>>> Stashed changes
 		using IpAddress = boost::asio::ip::address;
 		using IpAddressV4 = boost::asio::ip::address_v4;
 		using IpAddressV6 = boost::asio::ip::address_v6;
@@ -40,6 +55,7 @@ namespace Forward::Net {
 		using TcpSocketBase = Tcp::socket;
 		using TcpResolver = Tcp::resolver;
 		using TcpAcceptor = Tcp::acceptor;
+<<<<<<< Updated upstream
 
 		static IpAddress MakeAddress(std::string_view str, ErrorCode& ec) 
 		{
@@ -48,6 +64,10 @@ namespace Forward::Net {
 
 		namespace SSL {
 
+=======
+
+		namespace SSL {
+>>>>>>> Stashed changes
 			using Context = boost::asio::ssl::context;
 
 			using StreamBase = boost::asio::ssl::stream_base;
@@ -57,8 +77,13 @@ namespace Forward::Net {
 		}
 
 		namespace Asio {
+<<<<<<< Updated upstream
 
 			using namespace boost::asio;
+=======
+			using namespace boost::asio;
+			using namespace boost::asio::ip;
+>>>>>>> Stashed changes
 		}
 	}
 }
