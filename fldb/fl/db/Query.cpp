@@ -1,6 +1,6 @@
 #include "fl/db/Query.hpp"
 
-namespace Forward::DBTypes {
+namespace Forward::Database {
 
 	Query::Query() {}
 	Query::Query(sql::Statement* statement)

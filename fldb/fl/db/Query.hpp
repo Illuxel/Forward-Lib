@@ -2,7 +2,7 @@
 
 #include "fl/db/Result.hpp"
 
-namespace Forward::DBTypes {
+namespace Forward::Database {
 
 	class Query
 	{

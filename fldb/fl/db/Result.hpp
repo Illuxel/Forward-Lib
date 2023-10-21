@@ -2,7 +2,7 @@
 
 #include "fl/db/Core.hpp"
 
-namespace Forward::DBTypes {
+namespace Forward::Database {
 	
 	template<class Type>
 	static constexpr Type GetResultFromType(sql::ResultSet* result, uint32_t column)
@@ -48,6 +48,7 @@ namespace Forward::DBTypes {
 		}
 	}
 
+	typename<>
 	class Result
 	{
 	private:
