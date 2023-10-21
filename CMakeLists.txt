@@ -8,11 +8,10 @@ project(ForwardLib
     DESCRIPTION "Set of tools for developing Forward Applications"
 )
 
-# option(BUILD_STATIC "Build library statically" OFF)
-
 option(FL_ENABLE_TESTING "Enabling testing, will add google test feautures in C++" OFF)
-option(FL_ENABLE_EXAMPLES "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
 option(FL_ENABLE_BENCHMARK "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
+
+option(FL_ENABLE_EXAMPLES "Enabling benchmarking, will add google benchmark feautures in C++" OFF)
 
 if (NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
     set(CMAKE_INSTALL_INCLUDEDIR "include")
@@ -45,7 +44,6 @@ endif()
 if(NOT TARGET Boost)
     find_package(Boost 1.81 REQUIRED system json COMPONENTS)
 endif()
-
 
 #--------------< Includes >--------------#
 
@@ -81,10 +79,6 @@ set(FLCLIENT_SOURCE
 
     fl/forward/Client.cpp
 )
-
-#--------------< External dependencies >--------------#
-
-add_subdirectory(vendor)
 
 #--------------< Building tests and examples >--------------#
 
