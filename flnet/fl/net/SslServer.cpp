@@ -1,5 +1,5 @@
 #include "fl/net/SSLServer.hpp"
-#include "fl/utils/Log.hpp"
+#include "fl/core/Log.hpp"
 
 namespace Forward::Net {
 
@@ -22,7 +22,7 @@ namespace Forward::Net {
         std::string_view pass,
         Core::SSL::FileFormat format)
     {
-        Core::ErrorCode ec;
+        Core::ErrorCode ex;
 
         if (!pass.empty())
         {
@@ -30,19 +30,19 @@ namespace Forward::Net {
                 [&pass](uint64_t, Core::SSL::Context::password_purpose)
                 {
                     return pass.data();
-                }, ec);
+                }, ex);
 
-            if (ec)
+            if (ex)
             {
-                return FL_LOG("SslServer", ec);
+                return FL_LOG("SslServer", ex);
             }
         }
 
-        secure_context_.use_private_key_file(filename.data(), format, ec);
+        secure_context_.use_private_key_file(filename.data(), format, ex);
 
-        if (ec)
+        if (ex)
         {
-            FL_LOG("SslServer", ec);
+            FL_LOG("SslServer", ex);
         }
     }
 }

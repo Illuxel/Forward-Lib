@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fl/utils/Memory.hpp"
+#include "fl/core/Memory.hpp"
 
 #include "fl/web/WebFileSystem.hpp"
 
@@ -30,7 +30,7 @@ namespace Forward::Web {
         // key: reg route, value: prepared route
         std::map<std::string, std::string, RouteComparator> routes_;
 
-        mutable std::shared_mutex router_mutex_;
+        mutable std::shared_mutex mtx_;
 
     public:
         HttpRouter();
@@ -54,4 +54,4 @@ namespace Forward::Web {
         // returns prepared target or index 
         std::string PrepareRouteName(std::string_view target) const;
     };
-}
+} // namespace Forward::Web

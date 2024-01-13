@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="fl\forward\Message.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="fl\forward\Account.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="fl\forward\Channel.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="fl\forward\Chat.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="fl\forward\Client.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="fl\forward\ForwardMessage.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="fl\forward\Group.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fl\forward\Account.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="fl\forward\Channel.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="fl\forward\Chat.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="fl\forward\Client.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="fl\forward\Core.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="fl\forward\ForwardMessage.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="fl\forward\Group.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="fl\forward\Message.hpp">
+      <Filter>Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{a99880d7-b2bc-47d1-8694-c3a433bb464f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,16 +1,20 @@
-if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
-  set(CMAKE_INSTALL_LIBDIR "lib")
+#--------------< Building tests and examples >--------------#
+
+if (FL_ENABLE_EXAMPLE)
+    add_subdirectory(example)
 endif()
 
 if (FL_ENABLE_BENCHMARK)
     add_subdirectory(bench)
 endif()
 
-if (FL_ENABLE_TESTING)
+if (FL_ENABLE_TEST)
     add_subdirectory(test)
 endif()
 
-set(NET_INCLUDE
+#--------------< Variables >--------------#
+
+set(FLNET_INCLUDE
     fl/net/Core.hpp
 
     fl/net/Endpoint.hpp
@@ -21,8 +25,8 @@ set(NET_INCLUDE
     fl/net/TcpSocket.hpp
     fl/net/SslSocket.hpp
 )
-set(NET_SOURCE
-    ${NET_INCLUDE}
+set(FLNET_SOURCE
+    ${FLNET_INCLUDE}
 
     fl/net/Endpoint.cpp
 
@@ -33,7 +37,7 @@ set(NET_SOURCE
     fl/net/SslSocket.cpp
 )
 
-add_library(Forward.Net STATIC ${NET_SOURCE})
+add_library(Forward.Net STATIC ${FLNET_SOURCE})
 
 target_include_directories(Forward.Net 
 PUBLIC 
@@ -42,15 +46,14 @@ PUBLIC
 )
 target_link_libraries(Forward.Net
 PUBLIC    
+    Forward::Core
     OpenSSL::Crypto
     OpenSSL::SSL
     Boost::system 
     Boost::json
-    Forward::Utils
 )
 
-install(FILES ${NET_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/net)
-
+install(FILES ${FLNET_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/net)
 install(TARGETS Forward.Net
     EXPORT fl-targets
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}

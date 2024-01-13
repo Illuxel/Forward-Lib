@@ -11,5 +11,3 @@ static void BM_UrlParse(benchmark::State& state)
     }
 }
 BENCHMARK(BM_UrlParse);
-
-BENCHMARK_MAIN();

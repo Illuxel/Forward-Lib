@@ -1,6 +1,0 @@
-#include "fl/forward/Chat.hpp"
-
-namespace Forward::Data {
-
-    
-}

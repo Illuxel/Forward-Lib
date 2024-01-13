@@ -5,5 +5,4 @@ include(CMakeFindDependencyMacro)
 
 find_dependency(OpenSSL)
 find_dependency(Boost)
-# find_dependency(jwt-cpp)
-# find_dependency(SQLite)
+find_dependency(SQLite3)

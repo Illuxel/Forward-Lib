@@ -4,12 +4,6 @@
 
 namespace Forward::Web {
 
-    namespace Coding {
-
-        std::string UrlEncodeUtf8(std::string_view input);
-        std::string UrlDecodeUtf8(std::string_view input);
-    }
-
     class HttpQuery
     {
     private:
@@ -22,13 +16,15 @@ namespace Forward::Web {
 
         void SetQuery(std::string_view query);
 
+        // Get/TryGet
+
         StringArg Arg(std::string_view key) const;
         std::string_view Value(std::string_view key) const;
 
         std::vector<std::string> Keys() const;
 
         std::string ToString() const;
-        std::vector<StringArg> ToArgs(std::string_view arg_format = "") const;
+        StringArgList ToArgs(std::string_view format = "") const;
 
         uint64_t Size() const;
 

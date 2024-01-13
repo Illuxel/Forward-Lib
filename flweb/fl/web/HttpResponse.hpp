@@ -87,4 +87,4 @@ namespace Forward::Web {
     using HttpResponseEmpty = HttpResponse<Core::EmptyBody>;
     using HttpResponseString = HttpResponse<Core::StringBody>;
     using HttpResponseFile = HttpResponse<Core::FileBody>;
-}
+} // namespace Forward::Web

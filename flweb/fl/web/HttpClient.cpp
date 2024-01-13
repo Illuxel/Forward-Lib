@@ -1,14 +1,14 @@
 #include "fl/web/HttpClient.hpp"
-#include "fl/utils/Log.hpp"
+#include "fl/core/Log.hpp"
 
 namespace Forward::Web {
 
     HttpClient::HttpClient(
-        Core::AnyIOContext ex, 
-        Net::Core::SSL::Context& ctx 
+        Core::AnyIOContext any_ctx, 
+        Net::Core::SSL::Context& ssl_ctx 
     )
-        : resolver_(ex)
-        , ssl_stream_(ex, ctx)
+        : resolver_(any_ctx)
+        , ssl_stream_(any_ctx, ssl_ctx)
     {
     }
 
@@ -21,8 +21,8 @@ namespace Forward::Web {
         // Set SNI Hostname (many hosts need this to handshake successfully)
         if(!SSL_set_tlsext_host_name(ssl_stream_.native_handle(), host.data()))
         {
-            Core::ErrorCode ec{static_cast<int>(::ERR_get_error()), Core::Error::get_ssl_category()};
-            return FL_LOG("HttpClient", ec);
+            Core::ErrorCode ex{static_cast<int>(::ERR_get_error()), Core::Error::get_ssl_category()};
+            return FL_LOG("HttpClient", ex);
         }
 
         // Set up an HTTP GET request message
@@ -41,11 +41,11 @@ namespace Forward::Web {
     }
 
     void HttpClient::OnResolve(
-        Core::ErrorCode ec, 
+        Core::ErrorCode ex, 
         Core::TcpResolver::results_type results)
     {
-        if(ec)
-            return FL_LOG("resolve", ec);
+        if(ex)
+            return FL_LOG("resolve", ex);
 
         // Set a timeout on the operation
         Core::Beast::get_lowest_layer(ssl_stream_).expires_after(std::chrono::seconds(310));
@@ -58,11 +58,11 @@ namespace Forward::Web {
     }
 
     void HttpClient::OnConnect(
-        Core::ErrorCode ec,
+        Core::ErrorCode ex,
         Core::TcpResolver::endpoint_type)
     {
-        if(ec)
-            return FL_LOG("connect", ec);
+        if(ex)
+            return FL_LOG("connect", ex);
 
         // Perform the SSL handshake
         ssl_stream_.async_handshake(
@@ -72,10 +72,10 @@ namespace Forward::Web {
                 this));
     }
 
-    void HttpClient::OnHandshake(Core::ErrorCode ec)
+    void HttpClient::OnHandshake(Core::ErrorCode ex)
     {
-        if(ec)
-            return FL_LOG("handshake", ec);
+        if(ex)
+            return FL_LOG("handshake", ex);
 
         // Set a timeout on the operation
         Core::Beast::get_lowest_layer(ssl_stream_).expires_after(std::chrono::seconds(310));
@@ -87,13 +87,13 @@ namespace Forward::Web {
     }
 
     void HttpClient::OnWrite(
-        Core::ErrorCode ec, 
+        Core::ErrorCode ex, 
         std::size_t bytes_transferred)
     {
         boost::ignore_unused(bytes_transferred);
 
-        if(ec)
-            return FL_LOG("write", ec);
+        if(ex)
+            return FL_LOG("write", ex);
 
         // Receive the HTTP response
         Core::Beast::async_read(ssl_stream_, buffer_, res_.Base(),
@@ -101,12 +101,12 @@ namespace Forward::Web {
                 &HttpClient::OnRead, this));
     }
 
-    void HttpClient::OnRead(Core::ErrorCode ec, std::size_t bytes_transferred)
+    void HttpClient::OnRead(Core::ErrorCode ex, std::size_t bytes_transferred)
     {
         boost::ignore_unused(bytes_transferred);
 
-        if(ec)
-            return FL_LOG("read", ec);
+        if(ex)
+            return FL_LOG("read", ex);
 
         // Write the message to standard out
         FL_LOG("read", res_.Base().body());
@@ -120,16 +120,16 @@ namespace Forward::Web {
                 &HttpClient::OnShutdown, this));
     }
 
-    void HttpClient::OnShutdown(Core::ErrorCode ec)
+    void HttpClient::OnShutdown(Core::ErrorCode ex)
     {
-        if(ec == Core::Error::eof)
+        if(ex == Core::Error::eof)
         {
             // Rationale:
             // http://stackoverflow.com/questions/25587403/boost-asio-ssl-async-shutdown-always-finishes-with-an-error
-            ec = {};
+            ex = {};
         }
-        if(ec)
-            return FL_LOG("shutdown", ec);
+        if(ex)
+            return FL_LOG("shutdown", ex);
 
         // If we get here then the connection is closed gracefully
     }

@@ -1,20 +1,20 @@
-if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
-    set(CMAKE_INSTALL_LIBDIR "lib")
+find_package(SQLite3 REQUIRED)
+
+#--------------< Building tests and examples >--------------#
+
+if (FL_ENABLE_EXAMPLE)
+    # add_subdirectory(example)
 endif()
 
-include(../cmake/FindMySQL.cmake)
-
-#--------------< Tests >--------------#
-
-if (FL_ENABLE_BENCHMARKS)
-    add_subdirectory(bench)
+if (FL_ENABLE_BENCHMARK)
+    # add_subdirectory(bench)
 endif()
 
-if (FL_ENABLE_TESTING)
-    add_subdirectory(test)
+if (FL_ENABLE_TEST)
+    # add_subdirectory(test)
 endif()
 
-#--------------< Vars >--------------#
+#--------------< Variables >--------------#
 
 set(SQLITE3_PRIVATE_INCLUDE
 
@@ -38,56 +38,71 @@ set(FLDB_INCLUDE
 
     fl/db/Core.hpp
 
+    fl/db/DBConnection.hpp
+
     fl/db/Query.hpp
     fl/db/PreparedQuery.hpp
     fl/db/Result.hpp
-
-    fl/db/DBConnection.hpp
+    
     fl/db/Database.hpp
 )
 set(FLDB_SOURCE
     ${FLDB_INCLUDE}
 
+    fl/db/DBConnection.cpp
+    
     fl/db/Query.cpp
     fl/db/PreparedQuery.cpp
     fl/db/Result.cpp
 
-    fl/db/DBConnection.cpp
     fl/db/Database.cpp
 )
 
-add_library(Forward.Database STATIC 
-    ${FLDB_SOURCE} 
-    ${MYSQL_PRIVATE_SOURCE}
-    ${SQLITE3_PRIVATE_SOURCE}
+#--------------< SQLite >--------------#
+
+set(SQLITE3_INCLUDE
+
+    fl/db/sqlite/SQLiteConnector.hpp
 )
+set(SQLITE3_SOURCE
+    ${SQLITE3_INCLUDE}
+
+    fl/db/sqlite/SQLiteConnector.cpp
+)
+
+add_compile_definitions(SQLITE_THREADSAFE=2)
+
+#--------------< MYSQL >--------------#
+
+set(MYSQL_INCLUDE
+
+    fl/db/mysql/MySQLConnector.hpp
+)
+set(MYSQL_SOURCE
+    ${MYSQL_INCLUDE}
+
+    fl/db/mysql/MySQLConnector.cpp
+)
+
+#--------------< Project >--------------#
+
+add_library(Forward.Database ${FLDB_SOURCE})
 
 target_include_directories(Forward.Database
 PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-
-    ${MYSQL_CPPCONN_INCLUDE}
-PRIVATE
-    ${MYSQL_PRIVATE_INCLUDE}
-    ${SQLITE3_PRIVATE_INCLUDE}
 )
 target_link_libraries(Forward.Database
-PRIVATE
-    OpenSSL::Crypto
-    OpenSSL::SSL
-
-    ${MYSQL_LIB}
-    ${MYSQL_CPPCONN_LIB}
 PUBLIC
-    SQLite::SQLite
-    Forward::Utils
+    Forward::Core
+    SQLite::SQLite3 
 )
 
-install(FILES ${FLDB_INCLUDE} DESTINATION ${FLDB_INSTALL_DIR})
-install(DIRECTORY ${MYSQL_CPPCONN_INCLUDE} DESTINATION .)
-
-install(TARGETS Forward.Database SQLite EXPORT fl-targets
+install(FILES ${FLDB_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/db)
+install(
+    TARGETS  Forward.Database 
+    EXPORT   fl-targets
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}

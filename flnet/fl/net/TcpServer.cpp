@@ -1,5 +1,5 @@
 #include "fl/net/TcpServer.hpp"
-#include "fl/utils/Log.hpp"
+#include "fl/core/Log.hpp"
 
 #include <boost/beast/core/bind_handler.hpp>
 
@@ -18,39 +18,22 @@ namespace Forward::Net {
     
     }
 
-    void TcpServer::SetErrorCallback(OnErrorCallFunc const& callback)
-    {
-        on_error_ = callback;
-        is_onerror = true;
-    }
-    void TcpServer::SetAcceptCallback(OnSocketCallFunc const& callback)
-    {
-        on_socket_ = callback;
-        is_onsocket = true;
-    }
-
-    void TcpServer::SetSocketDataCallback(OnSocketDataCallFunc const& callback) 
-    {
-        on_socket_data_ = callback;
-        is_onsocketdata = true;
-    }
-
     void TcpServer::Listen()
     {
-        Core::ErrorCode ec;
-        Listen(ec);
+        Core::ErrorCode ex;
+        Listen(ex);
     }
-    void TcpServer::Listen(Core::ErrorCode& ec)
+    void TcpServer::Listen(Core::ErrorCode& ex)
     {
-        Listen(Endpoint(), ec);
+        Listen(Endpoint(), ex);
     }
 
     void TcpServer::Listen(Endpoint const& endpoint)
     {
-        Core::ErrorCode ec;
-        Listen(endpoint, ec);
+        Core::ErrorCode ex;
+        Listen(endpoint, ex);
     }
-    void TcpServer::Listen(Endpoint const& endpoint, Core::ErrorCode& ec)
+    void TcpServer::Listen(Endpoint const& endpoint, Core::ErrorCode& ex)
     {
         if (IsListening())
         {
@@ -59,21 +42,21 @@ namespace Forward::Net {
         }
 
         // Open the acceptor
-        acceptor_.open(endpoint.Protocol(), ec);
+        acceptor_.open(endpoint.Protocol(), ex);
 
-        if(ec)
+        if(ex)
             return;
 
         // Allow address reuse
         acceptor_.set_option(Core::TcpSocketBase::reuse_address(true));
-        acceptor_.bind(endpoint, ec);
+        acceptor_.bind(endpoint, ex);
 
-        if (ec) 
+        if (ex) 
             return;
 
-        acceptor_.listen(Core::TcpSocketBase::max_listen_connections, ec);
+        acceptor_.listen(Core::TcpSocketBase::max_listen_connections, ex);
 
-        if(ec)
+        if(ex)
             return;
 
         is_listening = true;
@@ -87,9 +70,9 @@ namespace Forward::Net {
         return is_listening;
     }
 
-    void TcpServer::OnSocketError(Core::ErrorCode ec)
+    void TcpServer::OnSocketError(Core::ErrorCode ex)
     {
-        FL_LOG("TcpServer", ec);
+        FL_LOG("TcpServer", ex);
     }
     void TcpServer::OnSocketAccept(Core::TcpSocketBase socket)
     {
@@ -121,24 +104,18 @@ namespace Forward::Net {
             boost::beast::bind_front_handler(
                 &TcpServer::HandleSocket, this));
     }
-    void TcpServer::HandleSocket(Core::ErrorCode ec, Core::TcpSocketBase socket)
+    void TcpServer::HandleSocket(Core::ErrorCode ex, Core::TcpSocketBase socket)
     {
-        if (ec)
+        if (ex)
         {
-            OnSocketError(ec);
-
-            if (is_onerror)
-                on_error_(ec);
-
+            OnSocketError(ex);
             return;
         }
-
-        if (is_onsocket)
-            on_socket_(std::move(socket));
         else
+        {
             OnSocketAccept(std::move(socket));
-
-        AcceptNextSocket();
+            AcceptNextSocket();
+        }
     }
      
 } // namespace Forward

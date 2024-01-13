@@ -1,5 +1,5 @@
 #include "fl/web/HttpServer.hpp"
-#include "fl/utils/Log.hpp"
+#include "fl/core/Log.hpp"
 
 namespace Forward::Web {
 
@@ -44,10 +44,10 @@ namespace Forward::Web {
             Core::Beast::bind_front_handler(
                 &HttpSession::OnHandshake, this));
     }
-    void HttpSession::OnHandshake(Core::ErrorCode ec)
+    void HttpSession::OnHandshake(Core::ErrorCode ex)
     {
-        if(ec)
-            return FL_LOG("handshake", ec.message());
+        if(ex)
+            return FL_LOG("handshake", ex.message());
 
         Read();
     }
@@ -76,12 +76,12 @@ namespace Forward::Web {
                 keep_alive
             ));
     }
-    void HttpSession::OnWrite(bool keep_alive, Core::ErrorCode ec, std::size_t bytes_transferred)
+    void HttpSession::OnWrite(bool keep_alive, Core::ErrorCode ex, std::size_t bytes_transferred)
     {
         boost::ignore_unused(bytes_transferred);
 
-        if(ec)
-            return FL_LOG("OnWrite", ec.message());
+        if(ex)
+            return FL_LOG("OnWrite", ex.message());
 
         if(!keep_alive)
             return Close();
@@ -99,9 +99,9 @@ namespace Forward::Web {
             Core::Beast::bind_front_handler(
                 &HttpSession::OnClose, this));
     }
-    void HttpSession::OnClose(Core::ErrorCode ec)
+    void HttpSession::OnClose(Core::ErrorCode ex)
     {
-        if(ec)
-            return FL_LOG("OnClose", ec);
+        if(ex)
+            return FL_LOG("OnClose", ex);
     }
 }

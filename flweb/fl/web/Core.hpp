@@ -2,8 +2,8 @@
 
 #include "fl/net/Core.hpp"
 
-#include "fl/utils/MimeType.hpp"
-#include "fl/utils/StringArg.hpp"
+#include "fl/core/MimeType.hpp"
+#include "fl/core/StringArg.hpp"
 
 #include <set>
 #include <unordered_map>
@@ -55,16 +55,20 @@ namespace Forward::Web {
 			using namespace Forward::Net::Core::SSL;
 
 			template<class Type>
-			using SslStream = boost::beast::ssl_stream<Type>;
+			using Stream = boost::beast::ssl_stream<Type>;
 
 			template<class Type>
 			using FlatStream = boost::beast::flat_stream<Type>;
+
 		}
 
 		namespace Beast {
 
 			using namespace boost::beast;
 			using namespace boost::beast::http;
-		}
-	}
-}
+
+		} // Beast
+
+	} // Core
+
+} // Forward::Web
