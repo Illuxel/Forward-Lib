@@ -4,28 +4,61 @@
 
 namespace Forward::Database {
 
+	template<typename Connector>
 	class Query
 	{
 	protected:
-		Exception query_ec_;
-		Scope<sql::Statement> query_data_ = nullptr;
+		Exception ex_;
+		DBConnection<Connector> conn_;
 
 	public:
-		Query();
-		Query(sql::Statement* statement);
-		Query(Scope<sql::Statement>&& statement);
+		Query() {}
+		~Query() {}
 
-		virtual ~Query();
+		void SetQuery()	{}
 
-		void SetQuery();
+		Exception GetError() const
+		{
+			return ex_;
+		}
 
-		Exception GetException() const;
-		Result GetResult() const;
+		/**
+		 * Executes query. Handles exceptions in method scope
+		 *
+		 * @param sql SQL query
+		 * @return query result
+		 */
+		Result<Connector> Execute(std::string_view sql) 
+		{
+			Exception ex;
+			auto result = Execute(sql, ex);
 
-		virtual void Execute();
-		virtual Result Execute(std::string_view sql);
+			return result;
+		}
+		/**
+		 * Executes query
+		 *
+		 * @param sql SQL query
+		 * @param ex callback error
+		 * @return query result
+		 */
+		Result<Connector> Execute(std::string_view sql, Exception& ex) {}
 
-		virtual bool IsValid() const;
-		virtual bool IsExecuted() const;
+		/**
+		 * Executes query async
+		 *
+		 * @param sql SQL query
+		 * @return future object of result
+		 */
+		std::future<Result<Connector>> ExecuteAsync(std::string_view sql, Exception& ex) = 0;
+
+		bool IsValid() const
+		{
+			return (bool)query_data_;
+		}
+		bool IsExecuted() const
+		{
+			return ex_.IsError();
+		}
 	};
-}
+} // namespace Forward::Database
