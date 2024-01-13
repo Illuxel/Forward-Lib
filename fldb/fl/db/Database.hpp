@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fl/db/core/Connection.hpp"
+#include "fl/db/DBConnection.hpp"
 
 namespace Forward::Database {
 
