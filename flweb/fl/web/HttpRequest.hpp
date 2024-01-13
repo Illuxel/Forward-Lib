@@ -20,7 +20,7 @@ namespace Forward::Web {
             : request_(method, target, version) {}
 
         HttpRequest(Core::HttpBaseRequest<Body>&& request)
-            : request_(request, ) {}
+            : request_(request) {}
         HttpRequest(Core::HttpBaseRequest<Body> const& request)
             : request_(request) {}
 
@@ -77,4 +77,4 @@ namespace Forward::Web {
     using HttpRequestEmpty = HttpRequest<Core::EmptyBody>;
     using HttpRequestString = HttpRequest<Core::StringBody>;
     using HttpRequestFile = HttpRequest<Core::FileBody>;
-}
+} // namespace Forward::Web

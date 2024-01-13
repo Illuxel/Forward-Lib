@@ -2,7 +2,7 @@
 
 namespace Forward::Net {
 
-	class SSLSocket
+	class SslSocket
 	{
 	private:
 

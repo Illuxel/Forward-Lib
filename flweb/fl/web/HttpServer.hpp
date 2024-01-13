@@ -28,7 +28,7 @@ namespace Forward::Web {
         template<typename ...Args>
         constexpr void Route(Args&& ...args) 
         {
-            HttpResponder::RouteData route {std::forward<Args>(args)...};
+            HttpResponder::RouteData route { std::forward<Args>(args)... };
 
             if (!route.Target.empty())
                 if (router_)
@@ -40,4 +40,4 @@ namespace Forward::Web {
                 responder_->AddRouteHandler(route);
         }
     };
-}
+} // namespace Forward::Web

@@ -1,4 +1,5 @@
 #include "fl/web/HttpUrl.hpp"
+#include "fl/web/HttpUrlParser.hpp"
 
 #include <regex>
 
@@ -7,7 +8,7 @@ namespace Forward::Web {
     HttpUrl::HttpUrl() {}
     HttpUrl::HttpUrl(std::string_view url)
     {
-        auto decoded = Coding::UrlDecodeUtf8(url);
+        auto decoded = HttpUrlParser::EncodeUtf8(url);
         SetUrl(decoded);
     }
 
@@ -84,4 +85,4 @@ namespace Forward::Web {
         return true;
     }
 
-} // namespace Forward
+} // namespace Forward::Web

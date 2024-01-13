@@ -33,4 +33,4 @@ namespace Forward::Web {
         static bool IsPathLegal(std::string_view path);
     };
 
-} // namespace Forward
+} // namespace Forward::Web

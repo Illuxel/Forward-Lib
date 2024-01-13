@@ -1,5 +1,5 @@
 #include "fl/web/HttpRouter.hpp"
-#include "fl/utils/Log.hpp"
+#include "fl/core/Log.hpp"
 
 namespace Forward::Web {
 
@@ -25,12 +25,13 @@ namespace Forward::Web {
 
     std::string HttpRouter::GetPreparedTarget(std::string_view name) const 
     {
-        std::shared_lock lock(router_mutex_);
+        std::shared_lock lock(mtx_);
 
         auto const& it = routes_.find(name.data());
         
         if (it == routes_.cend())
             return "";
+
         return it->second;
     }
 
@@ -56,14 +57,14 @@ namespace Forward::Web {
     {
         auto const& prep_route = PrepareRouteName(target);
 
-        std::unique_lock lock(router_mutex_);
+        std::unique_lock lock(mtx_);
         routes_.insert(std::make_pair(target.data(), prep_route));
     }
     void HttpRouter::RegisterContent(std::string_view target)
     {
         std::string temp(target.data(), target.size());
 
-        std::unique_lock lock(router_mutex_);
+        std::unique_lock lock(mtx_);
 
         if (target.front() == '/')
             content_.insert(temp);
@@ -73,7 +74,7 @@ namespace Forward::Web {
 
     bool HttpRouter::IsTarget(std::string_view target) const
     {
-        std::shared_lock lock(router_mutex_);
+        std::shared_lock lock(mtx_);
         return routes_.find(target.data()) != routes_.end();
     }
     bool HttpRouter::IsContent(std::string_view target) const
@@ -95,7 +96,7 @@ namespace Forward::Web {
         if (target.back() == '/')
             return true;
 
-        std::shared_lock lock(router_mutex_);
+        std::shared_lock lock(mtx_);
 
         if (target == def_route_)
             return true;
@@ -107,7 +108,7 @@ namespace Forward::Web {
 
     std::string HttpRouter::PrepareRouteName(std::string_view target) const
     {
-        std::shared_lock lock(router_mutex_);
+        std::shared_lock lock(mtx_);
 
         if (IsTargetIndex(target))
             return def_route_;

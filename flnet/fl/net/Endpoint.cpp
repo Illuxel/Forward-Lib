@@ -1,5 +1,5 @@
 #include "fl/net/Endpoint.hpp"
-#include "fl/utils/Exception.hpp"
+#include "fl/core/Exception.hpp"
 
 namespace Forward::Net {
     
@@ -20,15 +20,15 @@ namespace Forward::Net {
 
         auto port = static_cast<uint16_t>(std::atoi(port_str.data()));
 
-        Core::ErrorCode ec;
-        endpoint_ = { Core::Asio::make_address(ip, ec), port };
-        is_valid = !(bool)ec;
+        Core::ErrorCode ex;
+        endpoint_ = { Core::Asio::make_address(ip, ex), port };
+        is_valid = !(bool)ex;
     }
     Endpoint::Endpoint(std::string_view ip, uint16_t port)
     {
-        Core::ErrorCode ec;
+        Core::ErrorCode ex;
         endpoint_ = { Core::Asio::make_address(ip), port };
-        is_valid = !(bool)ec;
+        is_valid = !(bool)ex;
     }
 
     std::string Endpoint::Address() const 

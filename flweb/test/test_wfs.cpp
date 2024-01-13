@@ -4,8 +4,8 @@ using namespace Forward::Web;
 
 #include <gtest/gtest.h>
 
-TEST(WebFileInfo, Data) {
-
+TEST(WebFileSystem, Data)
+{
     WebFileInfo wf = {
         "file_name",
         MimeType::FromString("txt"),
@@ -21,7 +21,7 @@ TEST(WebFileInfo, Data) {
     EXPECT_EQ(wf.TargetPath(), "/folder_name/file_name.txt");
 }
 
-TEST(WebFileSystem, TargetFileSearch) {
-
+TEST(WebFileSystem, TargetFileSearch) 
+{
 
 }

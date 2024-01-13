@@ -1,0 +1,9 @@
+{
+  "dependencies": [
+    "benchmark",
+    "gtest",
+    "boost",
+    "mysql-connector-cpp",
+    "sqlite3"
+  ]
+}

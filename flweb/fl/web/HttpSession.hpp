@@ -9,7 +9,7 @@ namespace Forward::Web {
     private:
         using ExpireTime = std::chrono::steady_clock::duration;
 
-        Core::SSL::SslStream<Core::TcpStream> ssl_stream_;
+        Core::SSL::Stream<Core::TcpStream> ssl_stream_;
         ExpireTime exp_run_, exp_read_, exp_close_;
         
         Core::FlatBuffer buffer_;
@@ -35,28 +35,28 @@ namespace Forward::Web {
     protected:
         /**
          *
-         * void HttpSession::OnRead(sys::error_code ec, size_t bytes_transferred)
+         * void HttpSession::OnRead(sys::error_code ex, size_t bytes_transferred)
          * {
          *     boost::ignore_unused(bytes_transferred);
          * 
-         *     if(ec == http::error::end_of_stream)
+         *     if(ex == http::error::end_of_stream)
          *         return Close();
          * 
-         *     if(ec)
-         *         return FL_LOG("OnRead", ec.message());
+         *     if(ex)
+         *         return FL_LOG("OnRead", ex.message());
          * 
          *     ... Your code
          *  
          *  }*/
-        virtual void OnRead(Core::ErrorCode ec, std::size_t bytes_transferred) = 0;
+        virtual void OnRead(Core::ErrorCode ex, std::size_t bytes_transferred) = 0;
 
     private:
         void OnRun();
-        void OnHandshake(Core::ErrorCode ec);
+        void OnHandshake(Core::ErrorCode ex);
 
         void Read();
 
-        void OnWrite(bool keep_alive, Core::ErrorCode ec, std::size_t bytes_transferred);
-        void OnClose(Core::ErrorCode ec);
+        void OnWrite(bool keep_alive, Core::ErrorCode ex, std::size_t bytes_transferred);
+        void OnClose(Core::ErrorCode ex);
     };
-}
+} // namespace Forward::Web

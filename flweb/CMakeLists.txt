@@ -1,18 +1,23 @@
-if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
-  set(CMAKE_INSTALL_LIBDIR "lib")
+#--------------< Building tests and examples >--------------#
+
+if (FL_ENABLE_EXAMPLE)
+    add_subdirectory(example)
 endif()
 
 if (FL_ENABLE_BENCHMARK)
     add_subdirectory(bench)
 endif()
 
-if (FL_ENABLE_TESTING)
+if (FL_ENABLE_TEST)
     add_subdirectory(test)
 endif()
 
-set(WEB_INCLUDE
+#--------------< Variables >--------------#
+
+set(FLWEB_INCLUDE
     fl/web/Core.hpp
 
+    fl/web/HttpUrlParser.hpp
     fl/web/HttpQuery.hpp
     fl/web/HttpUrl.hpp
 
@@ -27,9 +32,10 @@ set(WEB_INCLUDE
 
     fl/web/HttpClient.hpp
 )
-set(WEB_SOURCE
-    ${WEB_INCLUDE}   
+set(FLWEB_SOURCE
+    ${FLWEB_INCLUDE}   
 
+    fl/web/HttpUrlParser.cpp
     fl/web/HttpQuery.cpp
     fl/web/HttpUrl.cpp
 
@@ -42,7 +48,9 @@ set(WEB_SOURCE
     fl/web/HttpClient.cpp
 )
 
-add_library(Forward.Web STATIC ${WEB_SOURCE})
+#--------------< Library Forward.Web >--------------#
+
+add_library(Forward.Web STATIC ${FLWEB_SOURCE})
 
 target_include_directories(Forward.Web 
 PUBLIC 
@@ -54,9 +62,8 @@ PUBLIC
     Forward::Net
 )
 
-install(FILES ${WEB_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/web)
-
-install(TARGETS Forward.Web jwt-cpp
+install(FILES ${FLWEB_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fl/web)
+install(TARGETS Forward.Web
     EXPORT fl-targets
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}

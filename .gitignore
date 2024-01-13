@@ -1,5 +1,15 @@
+# IDE Visual Studio
+
 .vs
 .vscode
-build
-out
-CMakeSettings.json
+*.vcxproj.user
+
+# Project output
+
+[Bb]uild
+[Oo]ut
+
+# vcpkg
+
+vcpkg_installed
+vcpkg-configuration.json

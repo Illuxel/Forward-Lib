@@ -62,4 +62,4 @@ namespace Forward::Web {
         Core::MessageGenerator HandleWithoutRouter(HttpRequestString&& req);
 
     };
-}
+} // namespace Forward::Web

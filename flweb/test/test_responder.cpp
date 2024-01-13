@@ -11,7 +11,8 @@ TEST(HttpResponder, RegistrationTest) {
 
     route.Target = "/test";
     route.Method = HttpMethod::get;
-    route.Handler = [](HttpRequestString const& req, HttpResponseString&& res)
+    route.Handler = 
+    [](HttpRequestString const& req, HttpResponseString&& res)
     {
         return res;
     };

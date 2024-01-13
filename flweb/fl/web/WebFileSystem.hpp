@@ -11,13 +11,15 @@ namespace Forward::Web {
         std::filesystem::path Base;
 
         // returns file name
-        std::string File(bool extension = true) const {
+        std::string File(bool extension = true) const 
+        {
             return Name + (extension
                              ? Ext.GetExtName(false)
                              : "");
         }
         // returns path to a file
-        std::string FullPath() const {
+        std::string FullPath() const 
+        {
             std::string temp = Base.string();
             temp.append(TargetPath());
 
@@ -25,11 +27,13 @@ namespace Forward::Web {
         }
 
         // returns target file name
-        std::string TargetName(bool extension = true) const {
+        std::string TargetName(bool extension = true) const 
+        {
             return '/' + File(extension);
         }
         // returns relative path and file
-        std::string TargetPath(bool extension = true) const {
+        std::string TargetPath(bool extension = true) const 
+        {
             if (Relative == Base.filename())
                 return TargetName(extension);
 
@@ -78,4 +82,4 @@ namespace Forward::Web {
 
     };
 
-}
+} // namespace Forward::Web

@@ -1,5 +1,5 @@
 #include "fl/web/HttpResponder.hpp"
-#include "fl/utils/Log.hpp"
+#include "fl/core/Log.hpp"
 
 #include <algorithm>
 #include <execution>
@@ -23,12 +23,12 @@ namespace Forward::Web {
     void LoadWebPageContent(
         std::string_view path, 
         HttpResponseFile& res, 
-        Core::ErrorCode& ec)
+        Core::ErrorCode& ex)
     {   
         Core::FileBody::value_type body;
-        body.open(path.data(), Core::Beast::file_mode::scan, ec);
+        body.open(path.data(), Core::Beast::file_mode::scan, ex);
 
-        if (ec)
+        if (ex)
             return;
 
         uint64_t size = body.size();
@@ -168,15 +168,15 @@ namespace Forward::Web {
 
             std::string path = is_target ? router_->GetRouteFilePath(target) : router_->GetContentFilePath(target);
 
-            Core::ErrorCode ec;
-            LoadWebPageContent(path, resFile, ec);
+            Core::ErrorCode ex;
+            LoadWebPageContent(path, resFile, ex);
 
-            if (ec == Core::Beast::errc::no_such_file_or_directory)
+            if (ex == Core::Beast::errc::no_such_file_or_directory)
             {
                 return bad_request_(req, HttpStatus::not_found);
             }
 
-            if (ec)
+            if (ex)
             {
                 return bad_request_(req, HttpStatus::internal_server_error);
             }

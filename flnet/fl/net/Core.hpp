@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fl/utils/Memory.hpp"
+#include "fl/core/Memory.hpp"
 
 #include <thread>
 
@@ -10,14 +10,12 @@
 
 #include <boost/system/error_code.hpp>
 
+#include <boost/asio/version.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/strand.hpp>
 #include <boost/asio/ip/udp.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/asio/version.hpp>
-
-#include <thread>
 
 namespace Forward::Net {
 
