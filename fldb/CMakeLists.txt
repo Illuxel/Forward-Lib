@@ -16,23 +16,6 @@ endif()
 
 #--------------< Variables >--------------#
 
-set(SQLITE3_PRIVATE_INCLUDE
-
-)
-set(SQLITE3_PRIVATE_SOURCE
-    ${SQLITE3_PRIVATE_INCLUDE}
-
-)
-
-set(MYSQL_PRIVATE_INCLUDE
-    fl/db/private/mysql/DriverLock.hpp
-)
-set(MYSQL_PRIVATE_SOURCE
-    ${MYSQL_PRIVATE_INCLUDE}
-
-    fl/db/private/mysql/DriverLock.cpp
-)
-
 set(FLDB_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR}/fl/db)
 set(FLDB_INCLUDE 
 

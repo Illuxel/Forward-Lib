@@ -1,97 +1,69 @@
 #pragma once
 
-#include "fl/db/Core.hpp"
+#include "fl/db/DBConnection.hpp"
 
-namespace Forward::DBTypes {
-	
-	template<class Type>
-	static constexpr Type GetResultFromType(sql::ResultSet* result, uint32_t column)
-	{
-		if (!result)
-			throw std::runtime_error("Result is not initialized");
+namespace Forward::Database {
+    
+    template<typename Connector>
+    class Result
+    {
+    private:
+        Exception ex_;
+        DBConnection<Connector> conn_;
 
-		// Blob type
-		if constexpr (std::is_same<Type, std::istream*>::value) {
-			return result->getBlob(column);
-		}
-		// Text
-		else if constexpr (std::is_same<Type, char const*>::value) {
-			return result->getString(column);
-		}
-		else if constexpr (std::is_same<Type, std::string>::value) {
-			return result->getString(column);
-		}
-		else if constexpr (std::is_same<Type, std::string_view>::value) {
-			return result->getString(column).c_str();
-		}
-		// Integers and boolean
-		else if constexpr (std::is_same<Type, bool>::value) {
-			return result->getBoolean(column);
-		}
-		else if constexpr (std::is_same<Type, double>::value) {
-			return result->getDouble(column);
-		}
-		else if constexpr (std::is_same<Type, int32_t>::value) {
-			return result->getInt(column);
-		}
-		else if constexpr (std::is_same<Type, uint32_t>::value) {
-			return result->getUInt(column);
-		}
-		else if constexpr (std::is_same<Type, int64_t>::value) {
-			return result->getInt64(column);
-		}
-		else if constexpr (std::is_same<Type, uint64_t>::value) {
-			return result->getUInt64(column);
-		}
-		else {
-			throw std::runtime_error("Unsupported type");
-		}
-	}
+    public:
+        Result() {}
+        Result(Result&& result)
+        {
+            *this = std::move(right);
+        }
 
-	class Result
-	{
-	private:
-		Scope<sql::ResultSet> result_ = nullptr;
+        template<class Type>
+        constexpr Type Get(uint32_t index) const
+        {
+            if (index == 0)
+                throw std::invalid_argument("Invalid column index");
 
-	public:
-		Result();
-		Result(sql::ResultSet* result);
-		Result(Scope<sql::ResultSet>&& right);
+            if (IsEmpty())
+                throw std::runtime_error("Query result is empty");
+            
+            return Type();
+        }
 
-		Result(Result&& result) noexcept;
-		Result& operator=(Result&& right) noexcept;
+        template<class Type>
+        constexpr Type Get(std::string_view column) const
+        {
+            int index = result_->findColumn(column.data());
+            return Get<Type>(index);
+        }
 
-		template<class Type>
-		constexpr Type Get(uint32_t index) const
-		{
-			if (index == 0)
-				throw std::invalid_argument("Invalid column index");
+        uint32_t RowCount() const 
+        {
+            return 0;
+        }
+        uint32_t ColumnCount() const
+        {
+            return 0;
+        }
 
-			if (IsEmpty())
-				throw std::runtime_error("Query result is empty");
-			
-			return GetResultFromType<Type>(result_.get(), index);
-		}
+        bool IsValid() const
+        {
+            return conn_.IsValid();
+        }
+        bool IsEmpty() const
+        {
+            return true;
+        }
 
-		template<class Type>
-		constexpr Type Get(std::string_view column) const
-		{
-			int index = result_->findColumn(column.data());
-			return Get<Type>(index);
-		}
+        Result<Connector>& operator=(Result<Connector>&& right) noexcept
+        {
+            *this = std::move(right);
+            return *this;
+        }
 
-		uint32_t RowCount() const;
-		uint32_t ColumnCount() const;
-
-		bool IsValid() const;
-		bool IsEmpty() const;
-
-		explicit operator bool() const
-		{
-			return IsEmpty();
-		}
-
-		Result(Result const&) = delete;
-		Result& operator=(Result const&) = delete;
-	};
-}
+        explicit operator bool() const
+        {
+            return IsEmpty();
+        }
+    };
+} // namespace Forward::Database

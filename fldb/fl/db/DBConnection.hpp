@@ -1,270 +1,126 @@
 #pragma once
 
-#include "fl/db/Query.hpp"
-#include "fl/db/PreparedQuery.hpp"
+#include "fl/db/Core.hpp"
 
-#include "fl/db/Result.hpp"
+namespace Forward::Database {
 
-namespace sql {
-	class Driver;
-}
+    template <class Connector>
+    class ConnetionOptions {
+    private:
 
-namespace Forward {
+    public:
+        ConnetionOptions() {}
 
-	namespace MySQL {
-		class DriverLock;
-	}
+    };
 
-	/**
-	 * Represents database connection
-	 */
-	class DBConnection
-	{
-	private:
-		sql::Driver* driver_ = nullptr;
-		Scope<sql::Connection> connection_ = nullptr;
+    /**
+     * Represents database connection
+     */
+    template<class Connector>
+    class DBConnection
+    {
+    public:
+        using Options = ConnetionOptions<Connector>;
 
-		bool is_scheme = false;
+        using Scope = Scope<Connector>;
+        using Ref = Ref<Connector>;
 
-		mutable std::mutex conn_mtx_;           // for connection ptr ONLY
-		mutable std::shared_mutex data_mtx_;    // for everything else
+    private:
+        Scope conn_ = nullptr;
+        mutable std::shared_mutex mtx_;
 
-	public:
-		/**
-		 * @param driver MySQL driver instance
-		 */
-		DBConnection(sql::Driver* driver);
-		/**
-		 * Takes ownership of raw ptr connection
-		 *
-		 * @param connection
-		 */
-		DBConnection(sql::Connection* connection);
-		/**
-		 * Takes ownership of scope ptr connection
-		 *
-		 * @param connection
-		 */
-		DBConnection(Scope<sql::Connection>&& connection);
-		/**
-		 * Create connection object and connects to database using ConnectOptionsMap
-		 *
-		 * @param driver MySQL driver instance
-		 * @param conn_options is a map with properties: https://dev.mysql.com/doc/connector-cpp/1.1/en/connector-cpp-connect-options.html
-		 */
-		DBConnection(sql::Driver* driver, sql::ConnectOptionsMap const& conn_options);
-		/**
-		 * Create connection object and connects to database
-		 *
-		 * @param driver MySQL driver instance
-		 * @param conn_options is a map with properties: https://dev.mysql.com/doc/connector-cpp/1.1/en/connector-cpp-connect-options.html
-		 */
-		DBConnection(sql::Driver* driver, std::string_view host, std::string_view user, std::string_view password);
+    public:
+        template<typename ...Args> 
+        DBConnection(Args&&... args) 
+        {
+            conn_ = MakeScope(std::forward(args)...);
+        }
+        ~DBConnection() {}
 
-		virtual ~DBConnection();
+        /**
+         * Connects to existing database using options map
+         *
+         * @param options is a map with properties (option and value)
+         * @param ex callback error
+         *
+         * @return true if connection success
+         */
+        bool Connect(Options const& options) 
+        {
+            Exception ex;
+            bool is_conn = Connect(options, ex);
 
-		/**
-		 * Sets current database scheme/name
-		 *
-		 * @param scheme database scheme/name
-		 */
-		void SetActiveSchema(std::string_view scheme);
+            return is_conn;
+        }
+        /**
+         * Connects to existing database using options map.
+         *
+         * @param options is a map with properties (option and value)
+         * @param ex callback error
+         *
+         * @return true if connection success
+         */
+        bool Connect(Options const& options, Exception& ex)
+        {
+            if (IsConnected())
+            {
+                FL_LOG("DBConnection", "Connection already exist");
+                return true;
+            }
 
-		/**
-		 * Connects to existing database using options map
-		 *
-		 * @param conn_options is a map with properties: https://dev.mysql.com/doc/connector-cpp/1.1/en/connector-cpp-connect-options.html
-		 * @param ec callback error
-		 *
-		 * @return true if connection success
-		 */
-		bool Connect(sql::ConnectOptionsMap const& conn_options);
-		/**
-		 * Connects to existing database using options map.
-		 *
-		 * @param conn_options is a map with properties: https://dev.mysql.com/doc/connector-cpp/1.1/en/connector-cpp-connect-options.html
-		 * @param ec callback error
-		 *
-		 * @return true if connection success
-		 */
-		bool Connect(sql::ConnectOptionsMap const& conn_options, Exception& ec);
-		/**
-		 * Connects to existing database. Handles exceptions in method scope
-		 *
-		 * @param host
-		 * @param user
-		 * @param password
-		 *
-		 * @return true if connection success
-		 */
-		bool Connect(std::string_view host, std::string_view user, std::string_view password);
-		/**
-		 * Connects to database
-		 *
-		 * @param host
-		 * @param user
-		 * @param password
-		 * 
-		 * @param ec callback error
-		 *
-		 * @return true if connection success
-		 */
-		bool Connect(std::string_view host, std::string_view user, std::string_view password, Exception& ec);
+            return IsConnected();
+        }
 
-		/**
-		 * Connects to database using options map
-		 *
-		 * @param conn_options is a map with properties: https://dev.mysql.com/doc/connector-cpp/1.1/en/connector-cpp-connect-options.html
-		 *
-		 * @return true if connection success
-		 */
-		std::future<bool> AsyncConnect(sql::ConnectOptionsMap const& conn_options);
-		/**
-		 * Connects to existing database async
-		 *
-		 * @param host
-		 * @param user
-		 * @param password
-		 * 
-		 * @param ec callback error
-		 *
-		 * @return true if connection success
-		 */
-		std::future<bool> AsyncConnect(std::string_view host, std::string_view user, std::string_view password);
+        /**
+         * Connects to database async using options map
+         *
+         * @param options is a map with properties (option and value)
+         * @return true if connection success
+         */
+        std::future<bool> ConnectAsync(Options const& options) 
+        {
+            return std::future<bool>();
+        }
+        /**
+         * Connects to database async using options map and returns errors
+         *
+         * @param options is a map with properties (option and value)
+         * @param ex callback error
+         * @return true if connection success
+         */
+        std::future<bool> ConnectAsync(Options const& options, Exception& ex) 
+        {
+            return std::future<bool>();
+        }
 
-		/**
-		 * Executes query. Handles exceptions in method scope
-		 *
-		 * @param sql SQL query
-		 *
-		 * @return query result or nullptr
-		 */
-		virtual DBTypes::Result Execute(std::string_view sql);
-		/**
-		 * Executes query
-		 *
-		 * @param sql SQL query
-		 * @param ec callback error
-		 *
-		 * @return query result or nullptr
-		 */
-		virtual DBTypes::Result Execute(std::string_view sql, Exception& ec);
-		/**
-		 * Executes query async
-		 *
-		 * @param sql SQL query
-		 *
-		 * @return future object of result
-		 */
-		virtual std::future<DBTypes::Result> AsyncExecute(std::string_view sql);
+        /**
+         * Closes database connection
+         */
+        bool Close() 
+        { 
+            return true;
+        }
+        /**
+         * Closes database connection asynchronously
+         */
+        std::future<bool> CloseAsync() 
+        { 
+            return std::future<bool>(); 
+        }
 
-		/**
-		 * Executes query with arguments. Handles exceptions in method scope
-		 *
-		 * @param sql    SQL query
-		 * @param args     argument list for query parameters.
-		 *                  Each argument represents '?' in SQL query
-		 *
-		 * @return query result or nullptr
-		 */
-		template<typename ...Args>
-		DBTypes::Result Execute(std::string_view sql, Args&&... args)
-		{
-			Exception ec;
-			DBTypes::Result result = Execute(sql, ec, std::forward<Args>(args)...);
+        /**
+         * Checks if database has initialized connection
+         *
+         * @return true if connection ptr is initialized, otherwise will return false
+         */
+        bool IsValid() const { return true;  }
+        /**
+         * Checks if database has established connection
+         *
+         * @return true if connection exist, otherwise false
+         */
+        bool IsConnected() const { return true; }
 
-			return result;
-		}
-		/**
-		 * Executes query with arguments.
-		 *
-		 * @param sql    SQL query
-		 * @param args     argument list for query parameters.
-		 *                  Each argument represents '?' in SQL query
-		 * @param ec callback error
-		 *
-		 * @return query result or nullptr
-		 */
-		template<typename ...Args>
-		DBTypes::Result Execute(std::string_view sql, Exception& ec, Args&&... args)
-		{
-			if (!IsConnected())
-			{
-				FL_LOG("DBConnection", "is not connected");
-				return nullptr;
-			}
-			if (!IsActiveSchema())
-			{
-				FL_LOG("DBConnection", "scheme was not set");
-				return nullptr;
-			}
-
-			DBTypes::Result result;
-			//MySQL::DriverLock d_lock(driver_);
-
-			{
-				std::lock_guard lock(conn_mtx_);
-
-				try
-				{
-					DBTypes::PreparedQuery query(connection_->prepareStatement(sql.data()));
-
-					query.BindValue(std::forward<Args>(args)...);
-
-					query.Execute();
-
-					//result = std::move(query.Execute());
-				}
-				catch (std::exception const& e)
-				{
-					ec = e;
-				}
-			}
-
-			return result;
-		}
-		/**
-		 * Executes query with arguments in separate thread
-		 * 
-		 * @return future object of query result
-		 */
-		template<typename ...Args>
-		std::future<DBTypes::Result> AsyncExecute(std::string_view sql, Args&&... args)
-		{
-			std::future<DBTypes::Result> future = std::async(
-				std::launch::async,
-				[&]()
-				{
-					DBTypes::Result result = Execute(sql, std::forward<Args>(args)...);
-
-					return result;
-				});
-
-			return future;
-		}
-
-		/**
-		 * Closes database connection
-		 */
-		void Close();
-
-		/**
-		 * Checks if database has  connection
-		 *
-		 * @return true if connection ptr is initialized, otherwise will return false
-		 */
-		bool IsValid() const;
-		/**
-		 * Checks if database has established connection
-		 *
-		 * @return true if connection exist, otherwise false
-		 */
-		bool IsConnected() const;
-		/**
-		 *	Checks if database scheme/name is set
-		 *
-		 *  @return true if scheme is set, otherwise false
-		 */
-		bool IsActiveSchema() const;
-	};
-} // namespace Forward
+        bool IsTable() const { return true; }
+    };
+} // namespace Forward::Database

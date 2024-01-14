@@ -10,8 +10,8 @@ using namespace Forward;
 #define DB_NAME "forward-db" 
 
 TEST(MySql, ScopedConnection) {
-    
-    auto db = Database::InitScoped();
+   
+    auto db = Database::InitScoped<MySQLConnection>();
 
     EXPECT_TRUE(db);
 
@@ -35,15 +35,15 @@ TEST(MySql, ScopedConnection) {
 
     {
         auto result = db->Execute("SELECT * FROM user_info WHERE user_id = ?", ec, 2);
-       
+        
         EXPECT_FALSE(ec);
         EXPECT_TRUE(!ec && result.IsEmpty());
     }
 }
 
-static inline void DBPoolMultiAccessFoo(DBTypes::Result& result, Exception& ec)
+static inline void DBPoolMultiAccessFoo(Database::Result& result, Exception& ec)
 {
-    auto db = Database::InitSeparate();
+    auto db = Database::InitSeparate<MySQLConnection>();
 
     if (!db) return;
 
@@ -52,7 +52,7 @@ static inline void DBPoolMultiAccessFoo(DBTypes::Result& result, Exception& ec)
 
     result = std::move(db->Execute("SELECT * FROM user_info WHERE user_id = ?", ec, 2));
 
-    Database::RemoveSeparate();
+    Database::RemoveSeparate<MySQLConnection>();
 }
 
 TEST(MySql, DBPoolMultiAccess) {
@@ -60,7 +60,7 @@ TEST(MySql, DBPoolMultiAccess) {
     const uint8_t thread_count = std::thread::hardware_concurrency();
 
     std::vector<Exception> ecs;
-    std::vector<DBTypes::Result> results;
+    std::vector<Database::Result> results;
 
     ecs.resize(thread_count);
     results.resize(thread_count);
@@ -94,9 +94,9 @@ TEST(MySql, DBPoolMultiAccess) {
     }
 }
 
-static inline void SingleObjMultiExecutionFoo(DBTypes::Result& result, Exception& ec)
+static inline void SingleObjMultiExecutionFoo(Database::Result& result, Exception& ec)
 {
-    auto db = Database::Get();
+    auto db = Database::Get<MySQLConnection>();
 
     result = std::move(db->Execute("SELECT * FROM user_info WHERE user_id = ?", ec, 2));
 }
@@ -106,12 +106,12 @@ TEST(MySql, SingleObjMultiExecution) {
     const uint8_t size = std::thread::hardware_concurrency();
 
     std::vector<Exception> ecs;
-    std::vector<DBTypes::Result> results;
+    std::vector<Database::Result> results;
 
     ecs.resize(size);
     results.resize(size);
 
-    auto db = Database::Init();
+    auto db = Database::Init<MySQLConnection>();
 
     EXPECT_TRUE(db);
 
@@ -155,27 +155,27 @@ TEST(MySql, SingleObjMultiExecution) {
 
 TEST(MySql, AsyncConnection) {
 
-    auto db = Database::Init();
-    auto is_conn = db->AsyncConnect(ADDRESS, USER_NAME, USER_PASSWORD);
+   auto db = Database::Init();
+   auto is_conn = db->AsyncConnect(ADDRESS, USER_NAME, USER_PASSWORD);
 
-    EXPECT_TRUE(is_conn.valid() && is_conn.get());
+   EXPECT_TRUE(is_conn.valid() && is_conn.get());
 }
 
 TEST(MySql, AsyncQueryExecution) {
 
-    auto db = Database::Get();
+   auto db = Database::Get();
 
-    EXPECT_TRUE(db->IsConnected());
+   EXPECT_TRUE(db->IsConnected());
 
-    db->SetActiveSchema(DB_NAME);
+   db->SetActiveSchema(DB_NAME);
 
-    EXPECT_TRUE(db->IsActiveSchema());
+   EXPECT_TRUE(db->IsActiveSchema());
 
-    auto result1 = db->AsyncExecute("SELECT * FROM user_info WHERE user_id = 2");
-    auto result2 = db->AsyncExecute("SELECT * FROM user_info WHERE user_id = ?", 2);
+   auto result1 = db->AsyncExecute("SELECT * FROM user_info WHERE user_id = 2");
+   auto result2 = db->AsyncExecute("SELECT * FROM user_info WHERE user_id = ?", 2);
 
-    EXPECT_TRUE(result1.valid() && result1.get().IsEmpty());
-    EXPECT_TRUE(result2.valid() && result2.get().IsEmpty());
+   EXPECT_TRUE(result1.valid() && result1.get().IsEmpty());
+   EXPECT_TRUE(result2.valid() && result2.get().IsEmpty());
 
-    Database::Remove();
+   Database::Remove();
 }
