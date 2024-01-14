@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Header">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Source">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -12,34 +8,31 @@
     <Filter Include="Source\Connector">
       <UniqueIdentifier>{5c8c743b-9a91-42ad-8c10-1dc00397baf9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header\Connector">
-      <UniqueIdentifier>{1cea62c9-8987-4586-839d-485a92fa0349}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fl\db\Result.hpp">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="fl\db\DBConnection.hpp">
-      <Filter>Header</Filter>
+      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="fl\db\Core.hpp">
-      <Filter>Header</Filter>
+      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="fl\db\Database.hpp">
-      <Filter>Header</Filter>
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="fl\db\DBConnection.hpp">
+      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="fl\db\PreparedQuery.hpp">
-      <Filter>Header</Filter>
+      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="fl\db\Query.hpp">
-      <Filter>Header</Filter>
+      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="fl\db\connector\SQLiteConnection.hpp">
-      <Filter>Header\Connector</Filter>
+      <Filter>Source\Connector</Filter>
     </ClInclude>
     <ClInclude Include="fl\db\connector\MySQLConnection.hpp">
-      <Filter>Header\Connector</Filter>
+      <Filter>Source\Connector</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
