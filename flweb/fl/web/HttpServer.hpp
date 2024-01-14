@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fl/net/SSLServer.hpp"
+#include "fl/net/SslServer.hpp"
 
 #include "fl/web/HttpResponder.hpp"
 #include "fl/web/HttpSession.hpp"
